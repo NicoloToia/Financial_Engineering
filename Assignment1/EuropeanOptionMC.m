@@ -12,15 +12,13 @@ function optionPrice=EuropeanOptionMC(F0,K,B,T,sigma,N,flag)
 
 % generate random numbers
 g = randn(N,1);
-%S0 = F0/(exp(-d*TTM)/B);
-S0 = 1;
-if flag == 1
+% compute St based on the forward dynamics
+St = F0 * exp( -0.5 * sigma^2 * T + sigma * sqrt(T) * g);
 
-    S(:) = S0*exp(g*sigma*sqrt(T)); 
-else
-    % put call parity
-end
+% payoff of the option
+Payoff = max(flag*(St-K), 0);
 
-optionPrice = B*mean(max(S(1,:) - K,0));
+% compute the option price
+optionPrice = B * mean(Payoff);
 
 end
