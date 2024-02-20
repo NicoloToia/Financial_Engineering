@@ -2,6 +2,15 @@
 %  Group 16, AA2023-2024
 %
 
+%% Clear the workspace
+clear all
+close all
+warning('off','all')
+clc
+
+%% Fix the random seed
+rng(42);
+
 %% Pricing parameters
 S0=1;
 K=1;
