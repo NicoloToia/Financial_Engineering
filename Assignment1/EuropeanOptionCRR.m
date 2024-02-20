@@ -15,27 +15,24 @@ u = exp(sigma * sqrt(dt));
 d = 1/u;
 q = (1-d) / (u-d);
 
-% compute the value of the forward at the leaves
-leaves = zeros(N+1, 1);
+% compute the value of the option at the leaves and the probability of each leaf
+% for N steps, there are N+1 leaves
+CRR_leaves = zeros(N+1, 1);
+CRR_prob = zeros(N+1, 1);
 
-for i = 0:N
-    leaves(i+1) = F0 * u^(i) * d^(N-i);
-end
-
-% compute the mean of the payoff at the leaves
-% m represents the number of up movements
+% m is the number of up moves
 for m = 0:N
+    % compute the value of the forward at the leaf
+    Ftt = F0 * u^(m) * d^(N-m);
     % compute the option value
-    optionValue = max(flag * (leaves(m+1) - K), 0);
+    CRR_leaves(m+1) = max(flag * (Ftt - K), 0);
     % compute the probability of this leaf
     % the probability of a leaf is (N choose m) * q^m * (1-q)^(N-m)
-    prob = nchoosek(N, m) * q^m * (1-q)^(N-m);
-    % store the value
-    leaves(m+1) = optionValue * prob;
+    CRR_prob(m+1) = nchoosek(N, m) * q^m * (1-q)^(N-m);
 end
 
 % compute the option price
-% Price is the mean of the leaves discounted
-OptionPrice = B * sum(leaves);
+% Price is the mean of the leaves (weighted by their probability) discounted
+OptionPrice = B * sum(CRR_leaves .* CRR_prob);
 
 end
