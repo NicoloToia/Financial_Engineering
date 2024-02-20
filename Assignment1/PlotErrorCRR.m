@@ -1,4 +1,4 @@
-function [nCRR,errCRR]=PlotErrorCRR(F0,K,B,T,sigma)
+function [M, errorCRR] = PlotErrorCRR(F0,K,B,T,sigma)
 % error plot for CRR method
 %
 %INPUT
@@ -8,31 +8,22 @@ function [nCRR,errCRR]=PlotErrorCRR(F0,K,B,T,sigma)
 % T:     time-to-maturity
 % sigma: volatility
 
+% compute the price of a call option using Black's formula
+% M does not matter, the closed formula is invariant
+exactPrice = EuropeanOptionPrice(F0,K,B,T,sigma,1,0,1);
 
-% calcolo iterazioni ottimali CRR ed errore
-clc
-clear all
-close all
-errCRR=1;
-nCRR=100;
-Eta=10^-3;
+% compute the number of steps to use
+m = 1:10;
+M = 2.^m;
 
-while errCRR>Eta
-    for i=1:2
-        pricingMode = i; % 1 ClosedFormula, 2 CRR
-        OptionPrice(i) = EuropeanOptionPrice(F0,K,B,T,sigma,pricingMode,nCRR);
-    end
-    errCRR=abs(OptionPrice(1)-OptionPrice(2));
-    nCRR=nCRR+5;
+% compute the error for each number of steps (row vector)
+errorCRR = zeros(1, length(M));
+
+for i = 1:length(M)
+    % compute the price of a call using the CRR method for M
+    priceCRR = EuropeanOptionPrice(F0,K,B,T,sigma,2,M,1);
+    % compute the error as the absolute vlaue
+    errorCRR(i) = abs(priceCRR-exactPrice);
 end
 
-N=[0:5:nCRR];
-for j=1:length(N)
-    for i=1:2
-        pricingMode = i; % 1 ClosedFormula, 2 CRR
-        OptionPrice(i) = EuropeanOptionPrice(F0,K,B,T,sigma,pricingMode,nCRR);
-    end
-    error(j)=abs(OptionPrice(1)-OptionPrice(2));
 end
-loglog(N,error)
-
