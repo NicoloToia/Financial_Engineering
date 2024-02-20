@@ -1,5 +1,5 @@
 function OptionPrice = EuropeanOptionCRR(F0, K, B, T, sigma, N, flag)
-%European option price with Closed formula
+%European option price with CRR method
 %
 %INPUT
 % F0:    forward price
@@ -19,7 +19,7 @@ q = (1-d) / (u-d);
 leaves = zeros(N+1, 1);
 
 for i = 0:N
-    leaves(i+1) = F0 * u^(N-i) * d^i;
+    leaves(i+1) = F0 * u^(i) * d^(N-i);
 end
 
 % compute the mean of the payoff at the leaves
