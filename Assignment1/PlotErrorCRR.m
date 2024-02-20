@@ -7,6 +7,10 @@ function [M, errorCRR] = PlotErrorCRR(F0,K,B,T,sigma)
 % K:     strike
 % T:     time-to-maturity
 % sigma: volatility
+%
+%OUTPUT
+% M:    number of steps (1x10 vector)
+% errorCRR: error for each number of steps (1x10)
 
 % compute the price of a call option using Black's formula
 % M does not matter, the closed formula is invariant
