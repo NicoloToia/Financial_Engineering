@@ -25,9 +25,13 @@ errorCRR = zeros(1, length(M));
 
 for i = 1:length(M)
     % compute the price of a call using the CRR method for M
-    priceCRR = EuropeanOptionPrice(F0,K,B,T,sigma,2,M,1);
+    priceCRR = EuropeanOptionPrice(F0,K,B,T,sigma,2,M(i),1);
     % compute the error as the absolute vlaue
     errorCRR(i) = abs(priceCRR-exactPrice);
 end
-
+figure
+title('CRR')
+loglog(M,errorCRR)
+hold on
+loglog(M,1./M)
 end
