@@ -17,10 +17,15 @@ B=exp(-r*TTM); % Discount
 %% Pricing 
 F0=S0*exp(-d*TTM)/B;     % Forward in G&C Model
 
-%TBM: Modify with a cicle
-pricingMode = 1; % 1 ClosedFormula, 2 CRR, 3 Monte Carlo
+%% Point a
 M=100; % M = simulations for MC, steps for CRR;
-OptionPrice = EuropeanOptionPrice(F0,K,B,TTM,sigma,pricingMode,M,flag)
+
+OptionPrice = zeros(3,1);
+
+for i=1:3
+    pricingMode = i; % 1 ClosedFormula, 2 CRR, 3 Monte Carlo
+    OptionPrice(i) = EuropeanOptionPrice(F0,K,B,TTM,sigma,pricingMode,M,flag);
+end
 
 %% Errors Rescaling 
 
