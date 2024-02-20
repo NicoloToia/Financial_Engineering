@@ -1,16 +1,15 @@
 % Assignment_1
-%  Group X, AA2021-2022
+%  Group 16, AA2023-2024
 %
-%  TBM (To Be Modified): Modify & Add where needed
 
 %% Pricing parameters
 S0=1;
 K=1;
-r=0.04;
-TTM=1/6; 
-sigma=0.30;
+r=0.03;
+TTM=1/4; 
+sigma=0.22;
 flag=1; % flag:  1 call, -1 put
-d=0.05;
+d=0.06;
 
 %% Quantity of interest
 B=exp(-r*TTM); % Discount
