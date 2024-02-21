@@ -18,7 +18,7 @@ function optionPrice = EuropeanOptionKIMC(F0,K,KI,B,T,sigma,N)
     Ftt=simulationMC(F0,T,sigma,N);
 
     % compute the prices
-    payoff = (Ftt - K) .* (Ftt > KI);
+    payoff = max((Ftt - K), 0) .* (Ftt > KI);
     optionPrice = B * mean(payoff);
 
 end
