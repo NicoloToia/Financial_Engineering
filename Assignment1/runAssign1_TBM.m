@@ -3,7 +3,7 @@
 % commento nick
 
 %% Clear the workspace
-clear all
+clear
 close all
 warning('off','all')
 clc
@@ -29,11 +29,11 @@ F0=S0*exp(-d*TTM)/B;     % Forward in G&C Model
 %% Point a
 M=100; % M = simulations for MC, steps for CRR;
 
-OptionPrice = zeros(3,1);
+optionPrice = zeros(3,1);
 
 for i=1:3
     pricingMode = i; % 1 ClosedFormula, 2 CRR, 3 Monte Carlo
-    OptionPrice(i) = EuropeanOptionPrice(F0,K,B,TTM,sigma,pricingMode,M,flag);
+    optionPrice(i) = EuropeanOptionPrice(F0,K,B,TTM,sigma,pricingMode,M,flag);
 end
 
 %% Point b
@@ -77,7 +77,7 @@ KI = 1.3;
 optionPriceKI = zeros(3,1);
 
 % monte carlo
-optionPriceKI(2) = EuropeanOptionKIMC(F0,K,KI,B,TTM,sigma,M);
+optionPriceKI(2) = EuropeanOptionKIMC(F0,K,KI,B,TTM,sigma,1000000);
 
 %% KI Option
 

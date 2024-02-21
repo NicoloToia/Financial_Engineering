@@ -1,4 +1,4 @@
-function OptionPrice = EuropeanOptionKICRR(F0,K, KI,B,T,sigma,N)
+function optionPrice = EuropeanOptionKICRR(F0,K, KI,B,T,sigma,N)
 %INPUT
 % F0:    forward price
 % B:     discount factor
@@ -35,10 +35,10 @@ end
 C0 = sum(CRR_leaves .* CRR_prob);
 
 if flag == 1
-    OptionPrice = C0;
+    optionPrice = C0;
 else % put option
     % leverage the put-call parity
     % C0 - P0 = B*(F0 - K)
-    OptionPrice = C0 - B*(F0 - K);
+    optionPrice = C0 - B*(F0 - K);
 end
 end
