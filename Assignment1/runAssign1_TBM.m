@@ -36,6 +36,8 @@ for i=1:3
     optionPrice(i) = EuropeanOptionPrice(F0,K,B,TTM,sigma,pricingMode,M,flag);
 end
 
+optionPrice
+
 %% Point b
 
 % plot Errors for CRR varing number of steps
@@ -81,7 +83,9 @@ optionPriceKI(1) = EuropeanOptionKIClosed(F0,K,KI,B,TTM,sigma);
 % CRR
 optionPriceKI(2) = EuropeanOptionKICRR(F0,K,KI,B,TTM,sigma, 1000);
 % monte carlo
-optionPriceKI(3) = EuropeanOptionKIMC(F0,K,KI,B,TTM,sigma,10000);
+optionPriceKI(3) = EuropeanOptionKIMC(F0,K,KI,B,TTM,sigma,1000000);
+
+optionPriceKI
 
 %% KI Option
 
