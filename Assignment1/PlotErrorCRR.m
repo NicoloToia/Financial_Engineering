@@ -29,9 +29,5 @@ for i = 1:length(M)
     % compute the error as the absolute vlaue
     errorCRR(i) = abs(priceCRR-exactPrice);
 end
-figure
-title('CRR')
-loglog(M,errorCRR)
-hold on
-loglog(M,1./M)
+
 end

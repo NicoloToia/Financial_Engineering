@@ -36,7 +36,7 @@ for i=1:3
     OptionPrice(i) = EuropeanOptionPrice(F0,K,B,TTM,sigma,pricingMode,M,flag);
 end
 
-%% Errors Rescaling 
+%% Point b
 
 % plot Errors for CRR varing number of steps
 % Note: both functions plot also the Errors of interest as side-effect 
@@ -44,6 +44,22 @@ end
 
 % plot Errors for MC varing number of simulations N 
 [nMC,stdEstim]=PlotErrorMC(F0,K,B,TTM,sigma); 
+
+%% Point c
+
+% Plot the results of CRR
+figure
+title('CRR')
+loglog(nCRR,errCRR)
+hold on
+loglog(nCRR,1/nCRR)
+
+% Plot the results of MC
+figure
+title('MC')
+loglog(M,stdEstim)
+hold on
+loglog(M,1./sqrt(M))
 
 %% KI Option
 

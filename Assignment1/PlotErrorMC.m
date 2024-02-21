@@ -8,7 +8,7 @@ function [M,stdEstim]=PlotErrorMC(F0,K,B,T,sigma)
 % T:     time-to-maturity
 % sigma: volatility
 
-m=[1:20];
+m=1:20;
 M=2.^m;
 stdEstim=zeros(1,20);
 
@@ -20,11 +20,7 @@ for i=1:length(M)
     Ftt = F0 * exp( -0.5 * sigma^2 * T  + sigma * sqrt(T) * g);
     
     % Compute the call option price for each simulation
-    stdEstim(i)=B^2*std(max((Ftt - K),0))/sqrt(M(i));
+    stdEstim(i) = B * std( max((Ftt - K),0) ) / sqrt(M(i));
 end
-figure
-title('MC')
-loglog(M,stdEstim)
-hold on
-loglog(M,1./sqrt(M))
+
 end
