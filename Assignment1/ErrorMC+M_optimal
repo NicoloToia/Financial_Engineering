@@ -1,4 +1,4 @@
-function [M,stdEstim, M_optimal]=ErrorMC(F0,K,B,T,sigma, spread)
+function [M_optimal]=OptimalM_MC(F0,K,B,T,sigma, bidask)
 % error plot for CRR method
 %
 %INPUT
@@ -9,7 +9,7 @@ function [M,stdEstim, M_optimal]=ErrorMC(F0,K,B,T,sigma, spread)
 % sigma: volatility
 
 m=[1:20];
-M=round(2.^m);
+M=2.^m;
 stdEstim=zeros(1,length(m));
 for i=1:length(M)
     g = randn(M(i),1);
@@ -22,7 +22,7 @@ for i=1:length(M)
     stdEstim(i)=B*std(max((Ftt - K),0))/sqrt(M(i)); 
 end
 ii = 1; 
-while (stdEstim(ii)>bidask && ii<70)
+while (stdEstim(ii)>bidask && ii<21)
     ii = ii+1; 
 end 
 M_optimal = ii; 
