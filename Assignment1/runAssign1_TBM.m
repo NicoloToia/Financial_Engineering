@@ -47,19 +47,26 @@ end
 
 %% Point c
 
+% spread is 1 bp
+spread = 10^-4;
+
 % Plot the results of CRR
 figure
 title('CRR')
 loglog(nCRR,errCRR)
 hold on
-loglog(nCRR,1/nCRR)
+loglog(nCRR, 1./nCRR)
+% cutoff
+loglog(nCRR, spread * ones(length(nCRR),1))
 
 % Plot the results of MC
 figure
 title('MC')
-loglog(M,stdEstim)
-hold on
-loglog(M,1./sqrt(M))
+loglog(nMC,stdEstim)
+hold on 
+loglog(nMC,1./sqrt(nMC))
+% cutoff
+loglog(nMC, spread * ones(length(nMC),1))
 
 %% KI Option
 
