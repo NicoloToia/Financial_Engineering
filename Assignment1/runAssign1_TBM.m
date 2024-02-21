@@ -43,11 +43,11 @@ optionPrice
 % spread is 1 bp
 spread = 10^-4;
 % find optimal M for CRR
-optionPriceBlack = EuropeanOptionClosed(F0,K,B,T,sigma,flag);
+optionPriceBlack = EuropeanOptionClosed(F0,K,B,TTM,sigma,flag);
 M_CRR = findMCRR (optionPriceBlack, F0, K, B, TTM, sigma, flag, spread)
 
 % find optimal M for MC
-
+[M_optimal]=OptimalM_MC(F0,K,B,TTM,sigma, spread)
 %% Point c
 
 % plot Errors for CRR varing number of steps
