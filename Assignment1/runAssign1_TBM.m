@@ -68,6 +68,17 @@ loglog(nMC,1./sqrt(nMC))
 % cutoff
 loglog(nMC, spread * ones(length(nMC),1))
 
+%% Point d
+
+% set the barrier
+KI = 1.3;
+
+% store the prices
+optionPriceKI = zeros(3,1);
+
+% monte carlo
+optionPriceKI(2) = EuropeanOptionKIMC(F0,K,KI,B,TTM,sigma,M);
+
 %% KI Option
 
 %% KI Option Gamma
