@@ -58,9 +58,7 @@ fprintf(['\nOPTIMAL M FOR CRR \n' ...
 %% Point c
 
 % plot Errors for CRR varing number of steps
-% Note: both functions plot also the Errors of interest as side-effect 
 [nCRR,errCRR]=PlotErrorCRR(F0,K,B,TTM,sigma);
-
 % plot Errors for MC varing number of simulations N 
 [nMC,stdEstim]=PlotErrorMC(F0,K,B,TTM,sigma); 
 
@@ -109,8 +107,9 @@ fprintf(['\nOPTION PRICE KI \n' ...
 fprintf('CRRPriceKI     :   %.4f \n',optionPriceKI(2));
 fprintf('MCPriceKI      :   %.4f \n',optionPriceKI(3));
 
-%% KI Option
+%% Point e
 
-%% KI Option Gamma
+S_start = 0.7;
+S_end = 1.3;
 
-%% Antithetic Variables
+rangeS0 = linspace(S_start,S_end,100);
