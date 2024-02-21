@@ -2,9 +2,11 @@ function Ftt=simulationMC(F0,T,sigma,N)
 % MonteCarlo simulations forward
 %
 %INPUT 
-%
-%
-%
+% F0:    forward price
+% T:     time-to-maturity
+% sigma: volatility
+% N:     number of simulations
+
 % extract N random numbers from a standard gaussian
 g = randn(N,1);
 
