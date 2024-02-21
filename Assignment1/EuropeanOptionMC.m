@@ -22,11 +22,11 @@ C0 = mean(Ct) * B;
 
 
 if flag == 1
-    optionPrice = C0;
+    OptionPrice = C0;
 else % put option
     % leverage the put-call parity
     % C0 - P0 = B*(F0 - K)
-    optionPrice = C0 - B*(F0 - K);
+    OptionPrice = C0 - B*(F0 - K);
 end
 
 end % function EuropeanOptionMC
