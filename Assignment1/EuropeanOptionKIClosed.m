@@ -1,4 +1,4 @@
-function optionPrice = EuropeanOptionKIClosed(F0,K,KI,B,T,sigma)
+ function optionPrice = EuropeanOptionKIClosed(F0,K,KI,B,T,sigma)
 
 % EuropeanOptionKIClosed computes the price of a European option with a
 % knock-in barrier using the closed-form solution of Black model

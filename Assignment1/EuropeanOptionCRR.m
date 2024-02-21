@@ -12,7 +12,8 @@ function OptionPrice = EuropeanOptionCRR(F0, K, B, T, sigma, N, flag)
 % compute the parameters
 dt = T/N;
 u = exp(sigma * sqrt(dt));
-q = (1-1/u) / (u-1/u);
+%q = (1-1/u) / (u-1/u);
+q = 1 / (u + 1);
 
 r = -log(B) / T;
 B_dt = exp(-r*dt);
@@ -35,4 +36,4 @@ else
     OptionPrice = CallPrice - B * (F0 - K);
 end
 
-end
+end % function EuropeanOptionCRR
