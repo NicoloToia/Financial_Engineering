@@ -46,18 +46,15 @@ fprintf('MCPrice    :   %.4f \n',optionPrice(3));
 spread = 10^-4;
 % find optimal M for CRR
 optionPriceBlack = EuropeanOptionClosed(F0,K,B,TTM,sigma,flag);
-<<<<<<< Updated upstream
-M_CRR = findMCRR (optionPriceBlack, F0, K, B, TTM, sigma, flag, spread)
+M_CRR = findMCRR (optionPriceBlack, F0, K, B, TTM, sigma, flag, spread);
 
 % find optimal M for MC
 [M_optimal]=OptimalM_MC(F0,K,B,TTM,sigma, spread)
-=======
-M_CRR = findMCRR (optionPriceBlack, F0, K, B, TTM, sigma, flag, spread);
+% M_CRR = findMCRR (optionPriceBlack, F0, K, B, TTM, sigma, flag, spread);
 
 fprintf(['\nOPTIMAL M FOR CRR \n' ...
         'Number of intervals CRR :   %.d \n'],M_CRR);
 
->>>>>>> Stashed changes
 %% Point c
 
 % plot Errors for CRR varing number of steps
