@@ -76,8 +76,12 @@ KI = 1.3;
 % store the prices
 optionPriceKI = zeros(3,1);
 
+% closed formula
+optionPriceKI(1) = EuropeanOptionKIClosed(F0,K,KI,B,TTM,sigma);
+% CRR
+optionPriceKI(2) = EuropeanOptionKICRR(F0,K,KI,B,TTM,sigma, 1000);
 % monte carlo
-optionPriceKI(2) = EuropeanOptionKIMC(F0,K,KI,B,TTM,sigma,1000000);
+optionPriceKI(3) = EuropeanOptionKIMC(F0,K,KI,B,TTM,sigma,10000);
 
 %% KI Option
 
