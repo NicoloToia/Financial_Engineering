@@ -20,7 +20,7 @@ switch (flagNum)
     case 2
         vega = VegaMC(F0,K,KI,B,T,sigma,N);
     case 3
-        vega = VegaCF(F0,K,KI,B,T,sigma);
+        vega = VegaClosed(F0,K,KI,B,T,sigma);
     otherwise
         error('VegaKI: invalid flagNum');
 end
