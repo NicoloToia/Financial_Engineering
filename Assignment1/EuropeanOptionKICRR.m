@@ -11,34 +11,21 @@ function optionPrice = EuropeanOptionKICRR(F0,K, KI,B,T,sigma,N)
 % compute the parameters
 dt = T/N;
 u = exp(sigma * sqrt(dt));
-d = 1/u;
-q = (1-d) / (u-d);
+q = (1-1/u) / (u-1/u);
 
-% compute the value of the option at the leaves and the probability of each leaf
-% for N steps, there are N+1 leaves
-CRR_leaves = zeros(N+1, 1);
-CRR_prob = zeros(N+1, 1);
+r = -log(B) / T;
+B_dt = exp(-r*dt);
 
-% m is the number of up moves
-for m = 0:N
-    % compute the value of the forward at the leaf
-    Ftt = F0 * u^(m) * d^(N-m);
-    % compute the option value
-    CRR_leaves(m+1) = B*max((Ftt - K), 0)*(Ftt>KI);
-    % compute the probability of this leaf
-    % the probability of a leaf is (N choose m) * q^m * (1-q)^(N-m)
-    CRR_prob(m+1) = nchoosek(N, m) * q^m * (1-q)^(N-m);
+% initialize the tree leaves with the payoff
+Ftt = F0 * u.^(N:-2:-N);
+leavesCRR = max((Ftt - K), 0) .* (Ftt>KI);
+
+% go back to the root
+for i = 1:N
+    leavesCRR = B_dt * (q*leavesCRR(1:end-1) + (1-q)*leavesCRR(2:end));
 end
 
-% compute the option price
-% Price is the mean of the leaves (weighted by their probability) discounted
-C0 = sum(CRR_leaves .* CRR_prob);
+% return the option price
+optionPrice = leavesCRR;
 
-if flag == 1
-    optionPrice = C0;
-else % put option
-    % leverage the put-call parity
-    % C0 - P0 = B*(F0 - K)
-    optionPrice = C0 - B*(F0 - K);
-end
 end
