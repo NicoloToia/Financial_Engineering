@@ -113,3 +113,32 @@ S_start = 0.7;
 S_end = 1.3;
 
 rangeS0 = linspace(S_start,S_end,100);
+% compute the corresponding forward prices
+rangeF0 = rangeS0*exp(-d*TTM)/B;
+
+% closed formula vegas
+vegasClosed = zeros(length(rangeS0),1);
+for i = 1:length(rangeS0)
+    vegasClosed(i) = VegaKI(rangeF0(i),K,KI,B,TTM,sigma,M,3);
+end
+
+% MC vegas
+vegasMC = zeros(length(rangeS0),1);
+for i = 1:length(rangeS0)
+    vegasMC(i) = VegaKI(rangeF0(i),K,KI,B,TTM,sigma,1000000,2);
+end
+
+%TODO: add CRR vegas
+
+% plot the results
+figure
+plot(rangeS0,vegasClosed)
+title('Vega Closed Formula')
+xlabel('S0')
+ylabel('Vega')
+
+figure
+plot(rangeS0,vegasMC)
+title('Vega Monte Carlo')
+xlabel('S0')
+ylabel('Vega')
