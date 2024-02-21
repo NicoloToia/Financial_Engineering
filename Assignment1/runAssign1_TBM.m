@@ -1,6 +1,6 @@
 % Assignment_1
 %  Group 16, AA2023-2024
-%
+% commento nick
 
 %% Clear the workspace
 clear all
