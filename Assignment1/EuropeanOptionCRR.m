@@ -25,14 +25,20 @@ for m = 0:N
     % compute the value of the forward at the leaf
     Ftt = F0 * u^(m) * d^(N-m);
     % compute the option value
-    CRR_leaves(m+1) = max(flag * (Ftt - K), 0);
+    CRR_leaves(m+1) = max((Ftt - K), 0);
     % compute the probability of this leaf
     % the probability of a leaf is (N choose m) * q^m * (1-q)^(N-m)
     CRR_prob(m+1) = nchoosek(N, m) * q^m * (1-q)^(N-m);
 end
 
-% compute the option price
-% Price is the mean of the leaves (weighted by their probability) discounted
-OptionPrice = B * sum(CRR_leaves .* CRR_prob);
+% compute the call option price
+CallPrice = B * sum(CRR_leaves .* CRR_prob);
+
+% exploit put-call parity
+if flag == 1
+    OptionPrice = CallPrice;
+else
+    OptionPrice = CallPrice - B * (F0 - K);
+end
 
 end
