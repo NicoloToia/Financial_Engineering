@@ -12,27 +12,21 @@ function OptionPrice = EuropeanOptionCRR(F0, K, B, T, sigma, N, flag)
 % compute the parameters
 dt = T/N;
 u = exp(sigma * sqrt(dt));
-d = 1/u;
-q = (1-d) / (u-d);
+q = (1-1/u) / (u-1/u);
 
-% compute the value of the option at the leaves and the probability of each leaf
-% for N steps, there are N+1 leaves
-CRR_leaves = zeros(N+1, 1);
-CRR_prob = zeros(N+1, 1);
+r = -log(B) / T;
+B_dt = exp(-r*dt);
 
-% m is the number of up moves
-for m = 0:N
-    % compute the value of the forward at the leaf
-    Ftt = F0 * u^(m) * d^(N-m);
-    % compute the option value
-    CRR_leaves(m+1) = max((Ftt - K), 0);
-    % compute the probability of this leaf
-    % the probability of a leaf is (N choose m) * q^m * (1-q)^(N-m)
-    CRR_prob(m+1) = nchoosek(N, m) * q^m * (1-q)^(N-m);
+% initialize the tree leaves (N+1) with the payoff
+Ftt = F0 * u.^(N:-2:-N);
+leavesCRR = max(Ftt - K, 0);
+
+% reduce the tree to the root
+for i = 1:N
+    % vectorized version
+    leavesCRR = B_dt * (q * leavesCRR(1:end-1) + (1-q) * leavesCRR(2:end));
 end
-
-% compute the call option price
-CallPrice = B * sum(CRR_leaves .* CRR_prob);
+CallPrice = leavesCRR;
 
 % exploit put-call parity
 if flag == 1
