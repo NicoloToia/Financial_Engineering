@@ -20,14 +20,16 @@ for i=1:length(M)
     stdEstim(i) = B * std( max((Ftt - K),0) ) / sqrt(M(i));
 end
 
+% spread is 1 bp
+spread = 10^-4;
 % Plot the results of MC
 subplot(1,2,2)
-loglog(nMC,stdEstim)
+loglog(M,stdEstim)
 title('MC')
 hold on 
-loglog(nMC,1./sqrt(nMC))
+loglog(M,1./sqrt(M))
 % cutoff
-loglog(nMC, spread * ones(length(nMC),1))
+loglog(M, spread * ones(length(M),1))
 legend('MC','1/sqrt(nMC)','cutoff')
 
 end

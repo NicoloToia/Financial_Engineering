@@ -49,16 +49,13 @@ fprintf('MCPrice    :   %.4f \n',optionPrice(3));
 
 %% Point b and Point c
 
-%   Consider M, as the number of intervals in CRR and as the number of simulations in the MC. Focus 
-%   on a call. Select M according to the criteria mentioned in the class. 
-
-% spread is 1 bp
-spread = 10^-4;
-
 % plot Errors for CRR varing number of steps
 [nCRR,errCRR]=PlotErrorCRR(F0,K,B,TTM,sigma);
 % plot Errors for MC varing number of simulations N 
 [nMC,stdEstim]=PlotErrorMC(F0,K,B,TTM,sigma); 
+
+% spread is 1 bp
+spread = 10^-4;
 
 % find the optimal M for CRR and MC
 M_CRR = nCRR(find(errCRR < spread,1));
@@ -68,7 +65,6 @@ fprintf(['\nOPTIMAL M FOR CRR \n' ...
         'Number of intervals CRR :   %.d \n'],M_CRR);
 fprintf(['\nOPTIMAL M FOR MC \n' ...
         'Number of intervals CRR :   %.d \n'],M_MC);
-
 %% Point d
 
 %   Price also a European Call Option with European barrier at €1.3 (up&in) and same parameters with 
@@ -218,23 +214,4 @@ for i=1:length(d)
 end
 figure
 loglog(d,Delta_price,'x')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

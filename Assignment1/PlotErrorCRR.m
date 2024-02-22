@@ -30,15 +30,18 @@ for i = 1:length(M)
     errorCRR(i) = abs(priceCRR - exactPrice);
 end
 
+% spread is 1 bp
+spread = 10^-4;
+
 % Plot the results of CRR
 figure
 subplot(1,2,1)
-loglog(nCRR,errCRR)
+loglog(M,errorCRR)
 title('CRR')
 hold on
-loglog(nCRR, 1./nCRR)
+loglog(M, 1./M)
 % cutoff
-loglog(nCRR, spread * ones(length(nCRR),1))
+loglog(M, spread * ones(length(M),1))
 legend('CRR','1/nCRR','cutoff')
 
 end
