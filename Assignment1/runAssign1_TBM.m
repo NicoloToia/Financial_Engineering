@@ -98,7 +98,7 @@ optionPriceKI = zeros(3,1);
 % closed formula
 optionPriceKI(1) = EuropeanOptionKIClosed(F0,K,KI,B,TTM,sigma);
 % CRR
-optionPriceKI(2) = EuropeanOptionKICRR(F0,K,KI,B,TTM,sigma, M);
+optionPriceKI(2) = EuropeanOptionKICRR(F0,K,KI,B,TTM,sigma,M);
 % monte carlo
 optionPriceKI(3) = EuropeanOptionKIMC(F0,K,KI,B,TTM,sigma,M);
 
@@ -110,7 +110,7 @@ fprintf('MCPriceKI      :   %.4f \n',optionPriceKI(3));
 %% Point e
 
 S_start = 0.7;
-S_end = 1.3;
+S_end = 1.5;
 
 rangeS0 = linspace(S_start,S_end,100);
 % compute the corresponding forward prices
