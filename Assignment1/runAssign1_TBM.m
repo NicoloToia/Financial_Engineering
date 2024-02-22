@@ -153,3 +153,23 @@ plot(rangeS0,vegasCRR)
 title('Vega CRR')
 xlabel('S0')
 ylabel('Vega')
+
+%% point f
+
+
+[nMC_antithetic_var,stdEstim]=PlotErrorMC_antithetic_var(F0,K,B,TTM,sigma);
+
+% Plot the results of MC
+figure
+loglog(nMC_antithetic_var,stdEstim)
+title('MC antithetic variable')
+hold on 
+loglog(nMC_antithetic_var,1./sqrt(nMC_antithetic_var))
+% cutoff
+loglog(nMC_antithetic_var, spread * ones(length(nMC_antithetic_var),1))
+
+[nMC,stdEstim]=PlotErrorMC(F0,K,B,TTM,sigma); 
+
+loglog(nMC,stdEstim)
+
+legend('MC antithetic','cut off','nMC/sqrt(nMC)','MC')
