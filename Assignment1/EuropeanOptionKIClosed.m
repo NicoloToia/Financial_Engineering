@@ -23,7 +23,4 @@ else % if KI > K
     optionPrice = EuropeanOptionClosed(F0,KI,B,T,sigma, 1) + B*(KI-K) * normcdf(d2(F0,KI,T,sigma));
 end
 
-% discounting
-optionPrice = optionPrice;
-
 end

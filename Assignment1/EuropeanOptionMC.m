@@ -15,11 +15,11 @@ function optionPrice=EuropeanOptionMC(F0,K,B,T,sigma,N,flag)
 Ftt=simulationMC(F0,T,sigma,N);
 
 % Compute the pay-off function for each simulation
-phi = max((Ftt - K),0);
+payoff = max((Ftt - K),0);
 
 % Compute the price of the call option as the mean of the simulations discounted
 %CallPrice = (1/N)*sum(phi) * B;
-CallPrice = mean(phi) * B;
+CallPrice = mean(payoff) * B;
 
 if flag == 1
     optionPrice = CallPrice;
