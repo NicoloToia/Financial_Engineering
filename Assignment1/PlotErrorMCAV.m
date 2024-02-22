@@ -1,5 +1,5 @@
 function [M,stdEstim]=PlotErrorMCAV(F0,K,B,T,sigma)
-% error plot for CRR method
+% error plot for MCAV method
 %
 %INPUT
 % F0:    forward price

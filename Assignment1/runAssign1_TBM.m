@@ -26,6 +26,13 @@ B=exp(-r*TTM); % Discount
 F0=S0*exp(-d*TTM)/B;     % Forward in G&C Model
 
 %% Point a
+
+%   Price the option, 
+%   considering an underlying price equal to 1 Euro (i.e a derivative Notional of 1 Mln Euro): 
+%   i) via blkprice Matlab function; 
+%   ii) with a CRR tree approach; 
+%   iii) with a Monte-Carlo (MC) approach. 
+
 M=100; % M = simulations for MC, steps for CRR;
 
 optionPrice = zeros(3,1);
@@ -41,6 +48,9 @@ fprintf('CRRPrice   :   %.4f \n',optionPrice(2));
 fprintf('MCPrice    :   %.4f \n',optionPrice(3));
 
 %% Point b
+
+%   Consider M, as the number of intervals in CRR and as the number of simulations in the MC. Focus 
+%   on a call. Select M according to the criteria mentioned in the class. 
 
 % spread is 1 bp
 spread = 10^-4;
@@ -61,6 +71,7 @@ fprintf(['\nOPTIMAL M FOR MC \n' ...
 
 %% Point c
 
+%    Show that the numerical errors for a call rescale with M as 1/𝑀 for CRR and as 1/√𝑀 for MC. 
 
 % Plot the results of CRR
 figure
@@ -85,6 +96,10 @@ legend('MC','1/sqrt(nMC)','cutoff')
 
 %% Point d
 
+%   Price also a European Call Option with European barrier at €1.3 (up&in) and same parameters with 
+%   the two numerical techniques (tree & MC). Does it exist a closed formula also in this case? If yes, 
+%   compare the results. 
+
 % set the barrier
 KI = 1.3;
 
@@ -106,6 +121,10 @@ fprintf('CRRPriceKI     :   %.4f \n',optionPriceKI(2));
 fprintf('MCPriceKI      :   %.4f \n',optionPriceKI(3));
 
 %% Point e
+
+%   For this barrier option, plot the Vega (possibly using both the closed formula and a numerical 
+%   estimate) with the underlying price in the range 0.70 Euro and 1.5 Euro. Comment the results. 
+
 
 S_start = 0.7;
 S_end = 1.5;
@@ -182,6 +201,7 @@ legend('Trick','Closed')
 
 %% Point f
 
+% Does antithetic variables technique (Hull 2009, Ch.19.7) reduce MC error of point b.? 
 
 [nMCAV,stdEstimAV]=PlotErrorMCAV(F0,K,B,TTM,sigma);
 
@@ -199,12 +219,30 @@ legend('MC AV','1/sqrt(nMC)','cutoff','MC')
 
 %% point g
 
+%   Price also -with the Tree- a Bermudan option, where the holder has also the right to exercise 
+%   the option at the end of every month, obtaining the stock at the strike price. 
+
+
+S0=K;  % TO BE CHECKED
+F0=S0*exp(-d*TTM)/B;
 
 OptionPriceBermudan = BermudanOptionCRR(F0, K, B, TTM, sigma, M, flag);
 fprintf('CRRPriceBermudan      :   %.4f \n',OptionPriceBermudan);
 
+%% point h
 
-
+%   Pricing the Bermudan option, vary the dividend yield between 0% and 6% and compare 
+%   with the corresponding European price. Discuss the results.
+M=1000;
+d=[0:0.005:0.06];
+Delta_price=zeros(length(d),1);
+for i=1:length(d)
+    F0=S0*exp(-d(i)*TTM)/B;
+    OptionPriceBermudan = BermudanOptionCRR(F0, K, B, TTM, sigma, M, flag);
+    Delta_price=OptionPriceBermudan-EuropeanOptionCRR(F0, K, B, TTM, sigma, M, flag);
+end
+figure
+loglog(d,Delta_price,'x')
 
 
 
