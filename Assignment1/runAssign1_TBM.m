@@ -70,6 +70,7 @@ hold on
 loglog(nCRR, 1./nCRR)
 % cutoff
 loglog(nCRR, spread * ones(length(nCRR),1))
+legend('CRR','1/nCRR','cutoff')
 
 % Plot the results of MC
 figure
@@ -79,6 +80,7 @@ hold on
 loglog(nMC,1./sqrt(nMC))
 % cutoff
 loglog(nMC, spread * ones(length(nMC),1))
+legend('MC','1/sqrt(nMC)','cutoff')
 
 %% Point d
 
@@ -144,6 +146,8 @@ title('Vega Monte Carlo')
 xlabel('S0')
 ylabel('Vega')
 
+legend('Closed','MC')
+
 
 subplot(1,2,2)
 plot(rangeS0,vegasClosed)
@@ -155,6 +159,8 @@ plot(rangeS0,vegasCRR)
 title('Vega CRR')
 xlabel('S0')
 ylabel('Vega')
+
+legend('Closed','CRR')
 
 %% MC trick
 
@@ -170,6 +176,8 @@ plot(rangeS0,vegasClosed)
 title('Vega Monte Carlo Trick')
 xlabel('S0')
 ylabel('Vega')
+
+legend('Trick','Closed')
 
 %% Point f
 
