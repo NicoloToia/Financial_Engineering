@@ -85,7 +85,7 @@ loglog(nMC, spread * ones(length(nMC),1))
 % set the barrier
 KI = 1.3;
 
-M = 1000; %  TO FIX   
+M = 10000; %  TO FIX   
 
 % store the prices
 optionPriceKI = zeros(3,1);
@@ -113,7 +113,7 @@ fprintf('MCPriceKI      :   %.4f \n',optionPriceKI(3));
 
 S_start = 0.7;
 S_end = 1.5;
-M = 1000;
+M = 10000;
 
 rangeS0 = linspace(S_start,S_end,100);
 % compute the corresponding forward prices
@@ -140,18 +140,24 @@ end
 
 % plot the results
 figure
+subplot(1,2,1)
 plot(rangeS0,vegasClosed)
 title('Vega Closed Formula')
 xlabel('S0')
 ylabel('Vega')
-
-figure
+hold on
 plot(rangeS0,vegasMC)
 title('Vega Monte Carlo')
 xlabel('S0')
 ylabel('Vega')
 
-figure
+
+subplot(1,2,2)
+plot(rangeS0,vegasClosed)
+title('Vega Closed Formula')
+xlabel('S0')
+ylabel('Vega')
+hold on 
 plot(rangeS0,vegasCRR)
 title('Vega CRR')
 xlabel('S0')
