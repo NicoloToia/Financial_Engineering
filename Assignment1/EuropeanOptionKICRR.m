@@ -1,4 +1,4 @@
-function optionPrice = EuropeanOptionKICRR(F0,K, KI,B,T,sigma,N)
+function optionPrice = EuropeanOptionKICRR(F0,K,KI,B,T,sigma,N)
 %INPUT
 % F0:    forward price
 % B:     discount factor
