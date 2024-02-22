@@ -14,11 +14,11 @@ function optionPrice = EuropeanOptionKIMC(F0,K,KI,B,T,sigma,N)
 % OUTPUT
 % optionPrice : Price of the option
 
-    % simulate the forward price
-    Ftt=simulationMC(F0,T,sigma,N);
+% simulate the forward price
+Ftt=simulationMC(F0,T,sigma,N);
 
-    % compute the prices
-    payoff = max((Ftt - K), 0) .* (Ftt > KI);
-    optionPrice = B * mean(payoff);
+% compute the prices
+payoff = max((Ftt - K), 0) .* (Ftt > KI);
+optionPrice = B * mean(payoff);
 
 end
