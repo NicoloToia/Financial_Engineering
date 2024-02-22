@@ -47,7 +47,7 @@ fprintf(['\nOPTION PRICE \n' ...
 fprintf('CRRPrice   :   %.4f \n',optionPrice(2));
 fprintf('MCPrice    :   %.4f \n',optionPrice(3));
 
-%% Point b
+%% Point b and Point c
 
 %   Consider M, as the number of intervals in CRR and as the number of simulations in the MC. Focus 
 %   on a call. Select M according to the criteria mentioned in the class. 
@@ -68,31 +68,6 @@ fprintf(['\nOPTIMAL M FOR CRR \n' ...
         'Number of intervals CRR :   %.d \n'],M_CRR);
 fprintf(['\nOPTIMAL M FOR MC \n' ...
         'Number of intervals CRR :   %.d \n'],M_MC);
-
-%% Point c
-
-%    Show that the numerical errors for a call rescale with M as 1/𝑀 for CRR and as 1/√𝑀 for MC. 
-
-% Plot the results of CRR
-figure
-subplot(1,2,1)
-loglog(nCRR,errCRR)
-title('CRR')
-hold on
-loglog(nCRR, 1./nCRR)
-% cutoff
-loglog(nCRR, spread * ones(length(nCRR),1))
-legend('CRR','1/nCRR','cutoff')
-
-% Plot the results of MC
-subplot(1,2,2)
-loglog(nMC,stdEstim)
-title('MC')
-hold on 
-loglog(nMC,1./sqrt(nMC))
-% cutoff
-loglog(nMC, spread * ones(length(nMC),1))
-legend('MC','1/sqrt(nMC)','cutoff')
 
 %% Point d
 

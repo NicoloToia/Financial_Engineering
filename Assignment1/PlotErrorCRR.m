@@ -30,4 +30,15 @@ for i = 1:length(M)
     errorCRR(i) = abs(priceCRR - exactPrice);
 end
 
+% Plot the results of CRR
+figure
+subplot(1,2,1)
+loglog(nCRR,errCRR)
+title('CRR')
+hold on
+loglog(nCRR, 1./nCRR)
+% cutoff
+loglog(nCRR, spread * ones(length(nCRR),1))
+legend('CRR','1/nCRR','cutoff')
+
 end
