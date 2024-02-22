@@ -18,9 +18,9 @@ if (KI < K)
     optionPrice = EuropeanOptionClosed(F0,K,B,T,sigma, 1);
 else % if KI > K
     % Option is equivalent to a Vanilla call option of strike KI
-    % plus a Cash-or-nothing call option of strike KI and cash amount KI-K
-    d2 = @(F0,K,T,sigma) (log(F0/K) - 0.5*sigma^2*T)/(sigma*sqrt(T));
-    optionPrice = EuropeanOptionClosed(F0,KI,B,T,sigma, 1) + B*(KI-K) * normcdf(d2(F0,KI,T,sigma));
+    d1 = (log(F0/KI) + 0.5*sigma^2*T)/(sigma*sqrt(T));
+    d2 = d1 - sigma*sqrt(T);
+    optionPrice = B*(F0*normcdf(d1) - K*normcdf(d2));
 end
 
 end
