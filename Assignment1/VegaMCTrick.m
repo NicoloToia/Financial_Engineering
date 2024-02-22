@@ -1,4 +1,4 @@
-function vega = VegaMC(F0,K,KI,B,T,sigma,N)
+function vega = VegaMCTrick(F0,K,KI,B,T,sigma,N)
 % compute the vega of KI European call option using Monte Carlo simulation
 %
 % INPUT
@@ -12,9 +12,10 @@ function vega = VegaMC(F0,K,KI,B,T,sigma,N)
 
 % simulation the forward
 Ftt = simulationMC(F0,T,sigma,N);
+S0 = 1;
 
 % compute the estimator
-estimator = B * (log(Ftt./F0) - 0.5*sigma^2*T) / sigma .* Ftt .* (Ftt>KI) .* (Ftt>K);
+estimator = B * (log(Ftt./S0) - 0.5*sigma^2*T) / sigma .* Ftt .* (Ftt>KI) .* (Ftt>K);
 
 % compute the vega
 vega = mean(estimator);
