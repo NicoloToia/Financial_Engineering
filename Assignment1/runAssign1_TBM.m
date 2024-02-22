@@ -163,6 +163,21 @@ title('Vega CRR')
 xlabel('S0')
 ylabel('Vega')
 
+%% MC trick
+
+vegasTrick = zeros(length(rangeS0),1);
+for i = 1:length(rangeS0)
+    vegasTrick(i) = VegaMCTrick(rangeF0(i),K,KI,B,TTM,sigma,M);
+end
+
+figure
+plot(rangeS0,vegasTrick)
+hold on
+plot(rangeS0,vegasClosed)
+title('Vega Monte Carlo Trick')
+xlabel('S0')
+ylabel('Vega')
+
 %% point f
 
 
