@@ -85,6 +85,8 @@ loglog(nMC, spread * ones(length(nMC),1))
 % set the barrier
 KI = 1.3;
 
+M = 1000; %  TO FIX   
+
 % store the prices
 optionPriceKI = zeros(3,1);
 
@@ -111,6 +113,7 @@ fprintf('MCPriceKI      :   %.4f \n',optionPriceKI(3));
 
 S_start = 0.7;
 S_end = 1.5;
+M = 1000;
 
 rangeS0 = linspace(S_start,S_end,100);
 % compute the corresponding forward prices
