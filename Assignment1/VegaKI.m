@@ -16,7 +16,7 @@ function vega= VegaKI(F0,K,KI,B,T,sigma,N,flagNum)
 
 switch (flagNum)
     case 1
-        vega = VegaCRR(F0,K,B,T,sigma,N);
+        vega = VegaCRR(F0,K,KI,B,T,sigma,N);
     case 2
         vega = VegaMC(F0,K,KI,B,T,sigma,N);
     case 3
