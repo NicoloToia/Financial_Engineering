@@ -172,4 +172,4 @@ loglog(nMC_antithetic_var, spread * ones(length(nMC_antithetic_var),1))
 
 loglog(nMC,stdEstim)
 
-legend('MC antithetic','','','MC')
+legend('MC antithetic','cut off','nMC/sqrt(nMC)','MC')
