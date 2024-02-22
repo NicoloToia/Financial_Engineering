@@ -1,5 +1,5 @@
 function optionPrice=EuropeanOptionClosed(F0,K,B,T,sigma,flag)
-%European option price with Closed formula
+%European option price with Closed formula by Black model
 %
 %INPUT
 % F0:    forward price
@@ -8,6 +8,9 @@ function optionPrice=EuropeanOptionClosed(F0,K,B,T,sigma,flag)
 % T:     time-to-maturity
 % sigma: volatility
 % flag:  1 call, -1 put
+%
+% OUTPUT
+% optionPrice : Price of the option
 
 [call, put] = blkprice(F0, K, 0, T, sigma);
 

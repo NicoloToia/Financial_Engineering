@@ -10,14 +10,15 @@ function vega = VegaMCTrick(F0,K,KI,B,T,sigma,N)
 % sigma: volatility
 % N: number of simulations
 
+dSigma = 0.01;
+
 % simulation the forward
 Ftt = simulationMC(F0,T,sigma,N);
-S0 = 1;
 
 % compute the estimator
-estimator = B * (log(Ftt./S0) - 0.5*sigma^2*T) / sigma .* Ftt .* (Ftt>KI) .* (Ftt>K);
+estimator = (B + KI - K) * ((log(Ftt./F0) - 0.5*sigma^2*T) / sigma) .* Ftt .* (Ftt>KI);
 
 % compute the vega
-vega = mean(estimator);
+vega = mean(estimator) * dSigma;
 
 end
