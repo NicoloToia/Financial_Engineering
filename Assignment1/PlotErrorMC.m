@@ -1,5 +1,5 @@
 function [M,stdEstim]=PlotErrorMC(F0,K,B,T,sigma)
-% error plot for CRR method
+% error plot for MC method
 %
 %INPUT
 % F0:    forward price
@@ -13,13 +13,10 @@ M=2.^m;
 stdEstim=zeros(1,20);
 
 for i=1:length(M)
-    g = randn(M(i),1);
     % Monte Carlo simulation (one time step)
-    % Compute the value of the forward at time T for each simulation
-    % Black Model: Ft = F0 * exp(-(sigma^2)*T*0.5 + sigma*sqrt(T)*g)
-    Ftt = F0 * exp( -0.5 * sigma^2 * T  + sigma * sqrt(T) * g);
+    Ftt = simulationMC(F0, T, sigma, M(i));
     
-    % Compute the call option price for each simulation
+    % Compute the variance of the price
     stdEstim(i) = B * std( max((Ftt - K),0) ) / sqrt(M(i));
 end
 

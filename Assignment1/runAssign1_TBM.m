@@ -174,19 +174,16 @@ ylabel('Vega')
 %% Point f
 
 
-[nMC_antithetic_var,stdEstim]=PlotErrorMC_antithetic_var(F0,K,B,TTM,sigma);
+[nMCAV,stdEstimAV]=PlotErrorMCAV(F0,K,B,TTM,sigma);
 
 % Plot the results of MC
 figure
-loglog(nMC_antithetic_var,stdEstim)
+loglog(nMCAV,stdEstimAV)
 title('MC antithetic variable')
 hold on 
-loglog(nMC_antithetic_var,1./sqrt(nMC_antithetic_var))
+loglog(nMCAV,1./sqrt(nMCAV))
 % cutoff
-loglog(nMC_antithetic_var, spread * ones(length(nMC_antithetic_var),1))
-
-[nMC,stdEstim]=PlotErrorMC(F0,K,B,TTM,sigma); 
-
+loglog(nMCAV, spread * ones(length(nMCAV),1))
 loglog(nMC,stdEstim)
 
-legend('MC antithetic','cut off','nMC/sqrt(nMC)','MC')
+legend('MC AV','1/sqrt(nMC)','cutoff','MC')
