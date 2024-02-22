@@ -44,23 +44,23 @@ fprintf('MCPrice    :   %.4f \n',optionPrice(3));
 
 % spread is 1 bp
 spread = 10^-4;
-% find optimal M for CRR
-optionPriceBlack = EuropeanOptionClosed(F0,K,B,TTM,sigma,flag);
-M_CRR = findMCRR (optionPriceBlack, F0, K, B, TTM, sigma, flag, spread);
-
-% find optimal M for MC
-[M_optimal]=OptimalM_MC(F0,K,B,TTM,sigma,spread)
-% M_CRR = findMCRR (optionPriceBlack, F0, K, B, TTM, sigma, flag, spread);
-
-fprintf(['\nOPTIMAL M FOR CRR \n' ...
-        'Number of intervals CRR :   %.d \n'],M_CRR);
-
-%% Point c
 
 % plot Errors for CRR varing number of steps
 [nCRR,errCRR]=PlotErrorCRR(F0,K,B,TTM,sigma);
 % plot Errors for MC varing number of simulations N 
 [nMC,stdEstim]=PlotErrorMC(F0,K,B,TTM,sigma); 
+
+% find the optimal M for CRR and MC
+M_CRR = nCRR(find(errCRR < spread,1));
+M_MC = nMC(find(stdEstim < spread,1));
+
+fprintf(['\nOPTIMAL M FOR CRR \n' ...
+        'Number of intervals CRR :   %.d \n'],M_CRR);
+fprintf(['\nOPTIMAL M FOR MC \n' ...
+        'Number of intervals CRR :   %.d \n'],M_MC);
+
+%% Point c
+
 
 % Plot the results of CRR
 figure
@@ -87,7 +87,7 @@ legend('MC','1/sqrt(nMC)','cutoff')
 % set the barrier
 KI = 1.3;
 
-M = 10000; %  TO FIX   
+M = 1000;  
 
 % store the prices
 optionPriceKI = zeros(3,1);
