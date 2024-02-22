@@ -25,7 +25,7 @@ leavesCRR = max(Ftt - K, 0);
 % reduce the tree to the root
 for i = 1:N
     % vectorized version
-    leavesCRR = max(B_dt *(q * leavesCRR(1:end-1) + (1-q) * leavesCRR(2:end)),max());
+    leavesCRR = max(B_dt *(q * leavesCRR(1:end-1) + (1-q) * leavesCRR(2:end)),max(F0 * u.^(N-i:-2:-N+i)-K,0));
 end
 CallPrice = leavesCRR;
 

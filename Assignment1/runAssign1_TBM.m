@@ -64,6 +64,7 @@ fprintf(['\nOPTIMAL M FOR MC \n' ...
 
 % Plot the results of CRR
 figure
+subplot(1,2,1)
 loglog(nCRR,errCRR)
 title('CRR')
 hold on
@@ -73,7 +74,7 @@ loglog(nCRR, spread * ones(length(nCRR),1))
 legend('CRR','1/nCRR','cutoff')
 
 % Plot the results of MC
-figure
+subplot(1,2,2)
 loglog(nMC,stdEstim)
 title('MC')
 hold on 
@@ -195,3 +196,32 @@ loglog(nMCAV, spread * ones(length(nMCAV),1))
 loglog(nMC,stdEstim)
 
 legend('MC AV','1/sqrt(nMC)','cutoff','MC')
+
+%% point g
+
+
+OptionPriceBermudan = BermudanOptionCRR(F0, K, B, TTM, sigma, M, flag);
+fprintf('CRRPriceBermudan      :   %.4f \n',OptionPriceBermudan);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
