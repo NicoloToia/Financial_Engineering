@@ -49,7 +49,7 @@ optionPriceBlack = EuropeanOptionClosed(F0,K,B,TTM,sigma,flag);
 M_CRR = findMCRR (optionPriceBlack, F0, K, B, TTM, sigma, flag, spread);
 
 % find optimal M for MC
-[M_optimal]=OptimalM_MC(F0,K,B,TTM,sigma, spread)
+[M_optimal]=OptimalM_MC(F0,K,B,TTM,sigma,spread)
 % M_CRR = findMCRR (optionPriceBlack, F0, K, B, TTM, sigma, flag, spread);
 
 fprintf(['\nOPTIMAL M FOR CRR \n' ...
@@ -90,13 +90,6 @@ M = 10000; %  TO FIX
 % store the prices
 optionPriceKI = zeros(3,1);
 
-% % closed formula
-% optionPriceKI(1) = EuropeanOptionKIClosed(F0,K,KI,B,TTM,sigma);
-% % CRR
-% optionPriceKI(2) = EuropeanOptionKICRR(F0,K,KI,B,TTM,sigma, 1000);
-% % monte carlo
-% optionPriceKI(3) = EuropeanOptionKIMC(F0,K,KI,B,TTM,sigma,1000000);
-
 % closed formula
 optionPriceKI(1) = EuropeanOptionKIClosed(F0,K,KI,B,TTM,sigma);
 % CRR
@@ -113,11 +106,12 @@ fprintf('MCPriceKI      :   %.4f \n',optionPriceKI(3));
 
 S_start = 0.7;
 S_end = 1.5;
-M = 10000;
 
 rangeS0 = linspace(S_start,S_end,100);
 % compute the corresponding forward prices
 rangeF0 = rangeS0*exp(-d*TTM)/B;
+
+M = 10000;
 
 % closed formula vegas
 vegasClosed = zeros(length(rangeS0),1);
@@ -126,7 +120,6 @@ for i = 1:length(rangeS0)
 end
 
 % MC vegas
-% not great for low M
 vegasMC = zeros(length(rangeS0),1);
 for i = 1:length(rangeS0)
     vegasMC(i) = VegaKI(rangeF0(i),K,KI,B,TTM,sigma,M,2);
@@ -178,7 +171,7 @@ title('Vega Monte Carlo Trick')
 xlabel('S0')
 ylabel('Vega')
 
-%% point f
+%% Point f
 
 
 [nMC_antithetic_var,stdEstim]=PlotErrorMC_antithetic_var(F0,K,B,TTM,sigma);
