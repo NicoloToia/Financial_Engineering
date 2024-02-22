@@ -123,12 +123,17 @@ for i = 1:length(rangeS0)
 end
 
 % MC vegas
+% not great for low M
 vegasMC = zeros(length(rangeS0),1);
 for i = 1:length(rangeS0)
-    vegasMC(i) = VegaKI(rangeF0(i),K,KI,B,TTM,sigma,1000000,2);
+    vegasMC(i) = VegaKI(rangeF0(i),K,KI,B,TTM,sigma,M,2);
 end
 
-%TODO: add CRR vegas
+% CRR vegas
+vegasCRR = zeros(length(rangeS0),1);
+for i = 1:length(rangeS0)
+    vegasCRR(i) = VegaKI(rangeF0(i),K,KI,B,TTM,sigma,M,1);
+end
 
 % plot the results
 figure
@@ -140,5 +145,11 @@ ylabel('Vega')
 figure
 plot(rangeS0,vegasMC)
 title('Vega Monte Carlo')
+xlabel('S0')
+ylabel('Vega')
+
+figure
+plot(rangeS0,vegasCRR)
+title('Vega CRR')
 xlabel('S0')
 ylabel('Vega')
