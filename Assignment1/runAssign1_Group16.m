@@ -1,5 +1,5 @@
-% Assignment_1
-%  Group 16, AA2023-2024
+% Assignment1_Group16
+% Group 16, AA2023-2024
 %
 %% Clear the workspace
 clear; close all; clc
