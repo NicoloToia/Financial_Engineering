@@ -19,7 +19,7 @@ if (KI < K)
     % The option is equivalent to a vanilla call of strike K
     d1 = (log(F0/K) + 0.5*sigma^2*T) / (sigma*sqrt(T));
     vega = B * F0 * sqrt(T) * exp(-0.5*d1^2) / sqrt(2*pi) * dSigma;
-else 
+else % if KI > K
     % Compute the vega based on the composition of a vanilla with strike KI
     % and a money or nothing with strike KI and value (KI - K)
     d1 = (log(F0/KI) + 0.5*sigma^2*T) / (sigma*sqrt(T));

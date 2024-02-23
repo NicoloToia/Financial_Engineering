@@ -5,7 +5,7 @@
 clear; close all; clc
 
 %% Fix the random seed
-% rng(42);
+rng(42);
 
 %% Pricing parameters
 S0=1;
@@ -28,7 +28,7 @@ F0=S0*exp(-d*TTM)/B;     % Forward in G&C Model
 %   ii) with a CRR tree approach; 
 %   iii) with a Monte-Carlo (MC) approach. 
 
-M=20; % M =  number of simulations for MC & time steps for CRR;
+M=100; % M =  number of simulations for MC & time steps for CRR;
 
 optionPrice = zeros(3,1); % Inizialize option price vector 
 
@@ -65,11 +65,15 @@ M_CRR = nCRR(find(errCRR < spread,1));
 % Find the optimal M for MC (between the admissible choiche of vector M(1x20) )
 M_MC = nMC(find(stdEstim < spread,1));
 
+% Find best estimate CRR
+M_CRR_opt = findMCRR (optionPrice(1), F0, K, B, TTM, sigma, flag, spread);
+
 % Display results
-fprintf(['\nOPTIMAL M FOR CRR \n' ...
+fprintf(['\nBEST ADMISSIBLE M FOR CRR \n' ...
         'Number of intervals CRR :   %.d \n'],M_CRR);
-fprintf(['\nOPTIMAL M FOR MC \n' ...
+fprintf(['\nBEST M FOR MC \n' ...
         'Number of intervals CRR :   %.d \n'],M_MC);
+fprintf('\nOPTIMAL ADMISSIBLE M FOR CRR:   %d \n',M_CRR_opt);
 
 %% KI Option (Point d)
 
@@ -81,7 +85,7 @@ fprintf(['\nOPTIMAL M FOR MC \n' ...
 KI = 1.3;
 
 % Set a suitable number of time steps for CRR and simulations for MC
-M = 10000;  
+M = 1000;  
 
 % Inizialize option price KI vector
 optionPriceKI = zeros(3,1);

@@ -2,7 +2,7 @@ function optionPrice = EuropeanOptionMCAV(F0,K,B,T,sigma,N,flag)
 % EuropeanOptionMCAV: European option price using Monte Carlo simulation
 % with antithetic variates
 %
-%INPUT
+% INPUT
 % F0:    forward price
 % B:     discount factor
 % K:     strike
@@ -10,6 +10,9 @@ function optionPrice = EuropeanOptionMCAV(F0,K,B,T,sigma,N,flag)
 % sigma: volatility
 % N:     number of simulations
 % flag:  1 call, -1 put
+%
+% OUTPUT
+% optionPrice : Price of the option
 
 % Monte Carlo simulation with antithetic variates
 [Ftt, FttAV] = simulationMCAV(F0,T,sigma,N);

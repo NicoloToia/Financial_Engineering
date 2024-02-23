@@ -20,7 +20,7 @@ if (KI < K)
 else % if KI > K
     % Compute the option price by deriving the closed formula by computing
     % under Black's dynamics the price of the composition of a Vanilla call
-    % option strike k and a digital option (cash-or-nothing) with pay off
+    % option strike KI and a digital option (cash-or-nothing) with pay off
     % (KI - K)*I(Ftt >= KI)
     d1 = ( log(F0/KI)/(sigma*sqrt(T)) ) + 0.5*sigma*sqrt(T);
     d2 = d1 - sigma*sqrt(T);
