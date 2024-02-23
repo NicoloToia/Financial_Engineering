@@ -38,7 +38,7 @@ title('MC Error')
 xlabel('M'); ylabel('errorMC')
 hold on 
 loglog(M,1./sqrt(M))
-% cutoff based on the spread
+% cutoff is based on the spread
 loglog(M, spread * ones(length(M),1))
 legend('MC','1/sqrt(M)','cutoff')
 

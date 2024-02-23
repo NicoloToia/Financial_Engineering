@@ -1,4 +1,4 @@
-function vega= VegaKI(F0,K,KI,B,T,sigma,N,flagNum)
+function vega=VegaKI(F0,K,KI,B,T,sigma,N,flagNum)
 % Compute the vega of a knock-in call option
 %
 % INPUT:
@@ -14,6 +14,7 @@ function vega= VegaKI(F0,K,KI,B,T,sigma,N,flagNum)
 % OUTPUT:
 % vega:    vega of the option
 
+% Redirect to specic functions
 switch (flagNum)
     case 1
         vega = VegaCRR(F0,K,KI,B,T,sigma,N);

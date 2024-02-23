@@ -1,4 +1,4 @@
-function optionPrice = EuropeanOptionKICRR(F0,K,KI,B,T,sigma,N)
+function optionPrice=EuropeanOptionKICRR(F0,K,KI,B,T,sigma,N)
 % EuropeanOptionKICRR computes the price of a European option with a
 % knock-in barrier using the CRR method
 %

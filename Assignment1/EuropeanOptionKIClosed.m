@@ -9,6 +9,9 @@
 % B:     discount factor
 % T:     time-to-maturity
 % sigma: volatility
+%
+% OUTPUT
+% optionPrice : Price of the option with a knock-in barrier
 
 % if Barrier is less than strike
 if (KI < K)

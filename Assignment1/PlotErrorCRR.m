@@ -1,4 +1,4 @@
-function [M, errorCRR] = PlotErrorCRR(F0,K,B,T,sigma)
+function [M, errorCRR]=PlotErrorCRR(F0,K,B,T,sigma)
 % Error plot for CRR method.  As error is considered the difference 
 % in absolute value w.r.t. to the exact value.
 %
@@ -43,7 +43,7 @@ title('CRR Error')
 xlabel('M'); ylabel('errorCRR')
 hold on
 loglog(M, 1./M)
-% cutoff based on the spread
+% cutoff is based on the spread
 loglog(M, spread * ones(length(M),1))
 legend('CRR','1/M','cutoff')
 

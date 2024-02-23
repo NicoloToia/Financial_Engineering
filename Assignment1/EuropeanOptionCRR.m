@@ -1,4 +1,4 @@
-function OptionPrice = EuropeanOptionCRR(F0, K, B, T, sigma, N, flag)
+function optionPrice = EuropeanOptionCRR(F0, K, B, T, sigma, N, flag)
 %European option price with CRR method
 %
 % INPUT
@@ -39,9 +39,9 @@ CallPrice = leavesCRR;
 
 % Exploit put-call parity: C0 - P0 = B*(F0 - K)
 if flag == 1
-    OptionPrice = CallPrice;                    % Call price
+    optionPrice = CallPrice;                    % Call price
 else
-    OptionPrice = CallPrice - B * (F0 - K);     % Put price
+    optionPrice = CallPrice - B * (F0 - K);     % Put price
 end
 
 end % function EuropeanOptionCRR
