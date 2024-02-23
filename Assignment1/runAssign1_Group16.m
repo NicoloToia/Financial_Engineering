@@ -130,10 +130,10 @@ for i = 1:length(rangeS0)
 end
 
 % MC vegas
-vegasMC = zeros(length(rangeS0),1);
+vegasMCEstim = zeros(length(rangeS0),1);
 
 for i = 1:length(rangeS0)
-    vegasMC(i) = VegaKI(rangeF0(i),K,KI,B,TTM,sigma,M_MC,2);
+    vegasMCEstim(i) = VegaKI(rangeF0(i),K,KI,B,TTM,sigma,M_MC,2);
 end
 
 % CRR vegas
@@ -151,7 +151,7 @@ title('Vega Closed Formula')
 xlabel('S0')
 ylabel('Vega')
 hold on
-plot(rangeS0,vegasMC)
+plot(rangeS0,vegasMCEstim)
 title('Vega Monte Carlo')
 xlabel('S0')
 ylabel('Vega')
@@ -173,20 +173,20 @@ legend('Closed','CRR')
 
 %% MC Error Estim
 
-vegasTrick = zeros(length(rangeS0),1);
+vegasMCEstim = zeros(length(rangeS0),1);
 for i = 1:length(rangeS0)
-    vegasTrick(i) = VegaMCestim(rangeF0(i),K,KI,B,TTM,sigma,M);
+    vegasMCEstim(i) = VegaMCestim(rangeF0(i),K,KI,B,TTM,sigma,M);
 end
 
 figure
-plot(rangeS0,vegasTrick)
+plot(rangeS0,vegasMCEstim)
 hold on
 plot(rangeS0,vegasClosed)
 title('Vega Monte Carlo')
 xlabel('S0')
 ylabel('Vega')
 
-legend('Trick','Closed')
+legend('Vega estimator','Closed')
 
 %% Antithetic Variables (Point f)
 
