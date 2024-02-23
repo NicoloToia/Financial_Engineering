@@ -1,5 +1,5 @@
 function [optionPriceBerm, optionPriceAM] = BermudanOptionCRR(F0, K, B, T, sigma, d, N)
-% Bermudan option price with CRR method
+% Bermudan option price with CRR method and Pseudo-American option price
 %
 % INPUT
 % F0:    forward price
@@ -7,10 +7,12 @@ function [optionPriceBerm, optionPriceAM] = BermudanOptionCRR(F0, K, B, T, sigma
 % B:     discount factor
 % T:     time-to-maturity
 % sigma: volatility
-% flag:  1 call, -1 put
+% d:     dividend yield
+% N:     number of steps
 %
 % OUTPUT
-% optionPrice : Price of the Bermudan option
+% optionPriceBerm: price of the Bermudan option with 2 exercise dates
+% optionPriceAM:   price of the Pseudo-American option
 
 % reduce N to be a multiple of 3
 N = 3*floor(N/3);
@@ -29,7 +31,7 @@ B_dt = exp(-r*dt);
 Ftt = F0 * u.^(N:-2:-N);
 leavesCRR = max(Ftt - K, 0);
 
-% reduce the tree to the root
+% reduce the tree to the root for the Bermudan option
 for i = N-1:-1:0
     % update the option price
     leavesCRR = B_dt * (q * leavesCRR(1:end-1) + (1-q) * leavesCRR(2:end));
@@ -46,6 +48,7 @@ optionPriceBerm = leavesCRR;
 % initialize the tree leaves (N+1) with the forward and payoff
 Ftt = F0 * u.^(N:-2:-N);
 leavesCRR = max(Ftt - K, 0);
+% reduce the tree to the root for the Pseudo-American option
 for i = N-1:-1:0
     % update the option price
     leavesCRR = B_dt * (q * leavesCRR(1:end-1) + (1-q) * leavesCRR(2:end));
