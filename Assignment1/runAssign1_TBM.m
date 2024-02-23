@@ -133,7 +133,7 @@ end
 vegasMC = zeros(length(rangeS0),1);
 
 for i = 1:length(rangeS0)
-    vegasMC(i) = VegaKI(rangeF0(i),K,KI,B,TTM,sigma,M,2);
+    vegasMC(i) = VegaKI(rangeF0(i),K,KI,B,TTM,sigma,M_MC,2);
 end
 
 % CRR vegas
@@ -219,7 +219,7 @@ fprintf('\nOPTION PRICE AV : %.4f \n',optionPriceAV);
 %   the option at the end of every month, obtaining the stock at the strike price. 
 M = 1000;
 
-OptionPriceBermudan = BermudanOptionCRR(F0, K, B, TTM, sigma, M, flag);
+[OptionPriceBermudan,~] = BermudanOptionCRR(F0, K, B, TTM, sigma, d, M);
 fprintf('\nCRRPriceBermudan      :   %.4f \n',OptionPriceBermudan);
 
 %%  Vary the Dividend Yield (Point h)
@@ -227,24 +227,24 @@ fprintf('\nCRRPriceBermudan      :   %.4f \n',OptionPriceBermudan);
 %   Pricing the Bermudan option, vary the dividend yield between 0% and 6% and compare 
 %   with the corresponding European price. Discuss the results.
 
-d=0:0.005:0.06;
-OptionPriceBermudan = zeros(length(d),1);
-OptionPriceAM = zeros(length(d),1);
-OptionCRR = zeros(length(d),1);
+d_range=0:0.005:0.06;
+OptionPriceBermudan = zeros(length(d_range),1);
+OptionPriceAM = zeros(length(d_range),1);
+OptionCRR = zeros(length(d_range),1);
 
-for i=1:length(d)
+for i=1:length(d_range)
     % recompute the forward price
-    F0=S0*exp(-d(i)*TTM)/B;
-    [OptionPriceBermudan(i), OptionPriceAM(i)] = BermudanOptionCRR(F0, K, B, TTM, sigma, d(i), M);
+    F0=S0*exp(-d_range(i)*TTM)/B;
+    [OptionPriceBermudan(i), OptionPriceAM(i)] = BermudanOptionCRR(F0, K, B, TTM, sigma, d_range(i), M);
     OptionCRR(i) = EuropeanOptionCRR(F0, K, B, TTM, sigma, M, flag);
 end
 
 figure
-plot(d, OptionPriceBermudan, '-xb', 'LineWidth', 1); 
+plot(d_range, OptionPriceBermudan, '-xb', 'LineWidth', 1); 
 hold on
-plot(d, OptionPriceAM, '-xg', 'LineWidth', 1); 
+plot(d_range, OptionPriceAM, '-xg', 'LineWidth', 1); 
 hold on; 
-plot(d, OptionCRR, '-or', 'LineWidth', 1);
+plot(d_range, OptionCRR, '-or', 'LineWidth', 1);
 xlabel('Dividend Yield'); 
 ylabel('Option Price'); 
 title('Comparison of Bermudan Option Price and European Option Price'); 
