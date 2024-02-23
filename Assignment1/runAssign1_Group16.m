@@ -44,6 +44,13 @@ fprintf(['\nOPTION PRICE \n' ...
 fprintf('CRRPrice   :   %.4f \n',optionPrice(2));
 fprintf('MCPrice    :   %.4f \n',optionPrice(3));
 
+% notional amount
+notional = 1e6;
+fprintf(['\nOPTION PRICE \n' ...
+        'BlackPrice :   %.4f \n'],notional * optionPrice(1));
+fprintf('CRRPrice   :   %.4f \n',notional * optionPrice(2));
+fprintf('MCPrice    :   %.4f \n',notional * optionPrice(3));
+
 %% Errors Rescaling (Point b & c)
 
 % Consider M, as the number of intervals in CRR and as the number of 
