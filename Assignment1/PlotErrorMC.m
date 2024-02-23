@@ -32,7 +32,7 @@ end
 spread = 10^-4;
 
 % Plot the results of MC
-subplot(1,2,2)
+figure
 loglog(M,stdEstim)
 title('MC Error')
 xlabel('M'); ylabel('errorMC')

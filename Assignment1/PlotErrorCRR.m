@@ -37,7 +37,6 @@ spread = 10^-4;
 
 % Plot the results of CRR
 figure
-subplot(1,2,1)
 loglog(M,errorCRR)
 title('CRR Error')
 xlabel('M'); ylabel('errorCRR')
