@@ -203,11 +203,15 @@ title('MC Antithetic Variable Error')
 xlabel('M'); ylabel('errorMC AV')
 hold on 
 loglog(nMCAV,1./sqrt(nMCAV))
-% cutoff based on the spread
-loglog(nMCAV, spread * ones(length(nMCAV),1))
+loglog(nMCAV, spread * ones(length(nMCAV),1))   % cutoff based on the spread
 loglog(nMC,stdEstim)
 
 legend('MC AV','1/sqrt(M)','cutoff','MC')
+
+MAV=132000; %   optimal number of iterations for MCAV
+%   price for the European call option vith the AC method
+optionPriceAV = EuropeanOptionMCAV(F0,K,B,TTM,sigma,MAV,flag);
+fprintf('\nOPTION PRICE AV : %.4f \n',optionPriceAV);
 
 %% Bermudan Option (Point g)
 
