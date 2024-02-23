@@ -182,7 +182,7 @@ figure
 plot(rangeS0,vegasTrick)
 hold on
 plot(rangeS0,vegasClosed)
-title('Vega Monte Carlo Trick')
+title('Vega Monte Carlo')
 xlabel('S0')
 ylabel('Vega')
 
