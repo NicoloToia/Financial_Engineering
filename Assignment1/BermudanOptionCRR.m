@@ -1,4 +1,4 @@
-function optionPrice = BermudanOptionCRR(F0, K, B, T, sigma, N, flag)
+function optionPrice = BermudanOptionCRR(F0, K, B, T, sigma, N, d)
 % Bermudan option price with CRR method
 %
 % INPUT
@@ -27,6 +27,7 @@ B_dt = exp(-r*dt);
 % initialize the tree leaves (N+1) with the payoff
 Ftt = F0 * u.^(N:-2:-N);
 leavesCRR = max(Ftt - K, 0);
+
 S0 = 1;
 
 % reduce the tree to the root
@@ -34,7 +35,16 @@ for i = 1:N
     if i == (round(N/3) + 1) || i == round((2/3)*N) + 1
         % vectorized version
         ST_t = max(S0 *u.^(N-i:-2:-N+i) - K,0);
+        %ST_t = max(F0 *u.^(N-i:-2:-N+i) .* exp( (d-r) .* (T - i.*dt)) - K,0) ;
         leavesCRR = max(B_dt *(q * leavesCRR(1:end-1) + (1-q) * leavesCRR(2:end)),ST_t);
+        
+%     elseif i == round((2/3)*N) + 1
+% 
+%         % vectorized version
+%         %ST_t = max(S0 *u.^(N-i:-2:-N+i) - K,0);
+%         ST_t = max(F0 *u.^(N-i:-2:-N+i)* exp( (d - r)*   (dt*(T - round((2/3)*N) + 1))    )    - K,0) ;
+%         leavesCRR = max(B_dt *(q * leavesCRR(1:end-1) + (1-q) * leavesCRR(2:end)),ST_t);
+
     else
         leavesCRR = B_dt *(q * leavesCRR(1:end-1) + (1-q) * leavesCRR(2:end));
     end
