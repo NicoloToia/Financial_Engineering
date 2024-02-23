@@ -220,6 +220,8 @@ fprintf('\nOPTION PRICE AV : %.4f \n',optionPriceAV);
 M = 1000;
 
 [OptionPriceBermudan,~] = BermudanOptionCRR(F0, K, B, TTM, sigma, d, M);
+
+% Display results
 fprintf('\nCRRPriceBermudan      :   %.4f \n',OptionPriceBermudan);
 
 %%  Vary the Dividend Yield (Point h)
@@ -227,7 +229,9 @@ fprintf('\nCRRPriceBermudan      :   %.4f \n',OptionPriceBermudan);
 %   Pricing the Bermudan option, vary the dividend yield between 0% and 6% and compare 
 %   with the corresponding European price. Discuss the results.
 
+% Set range of dividend yields between 0% and 6%
 d_range=0:0.005:0.06;
+
 OptionPriceBermudan = zeros(length(d_range),1);
 OptionPriceAM = zeros(length(d_range),1);
 OptionCRR = zeros(length(d_range),1);
@@ -239,6 +243,7 @@ for i=1:length(d_range)
     OptionCRR(i) = EuropeanOptionCRR(F0, K, B, TTM, sigma, M, flag);
 end
 
+% Plot the results
 figure
 plot(d_range, OptionPriceBermudan, '-xb', 'LineWidth', 1); 
 hold on
