@@ -46,7 +46,7 @@ fprintf('MCPrice    :   %.4f \n',optionPrice(3));
 
 % notional amount
 notional = 1e6;
-fprintf(['\nOPTION PRICE \n' ...
+fprintf(['\nOPTION PRICE FOR 1 Mln CONTRACTS \n' ...
         'BlackPrice :   %.4f \n'],notional * optionPrice(1));
 fprintf('CRRPrice   :   %.4f \n',notional * optionPrice(2));
 fprintf('MCPrice    :   %.4f \n',notional * optionPrice(3));
