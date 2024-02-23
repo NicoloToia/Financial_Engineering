@@ -73,7 +73,7 @@ fprintf(['\nBEST ADMISSIBLE M FOR CRR \n' ...
         'Number of intervals CRR :   %.d \n'],M_CRR);
 fprintf(['\nBEST M FOR MC \n' ...
         'Number of intervals CRR :   %.d \n'],M_MC);
-fprintf('\nOPTIMAL ADMISSIBLE M FOR CRR:   %d \n',M_CRR_opt);
+fprintf('\nOPTIMAL M FOR CRR:   %d \n',M_CRR_opt);
 
 %% KI Option (Point d)
 
@@ -171,11 +171,11 @@ ylabel('Vega')
 
 legend('Closed','CRR')
 
-%% MC trick
+%% MC Error Estim
 
 vegasTrick = zeros(length(rangeS0),1);
 for i = 1:length(rangeS0)
-    vegasTrick(i) = VegaMCTrick(rangeF0(i),K,KI,B,TTM,sigma,M);
+    vegasTrick(i) = VegaMCestim(rangeF0(i),K,KI,B,TTM,sigma,M);
 end
 
 figure

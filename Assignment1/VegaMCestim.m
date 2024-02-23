@@ -1,4 +1,4 @@
-function vega = VegaMCTrick(F0,K,KI,B,T,sigma,N)
+function vega = VegaMCestim(F0,K,KI,B,T,sigma,N)
 % compute the vega of KI European call option using Monte Carlo simulation
 %
 % INPUT
