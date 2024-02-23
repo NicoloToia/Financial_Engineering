@@ -1,4 +1,4 @@
-function optionPrice = BermudanOptionCRR(F0, K, B, T, sigma, N, d)
+function [optionPriceBerm, optionPriceAM] = BermudanOptionCRR(F0, K, B, T, sigma, d, N)
 % Bermudan option price with CRR method
 %
 % INPUT
@@ -12,7 +12,8 @@ function optionPrice = BermudanOptionCRR(F0, K, B, T, sigma, N, d)
 % OUTPUT
 % optionPrice : Price of the Bermudan option
 
-% Compute the following parameters:
+% reduce N to be a multiple of 3
+N = 3*floor(N/3);
 % dt is the interval of time between two knots
 dt = T/N;
 % u is the factor by which the stock price increases
@@ -24,39 +25,36 @@ q = 1 / (u + 1);
 r = -log(B) / T;
 B_dt = exp(-r*dt);
 
-% initialize the tree leaves (N+1) with the payoff
+% initialize the tree leaves (N+1) with the forward and payoff
 Ftt = F0 * u.^(N:-2:-N);
 leavesCRR = max(Ftt - K, 0);
 
-S0 = 1;
-
 % reduce the tree to the root
-for i = 1:N
-    if i == (round(N/3) + 1) || i == round((2/3)*N) + 1
-        % vectorized version
-        ST_t = max(S0 *u.^(N-i:-2:-N+i) - K,0);
-        %ST_t = max(F0 *u.^(N-i:-2:-N+i) .* exp( (d-r) .* (T - i.*dt)) - K,0) ;
-        leavesCRR = max(B_dt *(q * leavesCRR(1:end-1) + (1-q) * leavesCRR(2:end)),ST_t);
-        
-%     elseif i == round((2/3)*N) + 1
-% 
-%         % vectorized version
-%         %ST_t = max(S0 *u.^(N-i:-2:-N+i) - K,0);
-%         ST_t = max(F0 *u.^(N-i:-2:-N+i)* exp( (d - r)*   (dt*(T - round((2/3)*N) + 1))    )    - K,0) ;
-%         leavesCRR = max(B_dt *(q * leavesCRR(1:end-1) + (1-q) * leavesCRR(2:end)),ST_t);
-
-    else
-        leavesCRR = B_dt *(q * leavesCRR(1:end-1) + (1-q) * leavesCRR(2:end));
+for i = N-1:-1:0
+    % update the option price
+    leavesCRR = B_dt * (q * leavesCRR(1:end-1) + (1-q) * leavesCRR(2:end));
+    if i == N/3 || i == 2*N/3
+        % compute the price of the forward at time t
+        Fti = F0 * u.^(i:-2:-i);
+        Sti = Fti / exp( (r-d) * (N-i) * dt);
+        leavesCRR = max(leavesCRR, Sti - K);
     end
 end
 
-CallPrice = leavesCRR;
+optionPriceBerm = leavesCRR;
 
-% exploit put-call parity
-if flag == 1
-    optionPrice = CallPrice;
-else
-    optionPrice = CallPrice - B * (F0 - K);
+% initialize the tree leaves (N+1) with the forward and payoff
+Ftt = F0 * u.^(N:-2:-N);
+leavesCRR = max(Ftt - K, 0);
+for i = N-1:-1:0
+    % update the option price
+    leavesCRR = B_dt * (q * leavesCRR(1:end-1) + (1-q) * leavesCRR(2:end));
+    % compute the price of the forward at time t
+    Fti = F0 * u.^(i:-2:-i);
+    Sti = Fti / exp( (r-d) * (N-i) * dt);
+    leavesCRR = max(leavesCRR, Sti - K);
 end
+
+optionPriceAM = leavesCRR;
 
 end % function EuropeanOptionCRR
