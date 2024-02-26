@@ -15,7 +15,6 @@ function vega = VegaMC(F0,K,KI,B,T,sigma,N)
 
 % Set the change in volatility at (1%)
 dSigma = 0.01; 
-
 % Use center scheme to compute the vega
 prevPrice = EuropeanOptionKIMC(F0,K,KI,B,T,sigma-dSigma,N);
 nextPrice = EuropeanOptionKIMC(F0,K,KI,B,T,sigma+dSigma,N);
