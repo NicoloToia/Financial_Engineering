@@ -10,7 +10,7 @@
 clear all;
 close all;
 clc;
-
+tic;
 %% Settings
 formatData='dd/mm/yyyy'; %Pay attention to your computer settings 
 
@@ -18,11 +18,10 @@ formatData='dd/mm/yyyy'; %Pay attention to your computer settings
 % This fuction works on Windows OS. Pay attention on other OS.
 
 [datesSet, ratesSet] = readExcelData('MktData_CurveBootstrap', formatData);
-
 %% Bootstrap
 % dates includes SettlementDate as first date
 
-[dates, discounts]=bootstrap(datesSet, ratesSet); % TBC
+[dates, discounts]=bootstrap(datesSet, ratesSet);
 
 %% Compute Zero Rates
 % TBM
@@ -34,3 +33,4 @@ formatData='dd/mm/yyyy'; %Pay attention to your computer settings
 
 %zero-rates
 % TBM
+toc;
