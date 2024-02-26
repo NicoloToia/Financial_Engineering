@@ -21,7 +21,20 @@ formatData='dd/mm/yyyy'; %Pay attention to your computer settings
 %% Bootstrap
 % dates includes SettlementDate as first date
 
-[dates, discounts]=bootstrap(datesSet, ratesSet);
+[dates, discounts, zeroRates]=bootstrap(datesSet, ratesSet);
+
+% plot
+figure 
+yyaxis left
+plot(dates(2:end), discounts(2:end), 'r-s')
+ylabel('Discount Factors')
+yyaxis right
+plot(dates(2:end), 100*zeroRates(2:end), 'b-o')
+ylabel('Zero Rates')
+xlabel('Date')
+title('Zero Rates and Discount Factors')
+legend('Discount Factors', 'Zero Rates')
+grid on
 
 %% Compute Zero Rates
 % TBM
