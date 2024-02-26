@@ -35,16 +35,17 @@ for i=1:7
     % compute the forward discount factor
 
     delta = yearfrac(futuresDates(i, 1), futuresDates(i, 2), 2);
-    forwardDiscount = 1 / (1 + futuresRates(i) * delta);
+    forwardDiscount = 1 / (1 + futuresRates(i) * delta)
     % find the index of the previous and next dates
     prevIdx = find(dates <= futuresDates(i, 1), 1, 'last')
-    nextIdx = find(dates >= futuresDates(i, 2), 1, 'first')
+    nextIdx = find(dates >= futuresDates(i, 1), 1, 'first')
     
     % compute the discount factor for the settlement date
-    settlementDF = interpDF(futuresDates(i, 1), dates(prevIdx), dates(nextIdx), discounts(prevIdx), discounts(nextIdx))
+    settlementDF = interpDF(futuresDates(i, 1), dates(prevIdx), dates(nextIdx), ...
+        discounts(prevIdx), discounts(nextIdx))
 
     % compute the discount factor for the expiry date
-    discounts(i+length(depoRates)) = forwardDiscount * settlementDF
+    discounts(i+length(depoRates)) = forwardDiscount * settlementDF;
 
 end
 
