@@ -4,7 +4,5 @@ function [discount]=interpDF(targetDate, prevDate, nextDate, prevdisc ,nextdisc)
 
 discount=interp1([prevDate,nextDate],[prevdisc,nextdisc],targetDate);
 
-figure
-plot(targetDate,discount,'xo',[prevDate, nextDate],[prevdisc ,nextdisc],'--');
-    
+
 end
