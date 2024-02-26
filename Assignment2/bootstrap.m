@@ -36,9 +36,9 @@ discounts = [1];
 
 % Deposit rates
 % use act/360
-depoDeltas = yearfrac(t0, deposDates, ACT_360)
+depoDeltas = yearfrac(t0, deposDates, ACT_360);
 dates = [dates; deposDates];
-discounts = [discounts; 1 ./ (1 + deposRates .* depoDeltas)]
+discounts = [discounts; 1 ./ (1 + deposRates .* depoDeltas)];
 
 % futures rates (use act/360)
 for i = 1:7
