@@ -20,10 +20,15 @@ formatData='dd/mm/yyyy'; %Pay attention to your computer settings
 [datesSet, ratesSet] = readExcelData('MktData_CurveBootstrap', formatData);
 %% Bootstrap
 % dates includes SettlementDate as first date
+[dates, discounts]=bootstrap(datesSet, ratesSet);
 
-[dates, discounts, zeroRates]=bootstrap(datesSet, ratesSet);
 
-% plot
+%% Compute Zero Rates
+zeroRates = zeroRates(dates, discounts);
+
+%% Plot Results
+
+%discount curve
 figure 
 yyaxis left
 % plot discount factors as green filled triangles
@@ -33,6 +38,8 @@ ylabel('Discount Factors')
 ylim([0 1])
 % ticks every 0.2
 yticks(0:0.2:1)
+
+%zero-rates
 yyaxis right
 % plot zero rates as blue filled diamonds (in percent)
 plot(dates(2:end), zeroRates(2:end)*100, 'b-d', 'MarkerFaceColor', 'b')
@@ -40,6 +47,8 @@ plot(dates(2:end), zeroRates(2:end)*100, 'b-d', 'MarkerFaceColor', 'b')
 ylim([2.5 5.0])
 yticks(2.5:0.5:5.0)
 ylabel('Zero Rates')
+
+% set x-axis label and title
 xlabel('Date')
 title('Zero Rates and Discount Factors')
 legend('Discount Factors', 'Zero Rates')
@@ -53,14 +62,11 @@ ax.XColor = 'k';
 ax.YAxis(1).Color = 'k';
 ax.YAxis(2).Color = 'k';
 
-%% Compute Zero Rates
-% TBM
 
-%% Plot Results
 
-%discount curve
-% TBM
+%% Point 2
+% S is 2.8173%
+S = 2.8173/100;
 
-%zero-rates
-% TBM
+
 toc;
