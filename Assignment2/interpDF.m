@@ -8,34 +8,31 @@ if ~isempty(idx)
 end
 
 % if there are dates that encapsulate the target date, interpolate
-
-
-
-
-
-
-
-
-
-
-% find the index of the dates that encapsulate the target date
-prevIdx = find(dates<=targetDate,1,'last');
+prevIdx = find(dates<targetDate,1,'last');
 nextIdx = find(dates>targetDate,1,'first');
-prevDate = dates(prevIdx);
-nextDate = dates(nextIdx);
 
-% target dates coincides
-if targetDate == prevDate
-    y = zeroRates(prevIdx);
-else
-    prevRate = zeroRates(prevIdx)
-    nextRate = zeroRates(nextIdx)
-    y = prevRate + (nextRate - prevRate) / (nextDate - prevDate) * (targetDate - prevDate);
+if ~isempty(prevIdx) && ~isempty(nextIdx)
+    prevDate = dates(prevIdx);
+    nextDate = dates(nextIdx);
+    prevY = zeroRates(prevIdx);
+    nextY = zeroRates(nextIdx);
+    delta = yearfrac(prevDate,nextDate, 2);
+    y = prevY + (nextY - prevY) / delta * yearfrac(prevDate,targetDate, 2);
+    discount = exp(-y * yearfrac(dates(1),targetDate, 2));
+    return;
 end
 
-delta = yearfrac(dates(1),targetDate, 2);
-
-discount = exp(-y*delta);
+% if the date is beyond the last date, extrapolate
+if targetDate > dates(end)
+    prevDate = dates(end-1);
+    nextDate = dates(end);
+    prevY = zeroRates(end-1);
+    nextY = zeroRates(end);
+    delta = yearfrac(prevDate,nextDate, 2);
+    y = prevY + (nextY - prevY) / delta * yearfrac(prevDate,targetDate, 2);
+    discount = exp(-y * yearfrac(dates(1),targetDate, 2));
+    return;
+end
 
 end
  
