@@ -9,4 +9,5 @@ function zRates = zeroRates(dates, discounts)
 % zRates    - vector of zero rates
 
     zRates = -log(discounts) ./ yearfrac(dates(1), dates);
+    zRates = zRates * 100;
 end
