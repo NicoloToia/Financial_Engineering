@@ -14,7 +14,7 @@ function [ratesSet_shift] = shift_rates(ratesSet)
         matrix = ratesSet.(field_name{field_index});
         
         % Shifta ogni valore della matrice aggiungendo +0.0001
-        shifted_matrix = matrix + 0.01;
+        shifted_matrix = matrix + 0.0001;
         
         % Assegna la matrice shiftata al campo corrispondente nella struct di output
         ratesSet_shift.(field_name{field_index}) = shifted_matrix;

@@ -42,7 +42,7 @@ yticks(0:0.2:1)
 %zero-rates
 yyaxis right
 % plot zero rates as blue filled diamonds (in percent)
-plot(dates(2:end), zeroRates(2:end)*100, 'b-d', 'MarkerFaceColor', 'b')
+plot(dates(2:end), zeroRates(2:end), 'b-d', 'MarkerFaceColor', 'b')
 % make the y-axis go from 2.5 to 5.0
 ylim([2.5 5.0])
 yticks(2.5:0.5:5.0)
