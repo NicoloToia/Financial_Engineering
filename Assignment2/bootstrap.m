@@ -17,7 +17,7 @@ EU_30_360 = 6;
 t0 = datesSet.settlement;
 % first 3 deposits
 deposDates = datesSet.depos(1:3);
-deposRates = ratesSet.depos(1:3,:)
+deposRates = ratesSet.depos(1:3,:);
 % first 7 futures
 futuresDates = datesSet.futures(1:7,:);
 futuresRates = ratesSet.futures(1:7,:);
