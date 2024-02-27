@@ -24,7 +24,7 @@ NPV_shift = 1 - discountsFixedLeg_DV01(end) - fixedRate * sum(deltas .* discount
 DV01 = NPV_shift - NPV_0;
 
 % parallel shift of zero rates
-zeroRatesFixedLeg = zeroRates([setDate;fixedLegPaymentDates], [1;discountsFixedLeg]) + bp;
+zeroRatesFixedLeg = zeroRates([setDate;fixedLegPaymentDates], [1;discountsFixedLeg])/100 + bp;
 zeroRatesFixedLeg = zeroRatesFixedLeg(2:end); % remove the zero rate at the set date
 discountsFixedLeg_z = exp(-zeroRatesFixedLeg .* yearfrac(setDate, fixedLegPaymentDates));
 
