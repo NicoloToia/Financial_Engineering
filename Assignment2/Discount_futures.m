@@ -1,6 +1,8 @@
 function [discounts dates] =Discount_futures(datesSet, ratesSet, discounts, dates, FutureDate)
-
+    
+    % date notation 
     ACT_360 = 2;
+    %   retrive data 
     futuresDates = datesSet.futures(1:FutureDate,:); % first 7 futures dates
     futuresRates = ratesSet.futures(1:FutureDate,:); % first 7 futures rates
     futuresRates = 0.5 * (futuresRates(:,1) + futuresRates(:,2));

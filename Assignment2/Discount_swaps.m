@@ -1,11 +1,13 @@
 function [discounts dates] =Discount_swaps(datesSet, ratesSet, discounts, dates, SwapStart)
 
+    % date notation 
     EU_30_360 = 6;
 
+    %   retrive data 
     swapsDates = datesSet.swaps;
     swapsRates = ratesSet.swaps;
     swapsRates = 0.5 * (swapsRates(:,1) + swapsRates(:,2));
-
+    % fix settlement date
     t0 = datesSet.settlement;
 
     % swaps rates (use EU 30/360)
