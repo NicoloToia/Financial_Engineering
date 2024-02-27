@@ -47,4 +47,6 @@ fixedLegPaymentDates = datesSet.swaps(1:6);
 [DV01, BPV, DV01_z] = sensSwap(setDate, fixedLegPaymentDates, fixedRate, dates, ...
     discounts,discounts_DV01)
 
+MacD = sensCouponBond(setDate, fixedLegPaymentDates, fixedRate, dates, discounts)
+
 toc;
