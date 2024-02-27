@@ -34,12 +34,20 @@ plotresult(dates, discounts, zeroRates);
 
 %% Point 2
 % S is 2.8173%
-S = 2.8173/100;
+fixedRate = 2.8173/100;
 
 [ratesSet_shift] = shift_rates(ratesSet);
 
-[dates, discounts]=bootstrap(datesSet, ratesSet_shift);
+[dates, discounts_DV01]=bootstrap(datesSet, ratesSet_shift);
 
-plotresult(dates, discounts, zeroRates);
+% target is 6 years
+setDate = datesSet.settlment;
+fixedLegPaymenDates = datesSet.swaps(1:6);
+
+[ratesSet_shift] = shift_rates(ratesSet);
+[dates, discounts_DV01]=bootstrap(datesSet, ratesSet_shift);
+
+[DV01, BPV, DV01_z] = sensSwap(setDate, fixedLegPaymentDates, fixedRate, dates, ...
+    discounts,discounts_DV01);
 
 toc;
