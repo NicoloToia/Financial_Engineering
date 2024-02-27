@@ -1,5 +1,6 @@
 function [discount]=futureSettlementDF(discounts, dates, targetDate)
 
+ACT_360 = 2;
 % perfect match, return the corresponding discount
 idx = find(dates==targetDate);
 if ~isempty(idx)
@@ -16,11 +17,11 @@ if ~isempty(prevIdx) && ~isempty(nextIdx)
     prevDate = dates(prevIdx);
     nextDate = dates(nextIdx);
     % get the zero rates
-    prevY = -log(discounts(prevIdx)) / yearfrac(dates(1),prevDate, 2);
-    nextY = -log(discounts(nextIdx)) / yearfrac(dates(1),nextDate, 2);
-    dt = yearfrac(prevDate,nextDate, 2);
-    y = prevY + (nextY - prevY) / dt * yearfrac(prevDate,targetDate, 2);
-    discount = exp(-y * yearfrac(dates(1),targetDate, 2));
+    prevY = -log(discounts(prevIdx)) / yearfrac(dates(1),prevDate, ACT_360);
+    nextY = -log(discounts(nextIdx)) / yearfrac(dates(1),nextDate, ACT_360);
+    dt = yearfrac(prevDate,nextDate, ACT_360);
+    y = prevY + (nextY - prevY) / dt * yearfrac(prevDate,targetDate, ACT_360);
+    discount = exp(-y * yearfrac(dates(1),targetDate, ACT_360));
     return;
 end
 
@@ -29,11 +30,11 @@ if targetDate > dates(end)
     % get last two dates and zero rates
     prevDate = dates(end-1);
     nextDate = dates(end);
-    prevY = -log(discounts(end-1)) / yearfrac(dates(1),prevDate, 2);
-    nextY = -log(discounts(end)) / yearfrac(dates(1),nextDate, 2);
-    dt = yearfrac(prevDate,nextDate, 2);
-    y = prevY + (nextY - prevY) / dt * yearfrac(prevDate,targetDate, 2);
-    discount = exp(-y * yearfrac(dates(1),targetDate, 2));
+    prevY = -log(discounts(end-1)) / yearfrac(dates(1),prevDate, ACT_360);
+    nextY = -log(discounts(end)) / yearfrac(dates(1),nextDate, ACT_360);
+    dt = yearfrac(prevDate,nextDate, ACT_360);
+    y = prevY + (nextY - prevY) / dt * yearfrac(prevDate,targetDate, ACT_360);
+    discount = exp(-y * yearfrac(dates(1),targetDate, ACT_360));
     return;
 end
 
