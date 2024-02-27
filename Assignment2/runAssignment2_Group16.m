@@ -44,10 +44,7 @@ fixedRate = 2.8173/100;
 setDate = datesSet.settlement;
 fixedLegPaymentDates = datesSet.swaps(1:6);
 
-[ratesSet_shift] = shift_rates(ratesSet);
-[dates, discounts_DV01]=bootstrap(datesSet, ratesSet_shift);
-
 [DV01, BPV, DV01_z] = sensSwap(setDate, fixedLegPaymentDates, fixedRate, dates, ...
-    discounts,discounts_DV01);
+    discounts,discounts_DV01)
 
 toc;
