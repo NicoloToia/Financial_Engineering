@@ -44,7 +44,9 @@ fixedRate = 2.8173/100;
 setDate = datesSet.settlement;
 fixedLegPaymentDates = datesSet.swaps(1:6);
 
-[DV01, BPV, DV01_z] = sensSwap(setDate, fixedLegPaymentDates, fixedRate, dates, ...
-    discounts,discounts_DV01)
+[DV01, BPV, DV01_z] = sensSwap(setDate, fixedLegPaymentDates, fixedRate, dates, discounts,discounts_DV01)
+couponPaymentDates = find_couponPaymentDates(datesSet, setDate);
+
+[MacD] = sensCouponBond(setDate, couponPaymentDates, fixedRate, dates, discounts)
 
 toc;
