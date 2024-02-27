@@ -7,7 +7,7 @@
 % to run:
 % > runAssignment2_TBM
 
-clear all;
+clear;
 close all;
 clc;
 tic;
@@ -41,8 +41,8 @@ fixedRate = 2.8173/100;
 [dates, discounts_DV01]=bootstrap(datesSet, ratesSet_shift);
 
 % target is 6 years
-setDate = datesSet.settlment;
-fixedLegPaymenDates = datesSet.swaps(1:6);
+setDate = datesSet.settlement;
+fixedLegPaymentDates = datesSet.swaps(1:6);
 
 [ratesSet_shift] = shift_rates(ratesSet);
 [dates, discounts_DV01]=bootstrap(datesSet, ratesSet_shift);

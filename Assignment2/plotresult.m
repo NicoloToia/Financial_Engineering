@@ -4,7 +4,7 @@ function plotresult(dates, discounts, zeroRates)
 figure 
 yyaxis left
 % plot discount factors as green filled triangles
-plot(dates(2:end), discounts(2:end), 'g-^', 'MarkerFaceColor', 'g')
+plot(dates(1:end), discounts(1:end), 'g-^', 'MarkerFaceColor', 'g')
 ylabel('Discount Factors')
 % make the y-axis go from 0 to 1
 ylim([0 1])
@@ -14,7 +14,7 @@ yticks(0:0.2:1)
 %zero-rates
 yyaxis right
 % plot zero rates as blue filled diamonds (in percent)
-plot(dates(2:end), zeroRates(2:end), 'b-d', 'MarkerFaceColor', 'b')
+plot(dates(1:end), zeroRates(1:end), 'b-d', 'MarkerFaceColor', 'b')
 % make the y-axis go from 2.5 to 5.0
 ylim([2.5 5.0])
 yticks(2.5:0.5:5.0)
