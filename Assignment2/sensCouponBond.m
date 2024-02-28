@@ -1,4 +1,4 @@
- function MacD = sensCouponBond(setDate, couponPaymentDates, fixedRate, dates, discounts)
+ function MacD = sensCouponBond_prova(setDate, couponPaymentDates, fixedRate, dates, discounts)
 
     MacD=0;
     price=0;
@@ -7,7 +7,7 @@
     c(length(couponPaymentDates))=fixedRate+1;
 
     for i=1:length(couponPaymentDates)
-        num = num + c(i)*(dates(i)-setDate)*futureSettlementDF(discounts, dates, couponPaymentDates(i));
+        num = num+c(i)*(dates(i)-setDate)*futureSettlementDF(discounts, dates, couponPaymentDates(i));
         price = price+c(i)*futureSettlementDF(discounts, dates, couponPaymentDates(i));
         MacD=MacD+num/price;
     end

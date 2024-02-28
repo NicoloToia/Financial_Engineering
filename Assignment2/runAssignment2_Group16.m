@@ -49,4 +49,6 @@ couponPaymentDates = find_couponPaymentDates(datesSet, setDate);
 
 [MacD] = sensCouponBond(setDate, couponPaymentDates, fixedRate, dates, discounts)
 
+MacD = sensCouponBond(setDate, fixedLegPaymentDates, fixedRate, dates, discounts)
+
 toc;
