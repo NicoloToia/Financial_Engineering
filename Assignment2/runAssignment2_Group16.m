@@ -46,10 +46,7 @@ fixedLegPaymentDates = datesSet.swaps(1:6);
 
 [DV01, BPV, DV01_z] = sensSwap(setDate, fixedLegPaymentDates, fixedRate, dates, discounts,discounts_DV01)
 
-couponPaymentDates = find_couponPaymentDates(datesSet, setDate);
-
 MacD = sensCouponBond(setDate, fixedLegPaymentDates, fixedRate, dates, discounts)
 
-MacD = sensCouponBond_prova(setDate, fixedLegPaymentDates, fixedRate, dates, discounts)
 
 toc;
