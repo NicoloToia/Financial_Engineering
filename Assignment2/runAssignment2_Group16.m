@@ -55,12 +55,12 @@ MacD = sensCouponBond(setDate, fixedLegPaymentDates, fixedRate, dates, discounts
 date_6Y = datesSet.swaps(6);
 date_7Y = datesSet.swaps(7);
 EU_30_360 = 6;
-DF6Y = discounts(find(dates==date_6Y));
-DF7Y = discounts(find(dates==date_7Y));
+DF6Y = discounts(dates==date_6Y);
+DF7Y = discounts(dates==date_7Y);
 delta = yearfrac(date_6Y, date_7Y, EU_30_360);
 S_7Y = 0.5 * (ratesSet.swaps(7,1) + ratesSet.swaps(7,2));
 
-IB_couponBond = 1 + DF6Y - (1 + S_7Y * delta) * DF7Y;
+IB_couponBond = 1 + DF6Y - (1 + S_7Y * delta) * DF7Y
 
 % direct calculation
 
