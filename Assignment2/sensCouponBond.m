@@ -16,5 +16,5 @@ for i=1:length(couponPaymentDates)
 end
 
 MacD = sum(c .* discountCoupons .* yearfrac(setDate, couponPaymentDates, EU_30_360)) / ...
-    sum(c .* discountCoupon);
+    sum(c .* discountCoupons);
 end
