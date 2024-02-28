@@ -5,7 +5,7 @@ ACT_360 = 2;
 
 % retrieve rates and dates
 deposDates = datesSet.depos(1:DeposDate); % first 3 deposit dates
-deposRates = ratesSet.depos(1:DeposDate); % first 3 deposit rates
+deposRates = ratesSet.depos(1:DeposDate,:); % first 3 deposit rates
 deposRates = 0.5 * (deposRates(:,1) + deposRates(:,2));
 
 % settlement date and initialize output
