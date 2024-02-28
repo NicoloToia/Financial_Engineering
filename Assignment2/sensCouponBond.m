@@ -10,12 +10,11 @@ c = ones(length(couponPaymentDates),1) * fixedRate .* deltas;
 c(end) = 1 + c(end);
 
 % compute the discounts factors
-discountsCoupon = zeros(length(couponPaymentDates),1);
+discountCoupons = zeros(length(couponPaymentDates),1);
 for i=1:length(couponPaymentDates)
-    discountsCoupon(i) = intExtDF(discounts, dates, couponPaymentDates(i));
+    discountCoupons(i) = intExtDF(discounts, dates, couponPaymentDates(i));
 end
 
 MacD = sum(c .* discountCoupons .* yearfrac(setDate, couponPaymentDates, EU_30_360)) / ...
-    sum(c .* discountsCoupon);
-
+    sum(c .* discountCoupon);
 end
