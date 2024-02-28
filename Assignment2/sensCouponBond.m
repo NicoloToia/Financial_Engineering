@@ -5,9 +5,9 @@
     num=0;
     EU_30_360 = 6;
     deltas = [
-        yearfrac(setDate, couponPaymentDates(1), EU_30_360)
-        yearfrac(couponPaymentDates(1:end-1), couponPaymentDates(2:end), EU_30_360)
-    ]
+        yearfrac(setDate, couponPaymentDates(1), EU_30_360);
+        yearfrac(couponPaymentDates(1:end-1), couponPaymentDates(2:end), EU_30_360);
+    ];
     c = ones(length(couponPaymentDates),1) * fixedRate .* deltas;
     c(end) = c(end) + 1;
 

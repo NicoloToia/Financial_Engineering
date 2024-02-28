@@ -48,5 +48,4 @@ fixedLegPaymentDates = datesSet.swaps(1:6);
 
 MacD = sensCouponBond(setDate, fixedLegPaymentDates, fixedRate, dates, discounts)
 
-
 toc;
