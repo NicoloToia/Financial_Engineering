@@ -1,6 +1,5 @@
  function MacD = sensCouponBond(setDate, couponPaymentDates, fixedRate, dates, discounts)
 
-    MacD=0;
     price=0;
     num=0;
     EU_30_360 = 6;
