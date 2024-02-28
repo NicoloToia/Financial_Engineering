@@ -10,6 +10,7 @@
 clear;
 close all;
 clc;
+% set the clock to find the time of execution
 tic;
 %% Settings
 formatData='dd/mm/yyyy'; %Pay attention to your computer settings 
