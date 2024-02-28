@@ -12,7 +12,7 @@ t0 = datesSet.settlement;
 
 % interpolate the first discount factor (swap 1y) and save it
 delta = yearfrac(t0, swapsDates(1), EU_30_360);
-discFact = futureSettlementDF(discounts, dates, swapsDates(1));
+discFact = intExtDF(discounts, dates, swapsDates(1));
 % BPV represents BPV(0, T_i-1)
 % initialize with the first Discount factor
 BPV = delta * discFact;

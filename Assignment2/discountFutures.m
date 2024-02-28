@@ -13,7 +13,7 @@ for i = 1:FutureDate
     deltaForward = yearfrac(futuresDates(i, 1), futuresDates(i, 2), ACT_360);
     forwardDiscount = 1 / (1 + futuresRates(i) * deltaForward);
     % compute the discount factor at the settlement date
-    settlementDF = futureSettlementDF(discounts, dates, futuresDates(i, 1));
+    settlementDF = intExtDF(discounts, dates, futuresDates(i, 1));
     % compute the discount factor at the expiry date
     discounts = [discounts; forwardDiscount * settlementDF];
     % update the zero rate
