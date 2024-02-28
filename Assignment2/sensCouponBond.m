@@ -9,7 +9,6 @@
     for i=1:length(couponPaymentDates)
         num = num+c(i)*(dates(i)-setDate)*futureSettlementDF(discounts, dates, couponPaymentDates(i));
         price = price+c(i)*futureSettlementDF(discounts, dates, couponPaymentDates(i));
-        MacD=MacD+num/price;
     end
-
+    MacD=num/price;
  end
