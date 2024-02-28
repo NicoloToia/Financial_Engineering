@@ -1,18 +1,21 @@
- function MacD = sensCouponBond(setDate, couponPaymentDates, fixedRate, dates, discounts)
+function MacD = sensCouponBond(setDate, couponPaymentDates, fixedRate, dates, discounts)
 
-    price=0;
-    num=0;
-    EU_30_360 = 6;
-    deltas = [
-        yearfrac(setDate, couponPaymentDates(1), EU_30_360);
-        yearfrac(couponPaymentDates(1:end-1), couponPaymentDates(2:end), EU_30_360);
-    ];
-    c = ones(length(couponPaymentDates),1) * fixedRate .* deltas;
-    c(end) = c(end) + 1;
+% compute the coupons to match yield of the swap
+EU_30_360 = 6;
+deltas = [
+    yearfrac(setDate, couponPaymentDates(1), EU_30_360);
+    yearfrac(couponPaymentDates(1:end-1), couponPaymentDates(2:end), EU_30_360);
+];
+c = ones(length(couponPaymentDates),1) * fixedRate .* deltas;
+c(end) = 1 + c(end);
 
-    for i=1:length(couponPaymentDates)
-        num = num+c(i)*intExtDF(discounts, dates, couponPaymentDates(i)) * yearfrac(setDate, couponPaymentDates(i), EU_30_360);
-        price = price+c(i)*intExtDF(discounts, dates, couponPaymentDates(i));
-    end
-    MacD=num/price;
- end
+% compute the discounts factors
+discountsCoupon = zeros(length(couponPaymentDates),1);
+for i=1:length(couponPaymentDates)
+    discountsCoupon(i) = intExtDF(discounts, dates, couponPaymentDates(i));
+end
+
+MacD = sum(c .* discountCoupons .* yearfrac(setDate, couponPaymentDates, EU_30_360)) / ...
+    sum(c .* discountsCoupon);
+
+end
