@@ -23,6 +23,7 @@ formatData='dd/mm/yyyy'; %Pay attention to your computer settings
 % dates includes SettlementDate as first date
 [dates, discounts]=bootstrap(datesSet, ratesSet);
 
+readDates = datetime(dates, 'ConvertFrom', 'datenum');
 
 %% Compute Zero Rates
 
