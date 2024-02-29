@@ -63,7 +63,4 @@ S_7Y = 0.5 * (ratesSet.swaps(7,1) + ratesSet.swaps(7,2));
 
 IB_couponBond = 1 + DF6Y - (1 + S_7Y * delta) * DF7Y
 
-% direct calculation
-
-
 toc;
