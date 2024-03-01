@@ -1,4 +1,4 @@
-function [discounts] = discountFutures(datesSet, ratesSet, discounts, dates, FutureDate)
+function [discounts] = discountFutures(datesSet, ratesSet, discounts, dates, FutureDate, futureStart)
 % Bootstrap the discount factors for futures
 %
 % INPUT
@@ -34,9 +34,9 @@ for i = 1:FutureDate
     deltaForward = yearfrac(futuresDates(i, 1), futuresDates(i, 2), ACT_360);
     forwardDiscount = 1 / (1 + futuresRates(i) * deltaForward);
     % find the discount factor at the settlement date by intExDF functions
-    settlementDF = intExtDF(discounts(1:3 + i), dates(1:3 + i), futuresDates(i, 1));
+    settlementDF = intExtDF(discounts(1:futureStart + i -1), dates(1:futureStart + i - 1), futuresDates(i, 1));
     % compute the discount factor at the expiry date
-    discounts(i+4) = forwardDiscount * settlementDF;                                    %% non SO COME METTERE INDICE CARINO
+    discounts(futureStart + i) = forwardDiscount * settlementDF;
 end
 
 end

@@ -1,4 +1,4 @@
-function [discounts] = discountSwaps(datesSet, ratesSet, discounts, dates , SwapStart)
+function [discounts] = discountSwaps(datesSet, ratesSet, discounts, dates , SwapDate, swapStart)
 % Bootstrap the discount factors for swaps
 %
 % INPUT
@@ -34,20 +34,21 @@ t0 = datesSet.settlement;
 
 % Interpolate the first discount factor (swap 1y) and save it
 delta = yearfrac(t0, swapsDates(1), EU_30_360);
-discFact = intExtDF(discounts, dates, swapsDates(1));
+% use only previous values
+discFact = intExtDF(discounts(1:swapStart-1), dates(1:swapStart-1), swapsDates(1));
 
 % BPV represents BPV(0, T_i-1)
 % Initialize with the first Discount factor
 BPV = delta * discFact;
 
 % compute the discount factors for the swaps
-for i=SwapStart:length(swapsDates)
+for i=SwapDate:length(swapsDates)
     % compute delta for t_i-1, t_i
     delta = yearfrac(swapsDates(i-1), swapsDates(i), EU_30_360);
     % compute new discount factor for t_i
     discount = (1 - swapsRates(i) * BPV) / (1 + swapsRates(i) * delta);
     % update discounts
-    discounts(i+10) = discount;                                                  %% non SO COME METTERE INDICE CARINO
+    discounts(swapStart + i - 2) = discount;
     % update the BPV
     BPV = BPV + delta * discount;
 end

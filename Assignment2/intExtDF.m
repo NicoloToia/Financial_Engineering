@@ -45,7 +45,6 @@ end
 % Target date is beyond the last date, flat extrapolation
 if targetDate > dates(end)
     discount = discounts(end);
-    disp('estrapolo')
     return;
 end
 

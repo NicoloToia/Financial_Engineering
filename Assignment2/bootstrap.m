@@ -23,19 +23,29 @@ function [dates, discounts]=bootstrap(datesSet, ratesSet)
 % Parameters fixed by trader, based on liquidity
 DeposDate  = 3;     %   consider untill this Depos
 FutureDate = 7;     %   consider untill this Future
-SwapStart  = 2;     %   consider from this Swap
+SwapDate  = 2;     %   consider from this Swap
 
 % Dates vector inizialization thanks to parameters above
-dates = [datesSet.settlement;datesSet.depos(1:DeposDate);datesSet.futures(1:FutureDate,2);...
-    datesSet.swaps(SwapStart:end)];
+dates = [
+    datesSet.settlement;
+    datesSet.depos(1:DeposDate);
+    datesSet.futures(1:FutureDate,2);
+    datesSet.swaps(SwapDate:end)
+];
+
 % Inizialize discounts vector
 discounts = ones(length(dates),1);
+
+% indeces
+futureStart = 1 + DeposDate;
+futureEnd = futureStart + FutureDate;
+swapStart = futureEnd + 1;
 
 % discount for Depos
 [discounts] = discountDepos(datesSet, ratesSet, discounts, DeposDate);
 % discount for Futures
-[discounts] = discountFutures(datesSet, ratesSet, discounts, dates, FutureDate);
+[discounts] = discountFutures(datesSet, ratesSet, discounts, dates, FutureDate, futureStart);
 % discount for Swaps
-[discounts] = discountSwaps(datesSet, ratesSet, discounts, dates , SwapStart);
+[discounts] = discountSwaps(datesSet, ratesSet, discounts, dates , SwapDate, swapStart);
 
 end
