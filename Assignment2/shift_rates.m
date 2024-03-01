@@ -1,22 +1,34 @@
 function [ratesSet_shift] = shift_rates(ratesSet)
-    % Inizializza la struct di output con gli stessi campi della struct di input
-    ratesSet_shift = ratesSet;
+% shift_rates: parallel shift of market data contained in the ratesSet by 1bp
+%
+% INPUT
+% ratesSet      : market data for bid&ask rates stored as follow
+%                -> ratesSet.depos      : Matix bid&ask Depos
+%                -> ratesSet.futures    : Matix bid&ask Futures
+%                -> ratesSet.swaps      : Matix bid&ask Swaps
+%
+% OUTPUT
+% ratesSet_shift: new rates data shifted by 1bp
 
-    % Ottieni il numero di campi nella struct
-    num_fields = numel(fieldnames(ratesSet));
+% Initialize the output struct with the same fields as the input struct
+ratesSet_shift = ratesSet;
 
-    % Itera su ciascun campo della struct
-    for field_index = 1:num_fields
-        % Estrai il nome del campo
-        field_name = fieldnames(ratesSet);
-        
-        % Estrai la matrice associata a quel campo
-        matrix = ratesSet.(field_name{field_index});
-        
-        % Shifta ogni valore della matrice aggiungendo +0.0001
-        shifted_matrix = matrix + 0.0001;
-        
-        % Assegna la matrice shiftata al campo corrispondente nella struct di output
-        ratesSet_shift.(field_name{field_index}) = shifted_matrix;
-    end
+% Get the number of fields in the struct
+num_fields = numel(fieldnames(ratesSet));
+
+% Iterate over each field of the struct
+for field_index = 1:num_fields
+    % Extract the name of the field
+    field_name = fieldnames(ratesSet);
+    
+    % Extract the matrix associated with that field
+    matrix = ratesSet.(field_name{field_index});
+    
+    % Shift each value of the matrix by adding +0.0001 (1bp)
+    shifted_matrix = matrix + 0.0001;
+    
+    % Assign the shifted matrix to the corresponding field in the output struct
+    ratesSet_shift.(field_name{field_index}) = shifted_matrix;
+end
+
 end
