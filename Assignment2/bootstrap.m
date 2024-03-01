@@ -14,18 +14,18 @@ function [dates, discounts]=bootstrap(datesSet, ratesSet)
 %
 % OUTPUT
 % dates    : Dates of discount factors curve bootstrap
-%            -> recall that the boostrap is considering the most liquid
+%            -> recall that the bootstrap is considering the most liquid
 %            products, hence as default & "according" with the market the vector has the 
 %            following structure:
-%            [settelment date; first 3 depos expiries; first 7 futures expiries; form the 2nd swap expiry to end]
+%            [settelment date; first 3 depos expiries; first 7 futures expiries; from the 2nd swap expiry to end]
 % discounts: Discount Factors of the discount curve bootstrap at corresponding dates
 
 % Parameters fixed by trader, based on liquidity
-DeposDate  = 3;     %   consider untill this Depos
-FutureDate = 7;     %   consider untill this Future
+DeposDate  = 3;     %   consider until this Depos
+FutureDate = 7;     %   consider until this Future
 SwapDate  = 2;     %   consider from this Swap
 
-% Dates vector inizialization thanks to parameters above
+% Dates vector initialization thanks to parameters above
 dates = [
     datesSet.settlement;
     datesSet.depos(1:DeposDate);
@@ -33,10 +33,10 @@ dates = [
     datesSet.swaps(SwapDate:end)
 ];
 
-% Inizialize discounts vector
+% Initialize discounts vector
 discounts = ones(length(dates),1);
 
-% indeces
+% indices
 futureStart = 1 + DeposDate;
 futureEnd = futureStart + FutureDate;
 swapStart = futureEnd + 1;

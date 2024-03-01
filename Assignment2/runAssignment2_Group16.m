@@ -1,5 +1,5 @@
 % runAssignment2_Group16
-%  group X, AY20ZZ-20ZZ
+%  group 16, AY2023-2024
 % Computes Euribor 3m bootstrap with a single-curve model
 %
 % to run:
@@ -19,7 +19,7 @@ formatData='dd/mm/yyyy'; % Pay attention to your computer settings
 
 %% Read market data
 
-% This fuction works on Windows OS. Pay attention on other OS.
+% This function works on Windows OS. Pay attention on other OS.
 [datesSet, ratesSet] = readExcelData('MktData_CurveBootstrap', formatData);
 
 %% Bootstrap
@@ -43,7 +43,7 @@ plotresult(dates, discounts, zeroRates);
 
 
 %% Sensitivities (Point 2)
-% With the discount curve obtained above compute for a portfolio composed 
+% With the discount curve obtained above compute the sensitivities for a portfolio composed 
 % only by one single swap, a 6y plain vanilla IR swap vs Euribor 3m 
 % with a fixed rate S = 2.8173%
 
@@ -59,7 +59,7 @@ fixedRate = 2.8173/100;
 setDate = datesSet.settlement;
 fixedLegPaymentDates = datesSet.swaps(1:6);
 
-% Compute sensitivities: DV01, BPV, Dv01_z (see function sensSwap for more detail)
+% Compute sensitivities: DV01, BPV, DV01_z (see function sensSwap for more detail)
 [DV01, BPV, DV01_z] = sensSwap(setDate, fixedLegPaymentDates, fixedRate, dates, discounts,discounts_DV01);
 
 % Compute Macaulay duration

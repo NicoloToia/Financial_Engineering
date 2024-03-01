@@ -17,12 +17,12 @@ function MacD = sensCouponBond(setDate, couponPaymentDates, fixedRate, dates, di
 % Yearfrac Convention
 EU_30_360 = 6;
 
-% delta betweens coupons dates
+% delta between coupons dates
 deltas = [
     yearfrac(setDate, couponPaymentDates(1), EU_30_360);
     yearfrac(couponPaymentDates(1:end-1), couponPaymentDates(2:end), EU_30_360);
 ];
-% compute the coupons & add the face falue of 1 to the last coupon
+% compute the coupons & add the face value of 1 to the last coupon
 c = ones(length(couponPaymentDates),1) * fixedRate .* deltas;
 c(end) = 1 + c(end);
 
