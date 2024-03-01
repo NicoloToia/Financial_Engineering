@@ -12,10 +12,10 @@ function [DV01, BPV, DV01_z] = sensSwap(setDate, fixedLegPaymentDates, fixedRate
 %
 % OUTPUT
 % DV01   : Variation in the NPV for a derivative's portfolio (e.g. a signle
-%          swap) due to the increased of rates used for the bootstrap of the
+%          swap) due to the increase of rates used for the bootstrap of the
 %          original curve for 1 bp in parallel shift
 % BPV    : Net Present Value of 1 bp       
-% DV01_z : variatio in the NPV for a derivative's portfolio due to the
+% DV01_z : variation in the NPV for a derivative's portfolio due to the
 %          increase of zero rates for 1 bp in parallel shift; i.e. it is the
 %          derivative's sensitivity for a (parallel shift)movement in the zero rate
 %          curve    
