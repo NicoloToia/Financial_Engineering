@@ -22,6 +22,10 @@ formatData='dd/mm/yyyy'; % Pay attention to your computer settings
 % This function works on Windows OS. Pay attention on other OS.
 [datesSet, ratesSet] = readExcelData('MktData_CurveBootstrap', formatData);
 
+% Faster loading dataSet
+% load datesSet.mat
+% load ratesSet.mat
+
 %% Bootstrap
 tic;
 % Bootstrap the discount factors from the market data
