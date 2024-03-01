@@ -45,7 +45,7 @@ NPV_0 = 1 - discountsFixedLeg(end) - fixedRate * deltas' * discountsFixedLeg;
 % Shifted NPV (after the shift of 1 bp)
 NPV_shift = 1 - discountsFixedLeg_DV01(end) - fixedRate * deltas' * discountsFixedLeg_DV01;
 % Compute the DV01
-DV01 = NPV_shift - NPV_0;
+DV01 = abs(NPV_shift - NPV_0);
 
 % Parallel shift of zero rates curve
 zeroRatesFixedLeg = zeroRates([setDate;fixedLegPaymentDates], [1;discountsFixedLeg])/100 + bp;
@@ -56,6 +56,6 @@ discountsFixedLeg_z = exp(-zeroRatesFixedLeg .* yearfrac(setDate, fixedLegPaymen
 % Compute the NPV of the shifted zero rates curve
 NPV_z = 1 - discountsFixedLeg_z(end) - fixedRate * deltas' * discountsFixedLeg_z;
 % Compute the DV01_z
-DV01_z = NPV_z - NPV_0;
+DV01_z = abs(NPV_z - NPV_0);
 
 end
