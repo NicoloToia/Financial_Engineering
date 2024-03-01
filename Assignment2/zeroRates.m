@@ -1,15 +1,18 @@
 function [zRates] = zeroRates(dates, discounts)
-% zeroRates Compute zero rates from discount factors
+% zeroRates: Compute zero rates from discount factors computed in function boostrap
 %
-% INPUT:
-% dates     - vector of dates
-% discounts - vector of discount factors
+% INPUT
+% dates    : Dates of the discount factors
+% discounts: Discount factors computed in the bootstrap
 %
 % OUTPUT:
-% zRates    - vector of zero rates
-    
+% zRates   : Zero rates
+
+% Compute zero rates 
 zRates = -log(discounts) ./ yearfrac(dates(1), dates);
+% Set the first zero rate equal to the frist depo (O/N)
 zRates(1) = zRates(2);
+% Converte zero rates in percentage
 zRates = zRates * 100;
 
 end
