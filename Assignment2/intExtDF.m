@@ -1,43 +1,52 @@
 function [discount]=intExtDF(discounts, dates, targetDate)
-% intExtDF: Interpolates or extrapolates the discount factor for a given date
+% intExtDF: Interpolates (linear) or extrapolates (flat) the zero rates curve for a given date,
+%           if the discount is present for the given date it returns the
+%           value without interpolating or extrapolating
 %
-% discount = intExtDF(discounts, dates, targetDate) returns the discount
-% factor for the given target date. The discount factors are given in the
-% vector discounts and the corresponding dates are given in the vector
-% dates.
+% INPUT
+% discounts  : discount factors curve for preceding values (Bootstrap) 
+% dates      : dates of discount factors curve bootstrap
+% targetDate : corrisponding date of the discount requested
+%
+% OUTPUT
+% discount   : discont factor found by matching/interpolating/extrapolating
+%              the zero rates curve
 
-% zero rates are interpolated with ACT/365
+
+% Zero rates are interpolated with yearfrac Convention ACT/365
 ACT_365 = 3;
 
-% perfect match, return the corresponding discount
+% Perfect match, return the corresponding discount
 idx = find(dates==targetDate);
 if ~isempty(idx)
     discount = discounts(idx);
     return;
 end
 
-% there are dates that encapsulate the target date, interpolate
+% Find dates that encapsulate the target date
 prevIdx = find(dates<targetDate,1,'last');
 nextIdx = find(dates>targetDate,1,'first');
+
+% Find the discount by linear interpolation of zero rates curve
 if ~isempty(prevIdx) && ~isempty(nextIdx)
-    % get the dates
+    % Set dates
     prevDate = dates(prevIdx);
     nextDate = dates(nextIdx);
-    % get the zero rates
+    % Compute the zero rates
     prevY = -log(discounts(prevIdx)) / yearfrac(dates(1),prevDate, ACT_365);
     nextY = -log(discounts(nextIdx)) / yearfrac(dates(1),nextDate, ACT_365);
+    % Linear interpolation between prevY & nextY and compute discount
     dt = yearfrac(prevDate,nextDate, ACT_365);
     y = prevY + (nextY - prevY) / dt * yearfrac(prevDate,targetDate, ACT_365);
     discount = exp(-y * yearfrac(dates(1),targetDate, ACT_365));
     return;
 end
 
-% target date is beyond the last date, extrapolate with flat
+% Target date is beyond the last date, flat extrapolation
 if targetDate > dates(end)
     discount = discounts(end);
+    disp('estrapolo')
     return;
 end
 
 end
- 
-
