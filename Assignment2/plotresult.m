@@ -1,16 +1,19 @@
 function plotresult(dates, discounts, zeroRates)
-% plotresult: Plots the discount factors and zero rates
+% plotresult: Plots the discount factors and zero rates curve vs dates
 %
-% INPUTS:
-% dates: dates of the discount factors and zero rates
-% discounts: discount factors
-% zeroRates: zero rates
+% INPUT
+% dates    : Dates of the discount factors and zero rates
+% discounts: Discount factors computed in the bootstrap
+% zeroRates: Zero rates computed in the bootstrap
 %
+% OUTPUT
+% --> plot of the zero rates curve vs dates
+% --> plot of discount factors curve vs dates
 
-% create a new figure
+% Create a new figure
 figure 
 
-% left hand side
+% discounts left hand side
 yyaxis left
 % plot discount factors as green filled triangles
 plot(dates(1:end), discounts(1:end), 'g-^', 'MarkerFaceColor', 'g')
@@ -18,7 +21,7 @@ ylabel('Discount Factors')
 ylim([0 1]) % make the y-axis go from 0 to 1
 yticks(0:0.2:1) % ticks every 0.2
 
-%zero-rates
+% zero-rates right hand side
 yyaxis right
 % plot zero rates as blue filled diamonds (in percentage)
 plot(dates(1:end), zeroRates(1:end), 'b-d', 'MarkerFaceColor', 'b')
@@ -28,7 +31,7 @@ ylabel('Zero Rates')
 
 % set x-axis limits
 xlabel('Date')
-title('Zero Rates and Discount Factors')
+title('Zero Rates and Discount Factors Curves')
 legend('Discount Factors', 'Zero Rates')
 grid on
 % x-axis in date format Month name and last two digits of year
