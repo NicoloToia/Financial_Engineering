@@ -1,20 +1,43 @@
-function [discounts dates] = discountSwaps(datesSet, ratesSet, discounts, dates, SwapStart)
+function [discounts] = discountSwaps(datesSet, ratesSet, discounts, dates , SwapStart)
+% Bootstrap the discount factors for swaps
+%
+% INPUT
+% datesSet   : dates from market data stored as follow
+%              -> datesSet.settlement : Settlement Date
+%              -> datesSet.depos      : Vector of end calculation dates for Depos
+%              -> datesSet.futures    : Matrix with start/end dates for Futures
+%              -> datesSet.swaps      : Vector of end calculation date for Swaps
+% ratesSet   : market data for bid&ask rates stored as follow
+%              -> ratesSet.depos      : Matix bid&ask Depos
+%              -> ratesSet.futures    : Matix bid&ask Futures
+%              -> ratesSet.swaps      : Matix bid&ask Swaps
+% discounts  : Inizialized vector for discounts of the length needed, 
+%             set as first value one
+% dates      : dates of discount factors curve bootstrap
+% SwapStart : the function compute the discounts from the n swap,
+%             where n = SwapStart
+%
+% OUTPUT
+% discounts: Discount Factors for swaps
 
-% date notation 
+
+% Yearfrac Convention 
 EU_30_360 = 6;
 
-% retrieve data
-swapsDates = datesSet.swaps;
-swapsRates = ratesSet.swaps;
-swapsRates = 0.5 * (swapsRates(:,1) + swapsRates(:,2));
-% fix settlement date
+% Retrieve rates and dates
+swapsDates = datesSet.swaps;                            % first 7 swaps dates
+swapsRates = ratesSet.swaps;                            % first 7 swaps rates
+swapsRates = 0.5 * (swapsRates(:,1) + swapsRates(:,2)); % mid-market swaps rates
+
+% Fix settlement date
 t0 = datesSet.settlement;
 
-% interpolate the first discount factor (swap 1y) and save it
+% Interpolate the first discount factor (swap 1y) and save it
 delta = yearfrac(t0, swapsDates(1), EU_30_360);
 discFact = intExtDF(discounts, dates, swapsDates(1));
+
 % BPV represents BPV(0, T_i-1)
-% initialize with the first Discount factor
+% Initialize with the first Discount factor
 BPV = delta * discFact;
 
 % compute the discount factors for the swaps
@@ -23,9 +46,8 @@ for i=SwapStart:length(swapsDates)
     delta = yearfrac(swapsDates(i-1), swapsDates(i), EU_30_360);
     % compute new discount factor for t_i
     discount = (1 - swapsRates(i) * BPV) / (1 + swapsRates(i) * delta);
-    % update the dates, discounts and zero rates
-    dates = [dates; swapsDates(i)];
-    discounts = [discounts; discount];
+    % update discounts
+    discounts(i+10) = discount;                                                  %% non SO COME METTERE INDICE CARINO
     % update the BPV
     BPV = BPV + delta * discount;
 end
