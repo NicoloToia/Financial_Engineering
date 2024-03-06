@@ -90,10 +90,10 @@ disp(' ')
 %%
 % Part I Q2: Z-spread (four scalars, each one corresponding to a bond)
 % It is required the numerical solution based on function PV_risky_bond_Z()
-%IG_z_1y = ?
-%IG_z_2y = ?
-%HY_z_1y = ?
-%HY_z_2y = ?
+IG_z_1y = zscore(ZC_curve, IG_cf_schedule_1y, IG_Bond_dirty_price_1y);
+IG_z_2y = zscore(ZC_curve, IG_cf_schedule_2y, IG_Bond_dirty_price_2y);
+HY_z_1y = zscore(ZC_curve, HY_cf_schedule_1y, HY_Bond_dirty_price_1y);
+HY_z_2y = zscore(ZC_curve, HY_cf_schedule_2y, HY_Bond_dirty_price_2y);
 
 disp('––– Part I Q2: Z-spread (scalar): basis points –––')
 fprintf('IG 1y Z-spread: %.1f bp \n', IG_z_1y*10000) 
