@@ -17,7 +17,7 @@ if l == 2 % one year case
     B_bar = B .* survivalProb;
     % add the survival probability of 1 at time 0
     survivalProb = [1; survivalProb];
-    PV = couponValues' * B_bar + R * B' * (survivalProb(1:end-1) - survivalProb(2:end));
+    PV = couponValues' * B_bar + R * 100 * B' * (survivalProb(1:end-1) - survivalProb(2:end));
 elseif l == 4 % two year case
     % save the coupon dates and values
     couponDates = cf_schedule(:, 1);
@@ -36,7 +36,7 @@ elseif l == 4 % two year case
     B_bar = B .* survivalProb;
     % add the survival probability of 1 at time 0
     survivalProb = [1; survivalProb];
-    PV = couponValues' * B_bar + R * B' * (survivalProb(1:end-1) - survivalProb(2:end));
+    PV = couponValues' * B_bar + R * 100 * B' * (survivalProb(1:end-1) - survivalProb(2:end));
 else
     % throw error
     error('PV_risky_bond_h: invalid cash flow schedule');
