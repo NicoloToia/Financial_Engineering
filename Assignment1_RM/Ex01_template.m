@@ -11,7 +11,7 @@
 %       XX rating and Yy maturity
 %       Column #1: cash flow date(year frac)
 %       Column #2: cash flow amount (US $)
-%      alsongside with they market prices (dirty)
+%      alongside with they market prices (dirty)
 % 
 %   legend: XX -> IG = Investment Grade
 %           XX -> HY = High Yield
@@ -37,7 +37,9 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 clc;
 clear all;
-format("bank")
+% TODO: remove comment
+% format("bank")
+
 % Zero Coupon Curve
 ZC_curve = [0.25 0.054; 0.5 0.053; 2.0 0.046];
 
@@ -62,8 +64,10 @@ R = 0.4;                        %Recovery rate (\pi according to Schonbucher)
 %%
 % Part I Q1: Bootstrap of hazard rate curves (two, each one corresponding to a rating class) 
 % Students are free do design a bootstrap procedure based on the function PV_risky_bond_h
-% IG_h_curve = ?
-% HY_h_curve = ?
+IG_h_curve = hazardCurve(ZC_curve, R, IG_Bond_dirty_price_1y, ...
+    IG_Bond_dirty_price_2y, IG_cf_schedule_1y, IG_cf_schedule_2y);
+HY_h_curve = hazardCurve(ZC_curve, R, HY_Bond_dirty_price_1y, ...
+    HY_Bond_dirty_price_2y, HY_cf_schedule_1y, HY_cf_schedule_2y);
 
 disp('––– Part I Q1: Hazard rate piecewise curves –––')
 fprintf('IG Hazard rate (bp): %.1f 1y; %.1f 2y \n',IG_h_curve(:,2)*10000 )
