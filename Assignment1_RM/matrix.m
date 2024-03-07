@@ -1,13 +1,19 @@
-function [Q] = matrix(R, IG_z_curve, HY_z_curve)
+function [Q] = matrix(IG_h,HY_h)
 
 %    Derive the market-implied rating transition matrix based on the
 %   available market data (ZC risk-free curve and risky bond prices)
 
-q13 = (1 - exp(-IG_z_curve(1))) / (1 - R);
-q23 = (1 - exp(-HY_z_curve(1))) / (1 - R);
+h_IG_1=IG_h(1,2);
+h_IG_2=IG_h(2,2);
 
-q13_2 = ( 1 - exp(-IG_z_curve(2) - IG_z_curve(1)) ) / (1 - R);
-q23_2 = ( 1 - exp(-HY_z_curve(2) - HY_z_curve(1)) ) / (1 - R);
+h_HY_1=HY_h(1,2);
+h_HY_2=HY_h(2,2);
+
+q13 = 1 - exp(-h_IG_1);
+q23 = 1 - exp(-h_HY_1);
+
+q13_2 = 1 - exp(-h_IG_2-h_IG_1);
+q23_2 = 1 - exp(-h_HY_2-h_HY_1);
 
 A=[q13 q23 0 0; 
    0 0 q13 q23;

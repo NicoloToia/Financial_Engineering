@@ -119,10 +119,10 @@ fprintf('IG 2y model price: %.4f (Mkt: %.4f)\n', IG_Bond_dirty_price_2y_check,IG
 fprintf('HY 1y model price: %.4f (Mkt: %.4f)\n', HY_Bond_dirty_price_1y_check,HY_Bond_dirty_price_1y)
 fprintf('HY 2y model price: %.4f (Mkt: %.4f)\n', HY_Bond_dirty_price_2y_check,HY_Bond_dirty_price_2y)
 disp(' ')
-%%
-% Part II Q1: Transition Matrix [Optional in Matlab, if done analitically please write 
+
+%% Part II Q1: Transition Matrix [Optional in Matlab, if done analitically please write 
 %      the formulas and the results in the .pdf report]
 
-[Q] = matrix (R, IG_z_curve, HY_z_curve);
+[Q] = matrix(IG_h_curve, HY_h_curve);
 disp(Q);
 toc
