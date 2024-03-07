@@ -123,6 +123,9 @@ disp(' ')
 %% Part II Q1: Transition Matrix [Optional in Matlab, if done analitically please write 
 %      the formulas and the results in the .pdf report]
 
+% compute the transition matrix
 [Q] = Qmatrix(IG_h_curve, HY_h_curve);
-disp(Q);
+% print the transition matrix as a table
+disp(array2table(Q, 'VariableNames', {'IG', 'HY', 'Default'}, 'RowNames', {'IG', 'HY', 'Default'}))
+
 toc
