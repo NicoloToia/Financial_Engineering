@@ -1,6 +1,10 @@
 function [Q] = Qmatrix(IG_h,HY_h)
 % QMATRIX  Derive the market-implied rating transition matrix based on the
 % available market data (hazard rates)
+%
+% INPUT
+% IG_h: hazard rates for the investment grade bonds
+% HY_h: hazard rates for the high yield bonds
 
 % extract the hazard rates from the input
 h_IG_1=IG_h(1,2);
