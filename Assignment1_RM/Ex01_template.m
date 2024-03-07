@@ -97,6 +97,9 @@ IG_z_2y = zscore(ZC_curve, IG_cf_schedule_2y, IG_Bond_dirty_price_2y);
 HY_z_1y = zscore(ZC_curve, HY_cf_schedule_1y, HY_Bond_dirty_price_1y);
 HY_z_2y = zscore(ZC_curve, HY_cf_schedule_2y, HY_Bond_dirty_price_2y);
 
+IG_z_curve = [IG_z_1y; IG_z_2y];
+HY_z_curve = [HY_z_1y; HY_z_2y];
+
 disp('––– Part I Q2: Z-spread (scalar): basis points –––')
 fprintf('IG 1y Z-spread: %.1f bp \n', IG_z_1y*10000) 
 fprintf('IG 2y Z-spread: %.1f bp \n', IG_z_2y*10000)
@@ -120,6 +123,6 @@ disp(' ')
 % Part II Q1: Transition Matrix [Optional in Matlab, if done analitically please write 
 %      the formulas and the results in the .pdf report]
 
-[Q] = matrix(IG_h_curve, HY_h_curve);
+[Q] = matrix (R, IG_z_curve, HY_z_curve);
 disp(Q);
 toc
