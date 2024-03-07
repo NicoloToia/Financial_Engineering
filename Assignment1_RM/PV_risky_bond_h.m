@@ -1,5 +1,15 @@
 function [ PV ] = PV_risky_bond_h(cf_schedule, h_curve, ZC_curve, R)
+% PV_risky_bond_h: computes the present value of a risky bond using the
+% survival probabilities (derived from the hazard rates) and the zero
+% coupon curve
+%
+% INPUT
+%   cf_schedule: a 2xN matrix with the cash flow schedule of the bond
+%   h_curve: a 2xN matrix with the hazard rates
+%   ZC_curve: a 2xN matrix with the zero coupon curve
+%   R: recovery rate
 
+% check the length of the cash flow schedule
 l = length(cf_schedule);
 
 if l == 2 % one year case

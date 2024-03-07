@@ -123,6 +123,6 @@ disp(' ')
 %% Part II Q1: Transition Matrix [Optional in Matlab, if done analitically please write 
 %      the formulas and the results in the .pdf report]
 
-[Q] = matrix(IG_h_curve, HY_h_curve);
+[Q] = Qmatrix(IG_h_curve, HY_h_curve);
 disp(Q);
 toc
