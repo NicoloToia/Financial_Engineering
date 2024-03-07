@@ -1,6 +1,19 @@
 function [h_curve] = hazardCurve(zeroCurve, R, dirtyPrice_1y, dirtyPrice_2y, ...
     couponSchedule_1y, couponSchedule_2y)
 
+% Bootstrap the hazard 
+% 
+% INPUT
+% zeroCurve : ZC bond data [yearfrac ; rates]
+% R : recovery rate
+% dirtyPrice_1y : corporate market price 1year bond
+% dirtyPrice_2y : corporate market price 2year bond
+% couponSchedule_1y : cash flows 1year bond [yearfrac; cash flow]
+% couponSchedule_2y : cash flows 2year bond [yearfrac; cash flow]
+%
+% OUTPUT
+% h_curve : Hazard curve [yearfrac; h]
+
 % separate the coupons
 couponDates_1y = couponSchedule_1y(:,1);
 couponValues_1y = couponSchedule_1y(:,2);
