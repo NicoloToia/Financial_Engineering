@@ -21,9 +21,7 @@ B_2y = exp(-zeroRates_2y .* couponDates_2y);
 function P_1y = Price_1y(h1)
     survivalProb_1y = [1; exp(-h1 * couponDates_1y)];
     B_bar_1y = B_1y .* exp(-h1 * couponDates_1y);
-    P_1y = couponValues_1y' * B_bar_1y + ...
-        R * 100 * B_1y' * (survivalProb_1y(1:end-1) - survivalProb_1y(2:end)) - ...
-        dirtyPrice_1y;
+    P_1y = couponValues_1y' * B_bar_1y + R * 100 * B_1y' * (survivalProb_1y(1:end-1) - survivalProb_1y(2:end)) - dirtyPrice_1y;
 end 
 
 P_1y = @(h1) Price_1y(h1);
@@ -40,9 +38,7 @@ function P_2y = Price_2y(h2, h1)
     % compute defaultable bond prices
     B_bar_2y = B_2y .* survivalProb;
     % compute the price
-    P_2y = couponValues_2y' * B_bar_2y + ...
-        R * 100 * B_2y' * ([1; survivalProb(1:end-1)] - survivalProb) - ...
-        dirtyPrice_2y;
+    P_2y = couponValues_2y' * B_bar_2y + R * 100 * B_2y' * ([1; survivalProb(1:end-1)] - survivalProb) - dirtyPrice_2y;
 end 
 
 P_2y = @(h2) Price_2y(h2, h1);

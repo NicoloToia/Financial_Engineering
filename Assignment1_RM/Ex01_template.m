@@ -37,6 +37,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 clc;
 clear all;
+tic
 % TODO: remove comment
 % format("bank")
 
@@ -66,6 +67,7 @@ R = 0.4;                        %Recovery rate (\pi according to Schonbucher)
 % Students are free do design a bootstrap procedure based on the function PV_risky_bond_h
 IG_h_curve = hazardCurve(ZC_curve, R, IG_Bond_dirty_price_1y, ...
     IG_Bond_dirty_price_2y, IG_cf_schedule_1y, IG_cf_schedule_2y);
+    
 HY_h_curve = hazardCurve(ZC_curve, R, HY_Bond_dirty_price_1y, ...
     HY_Bond_dirty_price_2y, HY_cf_schedule_1y, HY_cf_schedule_2y);
 
@@ -114,8 +116,10 @@ fprintf('IG 2y model price: %.4f (Mkt: %.4f)\n', IG_Bond_dirty_price_2y_check,IG
 fprintf('HY 1y model price: %.4f (Mkt: %.4f)\n', HY_Bond_dirty_price_1y_check,HY_Bond_dirty_price_1y)
 fprintf('HY 2y model price: %.4f (Mkt: %.4f)\n', HY_Bond_dirty_price_2y_check,HY_Bond_dirty_price_2y)
 disp(' ')
-
+toc
 %%
 % Part II Q1: Transition Matrix [Optional in Matlab, if done analitically please write 
 %      the formulas and the results in the .pdf report]
+
+[Q] = matrix(IG_h_curve, HY_h_curve)
 % Q = ?;
