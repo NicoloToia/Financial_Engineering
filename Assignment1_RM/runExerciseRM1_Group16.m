@@ -64,7 +64,6 @@ R = 0.4;                        %Recovery rate (\pi according to Schonbucher)
 
 %%
 % Part I Q1: Bootstrap of hazard rate curves (two, each one corresponding to a rating class) 
-% Students are free do design a bootstrap procedure based on the function PV_risky_bond_h
 
 % Bootstrap the hazard curve
 IG_h_curve = hazardCurve(ZC_curve, R, IG_Bond_dirty_price_1y, ...
@@ -95,7 +94,6 @@ disp(' ')
 
 %%
 % Part I Q2: Z-spread (four scalars, each one corresponding to a bond)
-% It is required the numerical solution based on function PV_risky_bond_Z()
 
 % Compute the zero score
 IG_z_1y = zscore(ZC_curve, IG_cf_schedule_1y, IG_Bond_dirty_price_1y);
