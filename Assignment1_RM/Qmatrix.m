@@ -21,12 +21,12 @@ q23 = 1 - exp(-h_HY_1);
 q13_2 = 1 - exp(-h_IG_2-h_IG_1);
 q23_2 = 1 - exp(-h_HY_2-h_HY_1);
 % solve the system of equations to find the market-implied transition matrix
-A=[ q13 q23 0 0; 
+A =[ q13 q23 0 0; 
     0 0 q13 q23;
     1 1 0 0;
     0 0 1 1 ];
-b= [q13_2-q13 q23_2-q23 1-q13 1-q23]';
-x=A\b;
+b = [q13_2-q13 q23_2-q23 1-q13 1-q23]';
+x = A\b;
 % construct the market-implied transition matrix
 Q = [ x(1) x(2) q13;
     x(3) x(4) q23;
