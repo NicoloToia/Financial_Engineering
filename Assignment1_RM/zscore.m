@@ -19,8 +19,10 @@ zeroRates = ZC_curve(:,2);
 zeroRates = interp1(zeroDates, zeroRates, couponDates);
 DF = exp(-zeroRates .* couponDates);
 
+% Inizializate function in z
 P = @(z) couponValues' * (DF .* exp(-z * couponDates)) - dirtyPrice;
 
+% Find zero
 z = fzero(P, 0);
 
 end 
