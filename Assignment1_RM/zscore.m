@@ -1,4 +1,13 @@
-function z = zscore(ZC_curve, couponSchedule, dirtyPrice)
+function [z] = zscore(ZC_curve, couponSchedule, dirtyPrice)
+% Compute Z_scores
+%
+% INPUT
+% zeroCurve : ZC bond data [yearfrac ; rates]
+% couponSchedule: cash flows bond [yearfrac; cash flow]
+% dirtyPrice = market dirty price
+%
+% OUTPUT
+% z = z_score
 
 % save coupon dates and values
 couponDates = couponSchedule(:,1);
