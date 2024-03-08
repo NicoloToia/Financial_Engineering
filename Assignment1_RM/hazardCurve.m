@@ -1,6 +1,5 @@
 function [h_curve] = hazardCurve(zeroCurve, R, dirtyPrice_1y, dirtyPrice_2y, ...
     couponSchedule_1y, couponSchedule_2y)
-
 % Bootstrap the hazard 
 % 
 % INPUT

@@ -8,6 +8,9 @@ function [ PV ] = PV_risky_bond_h(cf_schedule, h_curve, ZC_curve, R)
 %   h_curve: a 2xN matrix with the hazard rates
 %   ZC_curve: a 2xN matrix with the zero coupon curve
 %   R: recovery rate
+%
+% OUTPUT
+%   PV : Dirty price for a given risky bond (from hazard rate curve - fixed recoovery rate R)
 
 % check the length of the cash flow schedule
 l = length(cf_schedule);

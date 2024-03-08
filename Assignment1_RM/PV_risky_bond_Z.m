@@ -6,6 +6,9 @@ function PV = PV_risky_bond_Z(zScore, couponSchedule, ZC_curve)
 % zScore: the Z-score of the bond
 % couponSchedule: a matrix with the coupon dates and values
 % ZC_curve: a matrix with the zero curve
+%
+% OUTPUT
+%   PV : Dirty price for a given risky bond (from scalar Z-spread)
 
 % save the coupon dates and values
 couponDates = couponSchedule(:,1);
