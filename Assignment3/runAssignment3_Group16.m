@@ -24,24 +24,26 @@ formatData='dd/MM/yyyy'; % Pay attention to your computer settings
 load('discounts.mat');
 
 % convert dates to datetime
-dates = datetime(dates, 'ConvertFrom', 'datenum');
+% dates = datetime(dates, 'ConvertFrom', 'datenum');
 
-settlementDate = dates(1);
-swap3yDate = dates(13);
+settlementDate = datetime(dates(1), 'ConvertFrom', 'datenum');
+swap3yDate = datetime(dates(13), 'ConvertFrom', 'datenum');
 
 % compute the floating leg dates
 floatDates = (settlementDate+calmonths(3):calmonths(3):swap3yDate)';
 % use the modified following convention to find the next business day
 floatDates = busdate(floatDates, 'modifiedfollow', -1);
+% convert into datenum
+floatDates = datenum(floatDates);
 % compute the discount factors at the float dates
-discountsFloat = intExtDF(discounts, datenum(dates), datenum(floatDates));
+discountsFloat = intExtDF(discounts, dates, floatDates);
 
 % find the fixed leg dates
-swap1yDate = datetime('19/02/2009', 'InputFormat', formatData);
+swap1yDate = datenum(datetime('19/02/2009', 'InputFormat', formatData));
 % fixed leg dates
 fixedDates = [swap1yDate; dates(12); dates(13)];
 % fixed leg discount factors
-discountsFixed = intExtDF(discounts, datenum(dates), datenum(fixedDates));
+discountsFixed = intExtDF(discounts, dates, fixedDates);
 
 % coupon parameters
 C_bar_0 = 101/100;
@@ -76,7 +78,7 @@ spreadsCDS = [ 29, 32, 35, 39, 40, 41] / 10000;
 % create the spline for the complete set of dates
 completeDates = [swap1yDate; dates(12:17)];
 % use cubic spline to interpolate the spreads
-spreadsCDS = spline(datenum(datesCDS), spreadsCDS, datenum(completeDates));
+spreadsCDS = spline(datesCDS, spreadsCDS, completeDates);
 
 % plot the spreads 
 figure
