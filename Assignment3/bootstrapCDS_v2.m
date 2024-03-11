@@ -13,9 +13,6 @@ function [datesCDS, survProbs, intensities] =  bootstrapCDS_v2(datesDF, discount
 %   survProbs: survival probabilities
 %   intensities: intensitiesz
 
-% initialize the output vectors (as column vectors)
-survProbs = zeros(length(datesCDS),1);
-intensities = zeros(length(datesCDS),1);
 
 % compute the discount factors at the CDS dates
 discountsCDS = interp1(datesDF,discounts,datesCDS);
@@ -23,29 +20,20 @@ discountsCDS = interp1(datesDF,discounts,datesCDS);
 EU_30_360 = 6;
 ACT_365 = 3;
 deltas = yearfrac([datesDF(1); datesCDS(1:end-1)], datesCDS, EU_30_360);
-deltasIntensity = yearfrac([datesDF(1); datesCDS(1:end-1)], datesCDS, EU_30_360);
+deltasIntensity = yearfrac([datesDF(1); datesCDS(1:end-1)], datesCDS, ACT_365);
 
-% compute the survival probabilities and the intensities
-BPV_bar = 0;
-sumE = 0;
-
-for i = 1:length(datesCDS)
-    if i == 1
-        prevProb = 1;
-    else
-        prevProb = survProbs(i-1);
-    end
-    % compute the numerator 
-    numerator = (1 - recovery) * (sumE + discountsCDS(i) * prevProb) - BPV_bar * spreadsCDS(i);
-    % compute the denominator
-    denominator = spreadsCDS(i) * deltas(i) *  discountsCDS(i) + (1 - recovery) * discountsCDS(i);
-    % compute the survival probability
-    survProbs(i) = numerator / denominator;
-    % compute the intensity
-    intensities(i) = -log(survProbs(i)/prevProb) / deltasIntensity(i);
-    % update the sums
-    BPV_bar = BPV_bar + deltas(i) * discounts(i) * survProbs(i);
-    sumE = sumE + discounts(i) * (prevProb - survProbs(i));
+% switch the flag
+switch (flag)
+    case 1 % approximate (neglect accrual)
+        [survProbs, intensities] = bootstrapApprox(discountsCDS, spreadsCDS, deltas, deltasIntensity, recovery);
+    case 2 % exact (consider accrual)
+        [survProbs, intensities] = bootstrapExact(discountsCDS, spreadsCDS, deltas, deltasIntensity, recovery);
+    case 3 % Jarrow-Turnbull
+        [survProbs, intensities] = bootstrapJT(discountsCDS, spreadsCDS, deltas, deltasIntensity, recovery);
+    otherwise
+        % throw an error
+        error('Flag not supported');
 end
+
 
 end
