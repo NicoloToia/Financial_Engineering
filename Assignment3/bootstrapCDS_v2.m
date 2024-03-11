@@ -40,7 +40,7 @@ for i = 1:length(datesCDS)
     survProbs(i) = numerator / denominator;
     % update the sums
     BPV_bar = BPV_bar + deltas(i) * discounts(i) * survProbs(i);
-    sumE = sumE + discounts(i) * (survProbs(i) - survProbs(i));
+    sumE = sumE + discounts(i) * (prevProb - survProbs(i));
 end
 
 end
