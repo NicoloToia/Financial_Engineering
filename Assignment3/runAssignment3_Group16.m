@@ -92,10 +92,10 @@ ylabel('Spreads')
 
 
 %% Point 2.b
-
+t0 = dates(1);
 % Andrea
-[datesCDS, survProbs, intensities] =  bootstrapCDS(dates, discounts, datesCDS, spreadsCDS, 1, R)
+[datesCDS, survProbs, intensities] =  bootstrapCDS(dates, discounts, [t0 ; completeDates], spreadsCDS, 1, R)
 % Jacopo
-[datesCDS, survProbs, intensities] =  bootstrapCDS(dates, discounts, datesCDS, spreadsCDS, 1, R)
+[datesCDS, survProbs, intensities] =  bootstrapCDS_v2(dates, discounts, completeDates, spreadsCDS, 1, R)
 
 toc
