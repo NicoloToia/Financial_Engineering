@@ -5,6 +5,8 @@ matlabInVSCodeVariableInfo.csv
 *.code-workspace
 # exclude the venvs
 */venv/
+# exclude pycharm stuff
+.idea/
 
 # Following code copied from https://github.com/github/gitignore/blob/main/Global/MATLAB.gitignore
 
