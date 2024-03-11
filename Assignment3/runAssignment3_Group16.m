@@ -51,16 +51,19 @@ C_bar = 3.9/100;
 
 % compute the price of the corresponding IB coupon bond
 ACT_360 = 2;
-deltas = yearfrac([settlementDate; fixedDates(1:end-1)], fixedDates, ACT_360);
+deltas = yearfrac([dates(1); fixedDates(1:end-1)], fixedDates, ACT_360);
 C0 = C_bar * deltas' * discountsFixed + discountsFixed(end);
 
 % compute the bpv using the floating leg
 ACT_360 = 2;
-deltas = yearfrac([settlementDate; floatDates(1:end-1)], floatDates, ACT_360);
+deltas = yearfrac([dates(1); floatDates(1:end-1)], floatDates, ACT_360);
 BPV_float = deltas' * discountsFloat;
 
-% compute the asset swap spread
+% compute the asset swap spread (expressed in basis points)
 S_asw = (C0 - C_bar_0) / BPV_float;
+S_asw = S_asw * 10000;
+% display the result
+disp(['The asset swap spread is: ', num2str(S_asw), ' basis points'])
 
 %% Point 2
 
