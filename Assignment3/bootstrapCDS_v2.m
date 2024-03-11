@@ -14,8 +14,7 @@ function [datesCDS, survProbs, intensities] =  bootstrapCDS_v2(datesDF, discount
 %   intensities: intensitiesz
 
 % initialize the output vectors (as column vectors)
-survProbs = zeros(length(datesCDS)+1,1);
-survProbs(1) = 1; % the first survival probability is 1
+survProbs = zeros(length(datesCDS),1);
 intensities = zeros(length(datesCDS),1);
 
 % compute the discount factors at the CDS dates
@@ -29,17 +28,19 @@ BPV_bar = 0;
 sumE = 0;
 
 for i = 1:length(datesCDS)
+    if i == 1
+        prevProb = 1;
+    else
+        prevProb = survProbs(i-1);
+    end
     % compute the numerator 
-    numerator = (1 - recovery) * (sumE + discountsCDS(i) * survProbs(i)) - BPV_bar * spreadsCDS(i);
+    numerator = (1 - recovery) * (sumE + discountsCDS(i) * prevProb) - BPV_bar * spreadsCDS(i);
     % compute the denominator
     denominator = spreadsCDS(i) * deltas(i) *  discountsCDS(i) + (1 - recovery) * discountsCDS(i);
-    survProbs(i+1) = numerator / denominator;
+    survProbs(i) = numerator / denominator;
     % update the sums
-    BPV_bar = BPV_bar + deltas(i) * discounts(i) * survProbs(i+1);
-    sumE = sumE + discounts(i) * (survProbs(i) - survProbs(i+1));
+    BPV_bar = BPV_bar + deltas(i) * discounts(i) * survProbs(i);
+    sumE = sumE + discounts(i) * (survProbs(i) - survProbs(i));
 end
-
-% drop the first survival probability
-survProbs = survProbs(2:end);
 
 end
