@@ -48,7 +48,9 @@ C_bar_0 = 101/100;
 C_bar = 3.9/100;
 
 % compute the price of the corresponding IB coupon bond
-C0 = sum(C_bar * discountsFixed) + discountsFixed(end);
+ACT_360 = 2;
+deltas = yearfrac([settlementDate; fixedDates(1:end-1)], fixedDates, ACT_360);
+C0 = C_bar * deltas' * discountsFixed + discountsFixed(end);
 
 % compute the bpv using the floating leg
 ACT_360 = 2;
