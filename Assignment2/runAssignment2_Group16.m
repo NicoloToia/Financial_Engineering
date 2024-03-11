@@ -32,6 +32,9 @@ tic;
 % dates includes SettlementDate as first date (for more detail see function bootstrap)
 [dates, discounts] = bootstrap(datesSet, ratesSet);
 
+% save the results
+save('discounts.mat', 'dates', 'discounts');
+
 % Covert dates in a more readable format
 readDates = datetime(dates, 'ConvertFrom', 'datenum');
 
