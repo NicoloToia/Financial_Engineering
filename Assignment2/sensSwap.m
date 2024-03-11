@@ -24,14 +24,8 @@ function [DV01, BPV, DV01_z] = sensSwap(setDate, fixedLegPaymentDates, fixedRate
 bp = 0.0001;
 
 % find the discounts factors for the fixed leg
-discountsFixedLeg = zeros(length(fixedLegPaymentDates), 1);
-discountsFixedLeg_DV01 = zeros(length(fixedLegPaymentDates), 1);
-
-for i = 1:length(fixedLegPaymentDates)
-    % intExtDF is a function that interpolates the discount factors if necessary
-    discountsFixedLeg(i) = intExtDF(discounts, dates, fixedLegPaymentDates(i));
-    discountsFixedLeg_DV01(i) = intExtDF(discounts_DV01, dates, fixedLegPaymentDates(i));
-end
+discountsFixedLeg = intExtDF(discounts, dates, fixedLegPaymentDates);
+discountsFixedLeg_DV01 = intExtDF(discounts_DV01, dates, fixedLegPaymentDates);
 
 % Compute the BPV
 deltas = [

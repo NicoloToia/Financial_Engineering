@@ -27,11 +27,7 @@ c = ones(length(couponPaymentDates),1) * fixedRate .* deltas;
 c(end) = 1 + c(end);
 
 % Compute the discounts factors
-discountCoupons = zeros(length(couponPaymentDates),1);
-for i=1:length(couponPaymentDates)
-    % intExtDF is a function that interpolates the discount factors if necessary
-    discountCoupons(i) = intExtDF(discounts, dates, couponPaymentDates(i));
-end
+discountCoupons = intExtDF(discounts, dates, couponPaymentDates);
 
 % compute Macaulay duration
 MacD = sum(c .* discountCoupons .* yearfrac(setDate, couponPaymentDates, EU_30_360)) / ...

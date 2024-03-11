@@ -1,4 +1,4 @@
-function [discount]=intExtDF(discounts, dates, targetDate)
+function [discounts]=intExtDF(discounts, dates, targetDates)
 % intExtDF: Interpolates (linear) or extrapolates (flat) the zero rates curve for a given date,
 %           if the discount is present for the given date it returns the
 %           value without interpolating or extrapolating
@@ -16,36 +16,11 @@ function [discount]=intExtDF(discounts, dates, targetDate)
 % Zero rates are interpolated with yearfrac Convention ACT/365
 ACT_365 = 3;
 
-% Perfect match, return the corresponding discount
-idx = find(dates==targetDate);
-if ~isempty(idx)
-    discount = discounts(idx);
-    return;
-end
-
-% Find dates that encapsulate the target date
-prevIdx = find(dates<targetDate,1,'last');
-nextIdx = find(dates>targetDate,1,'first');
-
-% Find the discount by linear interpolation of zero rates curve
-if ~isempty(prevIdx) && ~isempty(nextIdx)
-    % Set dates
-    prevDate = dates(prevIdx);
-    nextDate = dates(nextIdx);
-    % Compute the zero rates
-    prevY = -log(discounts(prevIdx)) / yearfrac(dates(1),prevDate, ACT_365);
-    nextY = -log(discounts(nextIdx)) / yearfrac(dates(1),nextDate, ACT_365);
-    % Linear interpolation between prevY & nextY and compute discount
-    dt = yearfrac(prevDate,nextDate, ACT_365);
-    y = prevY + (nextY - prevY) / dt * yearfrac(prevDate,targetDate, ACT_365);
-    discount = exp(-y * yearfrac(dates(1),targetDate, ACT_365));
-    return;
-end
-
-% Target date is beyond the last date, flat extrapolation
-if targetDate > dates(end)
-    discount = discounts(end);
-    return;
-end
+% compute the zero rates
+zeroRates = -log(discounts)./yearfrac(dates, dates(1), ACT_365);
+% interpolate
+searchRates = interp1(dates, zeroRates, targetDates, 'linear', zeroRates(end));
+% reconstruct the discount factors
+discounts = exp(-searchRates.*yearfrac(targetDates, dates(1), ACT_365));
 
 end
