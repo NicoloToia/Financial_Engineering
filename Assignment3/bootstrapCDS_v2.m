@@ -21,7 +21,9 @@ intensities = zeros(length(datesCDS),1);
 discountsCDS = interp1(datesDF,discounts,datesCDS);
 % compute the year fractions
 EU_30_360 = 6;
+ACT_365 = 3;
 deltas = yearfrac([datesDF(1); datesCDS(1:end-1)], datesCDS, EU_30_360);
+deltasIntensity = yearfrac([datesDF(1); datesCDS(1:end-1)], datesCDS, EU_30_360);
 
 % compute the survival probabilities and the intensities
 BPV_bar = 0;
@@ -37,7 +39,10 @@ for i = 1:length(datesCDS)
     numerator = (1 - recovery) * (sumE + discountsCDS(i) * prevProb) - BPV_bar * spreadsCDS(i);
     % compute the denominator
     denominator = spreadsCDS(i) * deltas(i) *  discountsCDS(i) + (1 - recovery) * discountsCDS(i);
+    % compute the survival probability
     survProbs(i) = numerator / denominator;
+    % compute the intensity
+    intensities(i) = -log(survProbs(i)/prevProb) / deltasIntensity(i);
     % update the sums
     BPV_bar = BPV_bar + deltas(i) * discounts(i) * survProbs(i);
     sumE = sumE + discounts(i) * (prevProb - survProbs(i));
