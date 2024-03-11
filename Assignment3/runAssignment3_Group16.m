@@ -60,5 +60,34 @@ BPV_float = deltas' * discountsFloat;
 % compute the asset swap spread
 S_asw = (C0 - C_bar_0) / BPV_float;
 
+%% Point 2
+
+% recovery rate
+R = 0.4;
+
+% take the swap dates 1y -> 5y, 7y
+datesCDS = [swap1yDate; dates(12:15); dates(17)];
+% spreads in basis points
+spreadsCDS = [ 29, 32, 35, 39, 40, 41] / 10000;
+
+
+%% Point 2.a
+
+% create the spline for the complete set of dates
+completeDates = [swap1yDate; dates(12:17)];
+% use cubic spline to interpolate the spreads
+spreadsCDS = spline(datenum(datesCDS), spreadsCDS, datenum(completeDates));
+
+% plot the spreads 
+figure
+plot(completeDates, spreadsCDS, 'o-')
+title('CDS Spreads')
+xlabel('Dates')
+ylabel('Spreads')
+
+
+%% Point 2.b
+
+% [datesCDS, survProbs, intensities] =  bootstrapCDS(dates, discounts, datesCDS, spreadsCDS, flag, R);
 
 toc
