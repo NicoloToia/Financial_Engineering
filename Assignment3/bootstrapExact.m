@@ -1,15 +1,15 @@
 function [survProbs, intensities] = bootstrapExact(discountsCDS, spreadsCDS, deltas, deltasIntensity, recovery)
 
 % initialize the output vectors (as column vectors)
-survProbs = zeros(length(datesCDS),1);
-intensities = zeros(length(datesCDS),1);
+survProbs = zeros(length(spreadsCDS),1);
+intensities = zeros(length(spreadsCDS),1);
 
 % compute the survival probabilities and the intensities
-BPV_bar = 0;
-sumE = 0;
-sumAccrual = 0;
+BPV_bar = 0; % sum of B(t0;t_i) * P(t_i) up to n-1
+sumE = 0; % sum of the e(t0;t_{i-1},t_i) up to n-1
+sumAccrual = 0; 
 
-for i = 1:length(datesCDS)
+for i = 1:length(spreadsCDS)
     if i == 1
         prevProb = 1;
     else
