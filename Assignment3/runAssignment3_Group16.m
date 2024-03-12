@@ -26,7 +26,7 @@ load('discounts.mat');
 % compute the floating leg dates
 settlementDate = datetime(dates(1), 'ConvertFrom', 'datenum');
 swap3yDate = datetime(dates(13), 'ConvertFrom', 'datenum');
-floatDates = datenum(settlementDate+calmonths(3):calmonths(3):swap3yDate);
+floatDates = datenum(settlementDate+calmonths(3):calmonths(3):swap3yDate)';
 % get the business days with the modified following convention
 % we specify 0 to avoid American holidays, indeed 21/02/2011 was Presidents' day (NYSE is closed)
 floatDates(~isbusday(floatDates)) = busdate(floatDates(~isbusday(floatDates)), "modifiedfollow", 0);
@@ -88,10 +88,8 @@ ylabel('Spreads')
 
 
 %% Point 2.b
-t0 = dates(1);
-% Andrea
-% [datesCDS, survProbs, intensities] =  bootstrapCDS(dates, discounts, [t0 ; completeDates], spreadsCDS, 1, R)
-% Jacopo
+
+% Bootstrap the CDS curve (approx method, neglect accrual)
 [datesCDS, survProbs, intensities] =  bootstrapCDS_v2(dates, discounts, completeDates, spreadsCDS, 1, R)
 
 PlotIntensities(datesCDS, intensities,t0)
