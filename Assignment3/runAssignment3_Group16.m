@@ -23,18 +23,14 @@ formatData='dd/MM/yyyy'; % Pay attention to your computer settings
 % discounts defines both dates and the discount factors
 load('discounts.mat');
 
-% convert dates to datetime
-% dates = datetime(dates, 'ConvertFrom', 'datenum');
-
+% compute the floating leg dates
 settlementDate = datetime(dates(1), 'ConvertFrom', 'datenum');
 swap3yDate = datetime(dates(13), 'ConvertFrom', 'datenum');
+floatDates = datenum(settlementDate+calmonths(3):calmonths(3):swap3yDate);
+% get the business days with the modified following convention
+% we specify 0 to avoid American holidays, indeed 21/02/2011 was Presidents' day (NYSE is closed)
+floatDates(~isbusday(floatDates)) = busdate(floatDates(~isbusday(floatDates)), "modifiedfollow", 0);
 
-% compute the floating leg dates
-floatDates = (settlementDate+calmonths(3):calmonths(3):swap3yDate)';
-% use the modified following convention to find the next business day
-floatDates = busdate(floatDates, 'modifiedfollow', -1);
-% convert into datenum
-floatDates = datenum(floatDates);
 % compute the discount factors at the float dates
 discountsFloat = intExtDF(discounts, dates, floatDates);
 
@@ -94,7 +90,7 @@ ylabel('Spreads')
 %% Point 2.b
 t0 = dates(1);
 % Andrea
-[datesCDS, survProbs, intensities] =  bootstrapCDS(dates, discounts, [t0 ; completeDates], spreadsCDS, 1, R)
+% [datesCDS, survProbs, intensities] =  bootstrapCDS(dates, discounts, [t0 ; completeDates], spreadsCDS, 1, R)
 % Jacopo
 [datesCDS, survProbs, intensities] =  bootstrapCDS_v2(dates, discounts, completeDates, spreadsCDS, 1, R)
 
