@@ -77,7 +77,7 @@ spreadsCDS = [ 29, 32, 35, 39, 40, 41] / 10000;
 % create the spline for the complete set of dates
 completeDates = [swap1yDate; dates(12:17)];
 % use cubic spline to interpolate the spreads
-spreadsCDS = spline(datesCDS, spreadsCDS, completeDates);
+spreadsCDS = interp1(datesCDS, spreadsCDS, completeDates, 'spline');
 
 % plot the spreads 
 figure
@@ -90,8 +90,41 @@ ylabel('Spreads')
 %% Point 2.b
 
 % Bootstrap the CDS curve (approx method, neglect accrual)
-[datesCDS, survProbs, intensities] =  bootstrapCDS_v2(dates, discounts, completeDates, spreadsCDS, 1, R)
+% [datesCDS, survProbs, intensities] =  bootstrapCDS_v2(dates, discounts, completeDates, spreadsCDS, 1, R)
+[datesCDS, P_Approx, int_Approx] =  bootstrapCDS_v2(dates, discounts, completeDates, spreadsCDS, 1, R);
+[datesCDS, P_Exact, int_Exact] =  bootstrapCDS_v2(dates, discounts, completeDates, spreadsCDS, 2, R);
+[datesCDS, P_JT, int_JT] =  bootstrapCDS_v2(dates, discounts, completeDates, spreadsCDS, 3, R);
 
-PlotIntensities(datesCDS, intensities,t0)
+% plot the approx and exact intensities as step functions
+figure
+stairs(datesCDS, int_Approx, '-')
+hold on
+stairs(datesCDS, int_Exact, '-')
+legend('Approx', 'Exact')
+
+
+% compute the cumulative mean of the intensities
+cumIntensities = cumsum(int_Approx) ./ (1:length(int_Approx))';
+% plot the intensities as a step function
+figure
+plot(datesCDS, cumIntensities, '-')
+hold on
+stairs(datesCDS, int_Approx, '-')
+stairs(datesCDS, int_JT, '-')
+legend('Mean', 'Approx', 'JT')
+
+%% Point 3
+
+R_ISP = R;
+R_UCG = 0.45;
+spreadsCDS_ISP = spreadsCDS;
+spreadsCDS_UCG = [34, 39, 45, 46, 47, 47] / 10000;
+
+% interpolate the UCG spreads
+spreadsCDS_UCG = interp1(datesCDS, spreadsCDS_UCG, completeDates, 'spline');
+% compute the marginal probabilities of default
+[datesCDS, P_ISP, int_ISP] = bootstrapCDS_v2(dates, discounts, completeDates, spreadsCDS_ISP, 1, R_ISP);
+[datesCDS, P_UCG, int_UCG] = bootstrapCDS_v2(dates, discounts, completeDates, spreadsCDS_UCG, 1, R_UCG);
+
 
 toc
