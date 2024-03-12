@@ -65,7 +65,7 @@ disp(['The asset swap spread is: ', num2str(S_asw), ' basis points'])
 
 % recovery rate
 R = 0.4;
-
+t0 = dates(1);
 % take the swap dates 1y -> 5y, 7y
 datesCDS = [swap1yDate; dates(12:15); dates(17)];
 % spreads in basis points
@@ -96,22 +96,7 @@ ylabel('Spreads')
 [datesCDS, P_JT, int_JT] =  bootstrapCDS_v2(dates, discounts, completeDates, spreadsCDS, 3, R);
 
 % plot the approx and exact intensities as step functions
-figure
-stairs(datesCDS, int_Approx, '-')
-hold on
-stairs(datesCDS, int_Exact, '-')
-legend('Approx', 'Exact')
-
-
-% compute the cumulative mean of the intensities
-cumIntensities = cumsum(int_Approx) ./ (1:length(int_Approx))';
-% plot the intensities as a step function
-figure
-plot(datesCDS, cumIntensities, '-')
-hold on
-stairs(datesCDS, int_Approx, '-')
-stairs(datesCDS, int_JT, '-')
-legend('Mean', 'Approx', 'JT')
+PlotIntensities(datesCDS,  int_Approx, int_Exact, int_JT)
 
 %% Point 3
 
@@ -121,6 +106,7 @@ spreadsCDS_ISP = spreadsCDS;
 spreadsCDS_UCG = [34, 39, 45, 46, 47, 47] / 10000;
 
 % interpolate the UCG spreads
+datesCDS = [swap1yDate; dates(12:15); dates(17)];
 spreadsCDS_UCG = interp1(datesCDS, spreadsCDS_UCG, completeDates, 'spline');
 % compute the marginal probabilities of default
 [datesCDS, P_ISP, int_ISP] = bootstrapCDS_v2(dates, discounts, completeDates, spreadsCDS_ISP, 1, R_ISP);

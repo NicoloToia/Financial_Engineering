@@ -31,12 +31,13 @@ if flag == 1
 
         term3 = (1-recovery)*intExtDF(discounts,datesDF,datesCDS(i))*survProbs(i-1) ;
 
-        term4 = (spreadsCDS(i-1)*yearfrac(datesCDS(i-2),datesCDS(i-1),EU_30_360)+(1-recovery))*discounts(i) ;
+        term4 = (spreadsCDS(i-1)*yearfrac(datesCDS(i-2),datesCDS(i-1),EU_30_360)+(1-recovery))*intExtDF(discounts,datesDF,datesCDS(i));
 
         survProbs(i) = ( term3 + term1 - term2 ) / term4 ;
 
     end
     intensities= -1 ./ deltas .* log(survProbs(2:end)/survProbs(1:end-1));
+    survProbs = survProbs';
 end
 
 end

@@ -1,11 +1,23 @@
-function PlotIntensities(datesCDS, intensities, t0)
+function PlotIntensities(datesCDS, int_Approx, int_Exact, int_JT)
 
-figure
-dates=[t0;datesCDS];
-for i=1:length(intensities)
-    xi=linspace(dates(i),dates(i+1));
-    yi=ones(length(xi),1)*intensities(i);
+    figure
+    stairs(datesCDS, int_Approx, '-')
     hold on
-    plot(xi,yi,"LineWidth",3,"Color","b")
+    stairs(datesCDS, int_Exact, '-')
+    legend('Approx', 'Exact')
+    
+    
+    % compute the cumulative mean of the intensities
+    cumIntensities = cumsum(int_Approx) ./ (1:length(int_Approx))';
+    % plot the intensities as a step function
+    figure
+    plot(datesCDS, cumIntensities, '-')
+    hold on
+    stairs(datesCDS, int_Approx, '-')
+    stairs(datesCDS, int_JT, '-')
+    legend('Mean', 'Approx', 'JT')
+    grid on
+    xlabel('Date')
+    ylabel('Intensity')
+    datetick('x', 'mm/dd/yyyy', 'keepticks')
 end
-hold off
