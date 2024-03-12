@@ -29,7 +29,9 @@ switch (flag)
     case 2 % exact (consider accrual)
         [survProbs, intensities] = bootstrapExact(discountsCDS, spreadsCDS, deltas, deltasIntensity, recovery);
     case 3 % Jarrow-Turnbull
-        [survProbs, intensities] = bootstrapJT(discountsCDS, spreadsCDS, deltas, deltasIntensity, recovery);
+        intensities = spreadsCDS ./ (1 - recovery);
+        % compute the survival probabilities
+        survProbs = zeros(length(datesCDS),1);
     otherwise
         % throw an error
         error('Flag not supported');
