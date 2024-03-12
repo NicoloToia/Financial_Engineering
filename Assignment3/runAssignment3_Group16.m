@@ -98,4 +98,6 @@ t0 = dates(1);
 % Jacopo
 [datesCDS, survProbs, intensities] =  bootstrapCDS_v2(dates, discounts, completeDates, spreadsCDS, 1, R)
 
+PlotIntensities(datesCDS, intensities,t0)
+
 toc
