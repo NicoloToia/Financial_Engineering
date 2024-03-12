@@ -15,7 +15,7 @@ function [datesCDS, survProbs, intensities] =  bootstrapCDS_v2(datesDF, discount
 
 
 % compute the discount factors at the CDS dates
-discountsCDS = interp1(datesDF,discounts,datesCDS);
+discountsCDS = intExtDF(discounts, datesDF, datesCDS);
 % compute the year fractions
 EU_30_360 = 6;
 ACT_365 = 3;
@@ -31,7 +31,7 @@ switch (flag)
     case 3 % Jarrow-Turnbull
         intensities = spreadsCDS ./ (1 - recovery);
         % compute the survival probabilities
-        survProbs = zeros(length(datesCDS),1);
+        survProbs = exp(-intensities .* yearfrac(datesDF(1), datesCDS, ACT_365));
     otherwise
         % throw an error
         error('Flag not supported');
