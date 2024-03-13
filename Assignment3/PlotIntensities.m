@@ -5,10 +5,11 @@ function PlotIntensities(datesCDS, int_Approx, int_Exact, int_JT)
     hold on
     stairs(datesCDS, int_Exact, '-')
     legend('Approx', 'Exact')
-    
+    datetick('x', 'mm/dd/yyyy', 'keepticks')
     
     % compute the cumulative mean of the intensities
     cumIntensities = cumsum(int_Approx) ./ (1:length(int_Approx))';
+
     % plot the intensities as a step function
     figure
     plot(datesCDS, cumIntensities, '-')
