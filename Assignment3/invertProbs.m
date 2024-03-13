@@ -27,4 +27,7 @@ tau = fzero(fun, dates(nextIdx));
 % round up
 tau = ceil(tau);
 
+% check that tau is less than the next date
+disp(['tau = ', datestr(tau, 'dd/mm/yyyy'), ' and next date = ', datestr(dates(nextIdx), 'dd/mm/yyyy')]);
+
 end

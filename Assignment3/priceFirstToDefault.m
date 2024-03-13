@@ -52,22 +52,22 @@ for i=1:nSim
     elseif isnan(t_ISP) % only UCG defaults
 
         % find the cashflows (as the payments done before the default) of the fee leg
-        emittedCashflowsIdx = datesCDS < t_UCG;
+        emittedCashflowsIdx = datesCDS <= t_UCG;
         emittedCashflowsIdx(find(emittedCashflowsIdx == 0, 1, 'first')) = 1;
         feeLeg(i) = deltas(emittedCashflowsIdx)'*discountsCDS(emittedCashflowsIdx);
 
         % find the contingent leg
-        defaultDF = discountsCDS(find(datesCDS > t_UCG, 1, 'first'));
+        defaultDF = discountsCDS(find(datesCDS >= t_UCG, 1, 'first'))
         contingentLeg(i) = (1 - R_UCG)*defaultDF;
 
     elseif isnan(t_UCG) % only ISP defaults
 
         % find the cashflows before
-        emittedCashflowsIdx = datesCDS < t_ISP;
+        emittedCashflowsIdx = datesCDS <= t_ISP;
         emittedCashflowsIdx(find(emittedCashflowsIdx == 0, 1, 'first')) = 1;
         feeLeg(i) = deltas(emittedCashflowsIdx)'*discountsCDS(emittedCashflowsIdx);
 
-        defaultDF = discountsCDS(find(datesCDS > t_ISP, 1, 'first'));
+        defaultDF = discountsCDS(find(datesCDS >= t_ISP, 1, 'first'))
         contingentLeg(i) = (1 - R_ISP)*defaultDF;
 
     else % both default
@@ -76,12 +76,12 @@ for i=1:nSim
         tau = min(t_ISP, t_UCG);
 
         % find the cashflows (as the payments done before the default)
-        emittedCashflowsIdx = datesCDS < tau;
+        emittedCashflowsIdx = datesCDS <= tau;
         emittedCashflowsIdx(find(emittedCashflowsIdx == 0, 1, 'first')) = 1;
         feeLeg(i) = deltas(emittedCashflowsIdx)'*discountsCDS(emittedCashflowsIdx);
 
         % find the contingent leg
-        defaultDF = discountsCDS(find(datesCDS > tau, 1, 'first'));
+        defaultDF = discountsCDS(find(datesCDS >= tau, 1, 'first'))
         % find which recovery rate to use
         R = R_ISP*(t_ISP == tau) + R_UCG*(t_UCG == tau);
         contingentLeg(i) = (1 - R)*defaultDF;
@@ -103,9 +103,7 @@ feeLeg = mean(feeLeg);
 % same goes here, taking the mean of the contingent leg is the same as weighing by the probability
 % that the default happens in that time tau
 contingentLeg = mean(contingentLeg);
-NPV = @(S) S * feeLeg - contingentLeg;
 
-% neutralize the NPV to find the spread
-priceFtD = fzero(NPV, 0.5);
+priceFtD = contingentLeg/feeLeg;
 
 end
