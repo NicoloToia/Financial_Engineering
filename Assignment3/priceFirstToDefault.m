@@ -17,11 +17,11 @@ function priceFtD = priceFirstToDefault(int_ISP, P_ISP, int_UCG, P_UCG, rho, R_I
 
 % compute the discounts at the dates of the CDS
 discountsCDS = intExtDF(discounts, dates, datesCDS);
-EU_30_360 = 6;
-deltas = yearfrac([dates(1); datesCDS(1:end-1)], datesCDS, EU_30_360);
+ACT_360 = 2;
+deltas = yearfrac([dates(1); datesCDS(1:end-1)], datesCDS, ACT_360);
 
 % number of simulations
-nSim = 1000;
+nSim = 10000;
 
 % draw the 2 correlated normal variables
 z = mvnrnd([0 0], [1 rho; rho 1], nSim);
@@ -78,12 +78,22 @@ for i=1:nSim
         R = R_ISP*(t_ISP == tau) + R_UCG*(t_UCG == tau);
         contingentLeg(i) = (1 - R)*defaultDF;
 
+        % check if there is at least one NaN in the contingent leg
+        if isnan(contingentLeg(i))
+            disp('Error: contingent leg is NaN')
+            disp(['t_ISP: ' num2str(t_ISP) ' t_UCG: ' num2str(t_UCG) ' tau: ' num2str(tau)])
+        end
+
     end
 
 end
 
 % write the NPV by taking the expectation of the two legs
+% notice: taking the mean of the fee leg written in terms of the ZC bonds is the same 
+% as summing the defaultable coupon bonds with the joint CDF.
 feeLeg = mean(feeLeg);
+% same goes here, taking the mean of the contingent leg is the same as weighing by the probability
+% that the default happens in that time tau
 contingentLeg = mean(contingentLeg);
 NPV = @(S) S * feeLeg - contingentLeg;
 

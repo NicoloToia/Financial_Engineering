@@ -116,4 +116,6 @@ rho = 0.2;
 
 priceFtD = priceFirstToDefault(int_ISP, P_ISP, int_UCG, P_UCG, rho, R_ISP, R_UCG, datesCDS, discounts, dates);
 
+disp(['The price of the first to default swap is: ', num2str(priceFtD)])
+
 toc
