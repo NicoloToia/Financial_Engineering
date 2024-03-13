@@ -11,6 +11,8 @@ close all;
 clc;
 
 format long
+% fix the random number generator
+rng(1);
 
 % set the clock to find the time of execution
 tic;
