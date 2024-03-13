@@ -32,14 +32,17 @@ feeLeg = zeros(nSim, 1);
 contingentLeg = zeros(nSim, 1);
 
 % invert the two cumulative distribution functions to get the default times
+nDefaults = 0;
 for i=1:nSim
      
     % invert the survival probabilities to find the default times
     t_ISP = invertProbs(u(i,1), int_ISP, P_ISP, datesCDS);
     t_UCG = invertProbs(u(i,2), int_UCG, P_UCG, datesCDS);
 
-    % check that at least one of them is not NaN
-    if isnan(t_ISP) && isnan(t_UCG)
+    % count how many defaults we have
+    nDefaults = nDefaults + sum(~isnan([t_ISP t_UCG]));
+
+    if isnan(t_ISP) && isnan(t_UCG) % no default happens
 
         % the default happens after the last date
         % our cashflows are only the full fee leg, not contingent
@@ -50,17 +53,21 @@ for i=1:nSim
 
         % find the cashflows (as the payments done before the default) of the fee leg
         emittedCashflowsIdx = datesCDS < t_UCG;
+        emittedCashflowsIdx(find(emittedCashflowsIdx == 0, 1, 'first')) = 1;
         feeLeg(i) = deltas(emittedCashflowsIdx)'*discountsCDS(emittedCashflowsIdx);
+
         % find the contingent leg
-        defaultDF = intExtDF(discounts, dates, t_UCG);
+        defaultDF = discountsCDS(find(datesCDS > t_UCG, 1, 'first'));
         contingentLeg(i) = (1 - R_UCG)*defaultDF;
 
     elseif isnan(t_UCG) % only ISP defaults
 
+        % find the cashflows before
         emittedCashflowsIdx = datesCDS < t_ISP;
+        emittedCashflowsIdx(find(emittedCashflowsIdx == 0, 1, 'first')) = 1;
         feeLeg(i) = deltas(emittedCashflowsIdx)'*discountsCDS(emittedCashflowsIdx);
 
-        defaultDF = intExtDF(discounts, dates, t_ISP);
+        defaultDF = discountsCDS(find(datesCDS > t_ISP, 1, 'first'));
         contingentLeg(i) = (1 - R_ISP)*defaultDF;
 
     else % both default
@@ -70,10 +77,11 @@ for i=1:nSim
 
         % find the cashflows (as the payments done before the default)
         emittedCashflowsIdx = datesCDS < tau;
+        emittedCashflowsIdx(find(emittedCashflowsIdx == 0, 1, 'first')) = 1;
         feeLeg(i) = deltas(emittedCashflowsIdx)'*discountsCDS(emittedCashflowsIdx);
 
         % find the contingent leg
-        defaultDF = intExtDF(discounts, dates, tau);
+        defaultDF = discountsCDS(find(datesCDS > tau, 1, 'first'));
         % find which recovery rate to use
         R = R_ISP*(t_ISP == tau) + R_UCG*(t_UCG == tau);
         contingentLeg(i) = (1 - R)*defaultDF;
