@@ -112,5 +112,8 @@ spreadsCDS_UCG = interp1(datesCDS, spreadsCDS_UCG, completeDates, 'spline');
 [datesCDS, P_ISP, int_ISP] = bootstrapCDS_v2(dates, discounts, completeDates, spreadsCDS_ISP, 1, R_ISP);
 [datesCDS, P_UCG, int_UCG] = bootstrapCDS_v2(dates, discounts, completeDates, spreadsCDS_UCG, 1, R_UCG);
 
+rho = 0.2;
+
+priceFtD = priceFirstToDefault(int_ISP, P_ISP, int_UCG, P_UCG, rho, R_ISP, R_UCG, datesCDS, discounts, dates);
 
 toc
