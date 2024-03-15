@@ -18,7 +18,7 @@ clc;
 
 formatData ='dd/MM/yyyy'; % Pay attention to your computer settings 
 
-rng(42);   % Fix the random number generator
+rng(42);   % Fix the random number generator ("the answer to Life, the Universe, and Everything")
 
 tic;       % Set the clock to find the time of execution
 
