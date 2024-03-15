@@ -3,7 +3,7 @@ function PlotIntensities(datesCDS, int_Approx, int_Exact, int_JT)
 % 1 approx; 2 exact; 3 Jarrow-Turnbull
 %
 % INPUT
-%   datesDF     : dates of the discount factors
+%   datesCDS    : dates of the CDS
 %   int_Approx  : intesities neglecting the accrual
 %   int_Exact   : intensities considering the accrual
 %   int_JT      : flat intensities Jarrow-Turmbull
@@ -13,9 +13,9 @@ function PlotIntensities(datesCDS, int_Approx, int_Exact, int_JT)
 
 % Plot the intensities with and without accrual
 figure
-stairs(datesCDS, int_Approx, '-')
+stairs(datesCDS, int_Approx, '.-')
 hold on
-stairs(datesCDS, int_Exact, '-')
+stairs(datesCDS, int_Exact, '.-')
 legend('Approx', 'Exact')
 datetick('x', 'mm/dd/yyyy', 'keepticks')
 
@@ -24,9 +24,9 @@ cumIntensities = cumsum(int_Approx) ./ (1:length(int_Approx))';
 
 % Plot of cumulative mean and JT intensities (qualitative), int_JT are flat
 figure
-plot(datesCDS, cumIntensities, '-')
+plot(datesCDS, cumIntensities, 'o-')
 hold on
-stairs(datesCDS, int_Approx, '-')
+stairs(datesCDS, int_Approx, '.-')
 stairs(datesCDS, int_JT, '-')
 legend('Mean', 'Approx', 'JT')
 grid on
