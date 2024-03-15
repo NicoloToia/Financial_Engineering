@@ -43,15 +43,11 @@ contingentLeg = zeros(nSim, 1);
 completeDates = [dates(1); datesCDS]; % add settlement date
 
 % Invert the two cumulative distribution functions to get the default times
-nDefaults = 0;
 for i=1:nSim
      
     % Invert the survival probabilities to find the default times
     t_ISP = invertProbs(u(i,1), int_ISP, P_ISP, datesCDS);
     t_UCG = invertProbs(u(i,2), int_UCG, P_UCG, datesCDS);
-
-    % Count how many defaults we have
-    nDefaults = nDefaults + sum(~isnan([t_ISP t_UCG]));
 
     if isnan(t_ISP) && isnan(t_UCG) % no default happens
 
@@ -59,42 +55,42 @@ for i=1:nSim
         % our cashflows are only the full fee leg, not contingent
         % S is omitted, we will compute it later on
         feeLeg(i) = deltas'*discountsCDS;
-        %contingentLeg(i) = 0;                                              
+        % contingentLeg(i) = 0; % not needed, zero by default
 
     elseif isnan(t_ISP) % only UCG defaults
 
-        % Find the cashflows (as the payments done before the default) of
-        % the fee leg + the accrual up to default
+        % only take into consideration the dates before the default time
         emittedCashflowsIdx = completeDates <= t_UCG;
+        % find the id of the last date before the default time
         ID_tau = find(emittedCashflowsIdx, 1, 'last');
+        % Find the discount factor at the time of default
         defaultDF = intExtDF(discounts, dates, t_UCG);
+        % find the fee leg, all payments before the default + the accrual up to default
         feeLeg(i) = deltas(emittedCashflowsIdx(2:end))'*discountsCDS(emittedCashflowsIdx(2:end)) ...
-            + yearfrac(completeDates(ID_tau), t_UCG,EU_30_360)*defaultDF;
+            + yearfrac(completeDates(ID_tau), t_UCG,EU_30_360)*defaultDF; % accrual term
         % Find the contingent leg in tau
-        contingentLeg(i) = (1 - R_UCG)*defaultDF;
+        contingentLeg(i) = (1 - R_UCG) * defaultDF;
 
     elseif isnan(t_UCG) % only ISP defaults
 
-        % Find the cashflows (as the payments done before the default) of
-        % the fee leg + the accrual up to default
+        % same as before, only for the ISP rather than the UCG
         emittedCashflowsIdx = completeDates <= t_ISP;
         ID_tau = find(emittedCashflowsIdx, 1, 'last');
         defaultDF = intExtDF(discounts, dates, t_ISP);
         feeLeg(i) = deltas(emittedCashflowsIdx(2:end))'*discountsCDS(emittedCashflowsIdx(2:end)) ...
             + yearfrac(completeDates(ID_tau), t_ISP, EU_30_360)*defaultDF;
         % find the contingent leg
-        contingentLeg(i) = (1 - R_ISP)*defaultDF;
+        contingentLeg(i) = (1 - R_ISP) * defaultDF;
 
     else % both default
 
         % Find which one happens first
         tau = min(t_ISP, t_UCG);
 
-        % Find the cashflows (as the payments done before the default) +
-        % the accrual up to time to default tau
         emittedCashflowsIdx = completeDates <= tau;
         ID_tau = find(emittedCashflowsIdx, 1, 'last');
         defaultDF = intExtDF(discounts, dates, tau);
+
         feeLeg(i) = deltas(emittedCashflowsIdx(2:end))'*discountsCDS(emittedCashflowsIdx(2:end)) ...
             + yearfrac(completeDates(ID_tau), tau, EU_30_360)*defaultDF;
     
