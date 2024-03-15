@@ -145,7 +145,7 @@ spreadsCDS_UCG = spreadsCDS_UCG(1:4);
 [datesCDS, P_UCG, int_UCG] = bootstrapCDS(dates, discounts, completeDates, spreadsCDS_UCG, 1, R_UCG);
 
 % Number of simulations
-nSim = 10000;
+nSim = 1e4;
 % Compute the confidence interval at 95%
 confidence_level = 0.95;
 
