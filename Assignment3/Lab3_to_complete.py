@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from scipy.optimize import OptimizeResult
 from sklearn.linear_model import LinearRegression
 import scipy as sc
 import keras as k
@@ -63,17 +64,19 @@ plt.scatter(logReturnSPX, logReturnAAPL, label='Data')
 plt.plot(logReturnSPX, model.predict(logReturnSPX.values.reshape(-1, 1)), label='Linear regression', color='red')
 plt.xlabel('X')
 plt.ylabel('y')
+plt.title('regression AAPL on SPX')
 plt.legend()
 plt.show()
 
 slope = model.coef_[0]
-print (slope)
+print ("The slope is equal to", slope)
 # YearFrac
 first_element = quotes.index[0]
 last_element = quotes.index[-1]
-print(first_element, last_element)
+
+print("The first element is", first_element, "and the last one is", last_element)
 fractionYear = yearfrac(first_element, last_element, 3)
-print(fractionYear)
+print("The year frac between the first and the last element is",fractionYear)
 
 # Interpolate
 x = np.array([0, 1, 2, 3, 4]).reshape(-1, 1)
@@ -82,64 +85,41 @@ model = LinearRegression()
 model.fit(x, f)
 point = np.array([[2.7]])
 interp_val = model.predict(point)
-print (interp_val)
-# Simulation
+print("The linear interpolation in", point, "is equal to",interp_val)
+# Simulation of a standard normal random variable
 np.random.seed(42)
-#n = np.linspace(100, 1000, 100)
-#N = len(n)
-#standard_normal_samples = np.array([])
-#variance = np.array([])
-#for i in range(0, N-1):
-    #standard_normal_samples[i] = np.random.randn((i+1)*100)
-    #variance[i] = np.var(standard_normal_samples[i])
-standard_normal_samples= np.random.randn(100)
-variance100= np.var(standard_normal_samples)
+standard_normal_samples = np.random.randn(100)
 plt.hist(standard_normal_samples, bins=40, density=True, alpha=0.7, color='blue')
 plt.title('Histogram of Standard Normal Distribution')
 plt.xlabel('Value')
 plt.ylabel('Frequency')
 plt.show()
 
-standard_normal_samples= np.random.randn(300)
-variance300= np.var(standard_normal_samples)
-plt.hist(standard_normal_samples, bins=40, density=True, alpha=0.7, color='blue')
-plt.title('Histogram of Standard Normal Distribution')
-plt.xlabel('Value')
-plt.ylabel('Frequency')
-plt.show()
-
-standard_normal_samples= np.random.randn(500)
-variance500= np.var(standard_normal_samples)
-plt.hist(standard_normal_samples, bins=40, density=True, alpha=0.7, color='blue')
-plt.title('Histogram of Standard Normal Distribution')
-plt.xlabel('Value')
-plt.ylabel('Frequency')
-plt.show()
-
-standard_normal_samples= np.random.randn(800)
-variance800= np.var(standard_normal_samples)
-plt.hist(standard_normal_samples, bins=40, density=True, alpha=0.7, color='blue')
-plt.title('Histogram of Standard Normal Distribution')
-plt.xlabel('Value')
-plt.ylabel('Frequency')
-plt.show()
-
-standard_normal_samples= np.random.randn(1000)
-variance1000= np.var(standard_normal_samples)
-plt.hist(standard_normal_samples, bins=40, density=True, alpha=0.7, color='blue')
-plt.title('Histogram of Standard Normal Distribution')
-plt.xlabel('Value')
-plt.ylabel('Frequency')
-plt.show()
-
-n = ([100, 300, 500, 800, 1000])
-variance = ([variance100, variance300,variance500, variance800, variance1000])
+# show that the variance converges to 1 as the number of simulations increases
+n = np.linspace(100, 10000, 100)
+N = len(n)
+variance = np.zeros(N)
+for i in range(N):
+    standard_normal_samples = np.random.randn(int(n[i]))
+    variance[i] = np.var(standard_normal_samples)
 plt.plot(n, variance)
+plt.title('Variance of simulated standard gaussian')
+plt.axhline(y=1, color='red', linestyle='--')
+plt.xlabel('N')
+plt.ylabel('Variance')
 plt.show()
 
-quantile_0_9 = np.percentile(standard_normal_samples, 90)
-CDF_at_quantile_0_9 = norm.cdf(quantile_0_9)
+quantile_0_9_simulated = np.percentile(standard_normal_samples, 90)
+quantile_0_9_real = norm.ppf(0.9)
+CDF_at_quantile_0_9_real = norm.cdf(quantile_0_9_real)
+CDF_at_quantile_0_9_simulated = norm.cdf(quantile_0_9_simulated)
+
+print("The CDF evaluated with the real quantile 0.9 is", CDF_at_quantile_0_9_real)
+print("The CDF evaluated with the simulated quantile 0.9 is", CDF_at_quantile_0_9_simulated)
+print("Hence the absolute value of the difference between the two CDF is", abs(CDF_at_quantile_0_9_real-CDF_at_quantile_0_9_simulated))
 
 # Minimization
-
-
+def f(x):
+    return (x[0]-3)**2+(x[1]-7)**2
+x_y_min = sc.optimize.minimize(f,(0, 0))
+print("The minimum of the function f is", x_y_min)

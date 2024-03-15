@@ -1,45 +1,56 @@
-function priceFtD = priceFirstToDefault(int_ISP, P_ISP, int_UCG, P_UCG, rho, R_ISP, R_UCG, datesCDS, discounts, dates)
-% priceFirstToDefault: price a first to default swap
+function [priceFtD, lower_bound_FtD, upper_bound_FtD] = priceFirstToDefault(int_ISP, P_ISP,...
+    int_UCG, P_UCG, rho, R_ISP, R_UCG, datesCDS, discounts, dates, nSim, confidence_level)
+% priceFirstToDefault: price a First to Default (spread_FtD)
 %
-% INPUT:
-% int_ISP: intensity of the ISP CDS
-% survProbs_ISP: survival probabilities of the ISP CDS, exp(-int_0&t lambda_ISP(t) dt)
-% int_UCG: intensity of the UCG CDS
-% survProbs_UCG: survival probabilities of the UCG CDS, exp(-int_0&t lambda_UCG(t) dt)
-% rho: correlation between the two CDS
-% R_ISP, R_UCG: recovery rates for ISP and UCG
-% datesCDS: dates of the CDS
-% discounts: discount factors from the Bootstrapping
-% dates: dates of the Discount Factors
+% INPUT
+%   int_ISP         : intensity of the ISP CDS
+%   survProbs_ISP   : survival probabilities of the ISP CDS, exp(-int_0&t lambda_ISP(t) dt)
+%   int_UCG         : intensity of the UCG CDS
+%   survProbs_UCG   : survival probabilities of the UCG CDS, exp(-int_0&t lambda_UCG(t) dt)
+%   rho             : correlation between the two CDS
+%   R_ISP, R_UCG    : recovery rates for ISP and UCG
+%   datesCDS        : dates of the CDS
+%   discounts       : discount factors from the Bootstrapping
+%   dates           : dates of the Discount Factors
+%   nSim            : number of simulations
+%   confidence_level: confidence level
 %
-% OUTPUT:
-% priceFtD: price of the first to default swap
+% OUTPUT
+%   priceFtD        : price of the first to default swap
+%   lower_bound_FtD : lower bound of the confidence interval
+%   upper_bound_FtD : upper bound of the confidence interval
 
-% compute the discounts at the dates of the CDS
+% Compute the discounts at the dates of the CDS
 discountsCDS = intExtDF(discounts, dates, datesCDS);
-ACT_360 = 2;
-deltas = yearfrac([dates(1); datesCDS(1:end-1)], datesCDS, ACT_360);
+EU_30_360 = 6;
+deltas = yearfrac([dates(1); datesCDS(1:end-1)], datesCDS, EU_30_360);
 
-% number of simulations
-nSim = 10000;
+% Simulation via Cholesky decomposition
+% A = chol([1 rho; rho 1]);
+% y = randn(nSim,2);
+% size(A)
+% size(y')
+% z  = A*y';
 
-% draw the 2 correlated normal variables
+% Draw the 2 correlated normal variables (via Matlab function)
 z = mvnrnd([0 0], [1 rho; rho 1], nSim);
-% apply the normal cdf to get the correlated uniform variables
+% Apply the normal cdf to get the correlated uniform variables
 u = normcdf(z);
-% create a vector to hold the sum of cashflows of the two legs for each simulation
+% Create a vector to hold the sum of cashflows of the two legs for each simulation
 feeLeg = zeros(nSim, 1);
 contingentLeg = zeros(nSim, 1);
 
-% invert the two cumulative distribution functions to get the default times
+completeDates = [dates(1); datesCDS]; % add settlement date
+
+% Invert the two cumulative distribution functions to get the default times
 nDefaults = 0;
 for i=1:nSim
      
-    % invert the survival probabilities to find the default times
+    % Invert the survival probabilities to find the default times
     t_ISP = invertProbs(u(i,1), int_ISP, P_ISP, datesCDS);
     t_UCG = invertProbs(u(i,2), int_UCG, P_UCG, datesCDS);
 
-    % count how many defaults we have
+    % Count how many defaults we have
     nDefaults = nDefaults + sum(~isnan([t_ISP t_UCG]));
 
     if isnan(t_ISP) && isnan(t_UCG) % no default happens
@@ -48,45 +59,51 @@ for i=1:nSim
         % our cashflows are only the full fee leg, not contingent
         % S is omitted, we will compute it later on
         feeLeg(i) = deltas'*discountsCDS;
+        %contingentLeg(i) = 0;                                              
 
     elseif isnan(t_ISP) % only UCG defaults
 
-        % find the cashflows (as the payments done before the default) of the fee leg
-        emittedCashflowsIdx = datesCDS <= t_UCG;
-        emittedCashflowsIdx(find(emittedCashflowsIdx == 0, 1, 'first')) = 1;
-        feeLeg(i) = deltas(emittedCashflowsIdx)'*discountsCDS(emittedCashflowsIdx);
-
-        % find the contingent leg
-        defaultDF = discountsCDS(find(datesCDS >= t_UCG, 1, 'first'))
+        % Find the cashflows (as the payments done before the default) of
+        % the fee leg + the accrual up to default
+        emittedCashflowsIdx = completeDates <= t_UCG;
+        ID_tau = find(emittedCashflowsIdx, 1, 'last');
+        defaultDF = intExtDF(discounts, dates, t_UCG);
+        feeLeg(i) = deltas(emittedCashflowsIdx(2:end))'*discountsCDS(emittedCashflowsIdx(2:end)) ...
+            + yearfrac(completeDates(ID_tau), t_UCG,EU_30_360)*defaultDF;
+        % Find the contingent leg in tau
         contingentLeg(i) = (1 - R_UCG)*defaultDF;
 
     elseif isnan(t_UCG) % only ISP defaults
 
-        % find the cashflows before
-        emittedCashflowsIdx = datesCDS <= t_ISP;
-        emittedCashflowsIdx(find(emittedCashflowsIdx == 0, 1, 'first')) = 1;
-        feeLeg(i) = deltas(emittedCashflowsIdx)'*discountsCDS(emittedCashflowsIdx);
-
-        defaultDF = discountsCDS(find(datesCDS >= t_ISP, 1, 'first'))
+        % Find the cashflows (as the payments done before the default) of
+        % the fee leg + the accrual up to default
+        emittedCashflowsIdx = completeDates <= t_ISP;
+        ID_tau = find(emittedCashflowsIdx, 1, 'last');
+        defaultDF = intExtDF(discounts, dates, t_ISP);
+        feeLeg(i) = deltas(emittedCashflowsIdx(2:end))'*discountsCDS(emittedCashflowsIdx(2:end)) ...
+            + yearfrac(completeDates(ID_tau), t_ISP, EU_30_360)*defaultDF;
+        % find the contingent leg
         contingentLeg(i) = (1 - R_ISP)*defaultDF;
 
     else % both default
 
-        % find which one happens first
+        % Find which one happens first
         tau = min(t_ISP, t_UCG);
 
-        % find the cashflows (as the payments done before the default)
-        emittedCashflowsIdx = datesCDS <= tau;
-        emittedCashflowsIdx(find(emittedCashflowsIdx == 0, 1, 'first')) = 1;
-        feeLeg(i) = deltas(emittedCashflowsIdx)'*discountsCDS(emittedCashflowsIdx);
-
-        % find the contingent leg
-        defaultDF = discountsCDS(find(datesCDS >= tau, 1, 'first'))
-        % find which recovery rate to use
+        % Find the cashflows (as the payments done before the default) +
+        % the accrual up to time to default tau
+        emittedCashflowsIdx = completeDates <= tau;
+        ID_tau = find(emittedCashflowsIdx, 1, 'last');
+        defaultDF = intExtDF(discounts, dates, tau);
+        feeLeg(i) = deltas(emittedCashflowsIdx(2:end))'*discountsCDS(emittedCashflowsIdx(2:end)) ...
+            + yearfrac(completeDates(ID_tau), tau, EU_30_360)*defaultDF;
+    
+        % Find the contingent leg
+        % Find which recovery rate to use
         R = R_ISP*(t_ISP == tau) + R_UCG*(t_UCG == tau);
         contingentLeg(i) = (1 - R)*defaultDF;
 
-        % check if there is at least one NaN in the contingent leg
+        % Check if there is at least one NaN in the contingent leg (security flag)
         if isnan(contingentLeg(i))
             disp('Error: contingent leg is NaN')
             disp(['t_ISP: ' num2str(t_ISP) ' t_UCG: ' num2str(t_UCG) ' tau: ' num2str(tau)])
@@ -96,14 +113,33 @@ for i=1:nSim
 
 end
 
-% write the NPV by taking the expectation of the two legs
+% Write the NPV by taking the expectation of the two legs
 % notice: taking the mean of the fee leg written in terms of the ZC bonds is the same 
 % as summing the defaultable coupon bonds with the joint CDF.
-feeLeg = mean(feeLeg);
+std_dev_fee = std(feeLeg);  % standard deviation fee leg
+feeLeg = mean(feeLeg);      % mean fee leg
 % same goes here, taking the mean of the contingent leg is the same as weighing by the probability
 % that the default happens in that time tau
-contingentLeg = mean(contingentLeg);
+std_dev_cont = std(contingentLeg);   % standard devation contingent leg
+contingentLeg = mean(contingentLeg); % mean contingent leg
 
+% Finde the price of the First to Default (spread S)
 priceFtD = contingentLeg/feeLeg;
+
+% Finde the Confidence Interval
+% Given the confidence level compute the quantile
+quantile = norminv((1 + confidence_level) / 2, 0, 1);
+% Find marginal error fee & contingent leg
+error_fee = quantile * (std_dev_fee / sqrt(nSim));
+error_cont = quantile * (std_dev_cont / sqrt(nSim));
+% Compute endpoints (up/down) fee leg
+lower_bound_fee = feeLeg - error_fee;
+upper_bound_fee = feeLeg + error_fee;
+% Compute endpoints (up/down) contingent leg
+lower_bound_cont = contingentLeg - error_cont;
+upper_bound_cont = contingentLeg + error_cont;
+% Compute endpoints (up/down) First to Default spread
+lower_bound_FtD = lower_bound_cont/lower_bound_fee;
+upper_bound_FtD = upper_bound_cont/upper_bound_fee;
 
 end

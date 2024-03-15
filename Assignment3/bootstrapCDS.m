@@ -1,43 +1,42 @@
 function [datesCDS, survProbs, intensities] =  bootstrapCDS(datesDF, discounts, datesCDS, spreadsCDS, flag, recovery)
-%    INPUT:   
+% Bootstrap the CDS curve and computes the survival probabilities and the intensities
+%
+% INPUT:   
 %   datesDF: dates of the discount factors
 %   discounts: discount factors
 %   datesCDS: dates of the CDS
 %   spreadsCDS: spreads of the CDS
-%   flag: 1 if the CDS spreads are in basis points, 0 if they are in decimals
+%   flag: 1 (approx), 2 (exact), 3 (Jarrow-Turmbull)
 %   recovery: recovery rate
-
-%   OUTPUT: 
+%
+% OUTPUT: 
 %   datesCDS: dates of the CDS
 %   survProbs: survival probabilities
-%   intensities: intensities
-EU_ACT_365 = 3;
+%   intensities: intensities (lambda)
+
+
+% compute the discount factors at the CDS dates
+discountsCDS = intExtDF(discounts, datesDF, datesCDS);
+% compute the year fractions
 EU_30_360 = 6;
-term1=0;
-term2=0;
-if flag == 1
-    % settlment
-    survProbs(1)=1;
-    % first year
-    survProbs(2)=(1-recovery)*survProbs(1)/(spreadsCDS(1)*yearfrac(datesCDS(1),datesCDS(2),EU_30_360)+(1-recovery));
+ACT_365 = 3;
+deltas = yearfrac([datesDF(1); datesCDS(1:end-1)], datesCDS, EU_30_360);
+deltasIntensity = yearfrac([datesDF(1); datesCDS(1:end-1)], datesCDS, ACT_365);
 
-    deltas = yearfrac(datesCDS(1:end-1), datesCDS(2:end), EU_ACT_365);
-
-    for i = 3:length(datesCDS)
-
-        term1 = term1 + (1-recovery)*intExtDF(discounts,datesDF,datesCDS(i-1))*(survProbs(i-2)- survProbs(i-1)) ;
-
-        term2 = term2 + spreadsCDS(i-1)*yearfrac(datesCDS(i-2),datesCDS(i-1),EU_30_360)*intExtDF(discounts,datesDF,datesCDS(i-1))*survProbs(i-1) ;
-
-        term3 = (1-recovery)*intExtDF(discounts,datesDF,datesCDS(i))*survProbs(i-1) ;
-
-        term4 = (spreadsCDS(i-1)*yearfrac(datesCDS(i-2),datesCDS(i-1),EU_30_360)+(1-recovery))*intExtDF(discounts,datesDF,datesCDS(i));
-
-        survProbs(i) = ( term3 + term1 - term2 ) / term4 ;
-
-    end
-    intensities= -1 ./ deltas .* log(survProbs(2:end)/survProbs(1:end-1));
-    survProbs = survProbs';
+% switch the flag
+switch (flag)
+    case 1 % approximate (neglect accrual)
+        [survProbs, intensities] = bootstrapApprox(discountsCDS, spreadsCDS, deltas, deltasIntensity, recovery);
+    case 2 % exact (consider accrual)
+        [survProbs, intensities] = bootstrapExact(discountsCDS, spreadsCDS, deltas, deltasIntensity, recovery);
+    case 3 % Jarrow-Turnbull
+        intensities = spreadsCDS ./ (1 - recovery);
+        % compute the survival probabilities
+        survProbs = exp(-intensities .* yearfrac(datesDF(1), datesCDS, ACT_365));
+    otherwise
+        % throw an error
+        error('Flag not supported');
 end
+
 
 end
