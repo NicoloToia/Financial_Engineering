@@ -58,8 +58,8 @@ deltas = yearfrac([dates(1); fixedDates(1:end-1)], fixedDates, EU_30_360);
 C0 = C_bar * deltas' * discountsFixed + discountsFixed(end);
 
 % Compute the BPV using the floating leg
-EU_30_360 = 2;
-deltas = yearfrac([dates(1); floatDates(1:end-1)], floatDates, EU_30_360);
+ACT_360 = 2;
+deltas = yearfrac([dates(1); floatDates(1:end-1)], floatDates, ACT_360);
 BPV_float = deltas' * discountsFloat;
 
 % Compute the asset swap spread (expressed in basis points)
@@ -96,12 +96,12 @@ ylabel('Spreads')
 
 %% Survival probabilities & Intensities (Point 2.b -> 2.d)
 
-% Bootstrap the CDS curve (approx method, neglect accrual)
-[~, P_Approx, int_Approx] =  bootstrapCDS(dates, discounts, completeDates, spreadsCDS, 1, R);
+% Bootstrap the CDS curve (approx method, neglecting accrual)
+[~, P_Approx, int_Approx] = bootstrapCDS(dates, discounts, completeDates, spreadsCDS, 1, R);
 % Bootstrap the CDS curve (Exact method, considering accrual)
-[~, P_Exact, int_Exact] =  bootstrapCDS(dates, discounts, completeDates, spreadsCDS, 2, R);
+[~, P_Exact, int_Exact] = bootstrapCDS(dates, discounts, completeDates, spreadsCDS, 2, R);
 % Jarrow-Turnbull
-[datesCDS, P_JT, int_JT] =  bootstrapCDS(dates, discounts, completeDates, spreadsCDS, 3, R);
+[datesCDS, P_JT, int_JT] = bootstrapCDS(dates, discounts, completeDates, spreadsCDS, 3, R);
 
 %(int_Approx + 10^-5) < int_Exact % check and observe that the accrual can
 % be negleted, indeed the difference is less than 1bp
@@ -135,14 +135,14 @@ ylabel('Spreads');
 legend('Location', 'best')
 
 % Take into acocunt the first 4 years
-completeDates = datesCDS(1:4);
+completeDates = completeDates(1:4);
 spreadsCDS_ISP = spreadsCDS_ISP(1:4);
 spreadsCDS_UCG = spreadsCDS_UCG(1:4);
 
-% Compute the marginal probabilities of default (1 - survival probability),
+% Compute the marginal probabilities of survival
 % the accrual is neglected, set flag == 2 to have exact calculations
-[~, P_ISP, int_ISP] = bootstrapCDS(dates, discounts, completeDates, spreadsCDS_ISP, 2, R_ISP);
-[datesCDS, P_UCG, int_UCG] = bootstrapCDS(dates, discounts, completeDates, spreadsCDS_UCG, 2, R_UCG);
+[~, P_ISP, int_ISP] = bootstrapCDS(dates, discounts, completeDates, spreadsCDS_ISP, 1, R_ISP);
+[datesCDS, P_UCG, int_UCG] = bootstrapCDS(dates, discounts, completeDates, spreadsCDS_UCG, 1, R_UCG);
 
 % Number of simulations
 nSim = 10000;
