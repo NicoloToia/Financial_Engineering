@@ -9,15 +9,18 @@
 clear all;
 close all;
 clc;
-% fix the random number generator
-rng(42);
 
-% set the clock to find the time of execution
-tic;
+% NOTE : for long computational time the number of iterations are set by
+% default at 1e4, use a larger number if more precision is required
+% (line:147)
 
 %% Settings
 
 formatData ='dd/MM/yyyy'; % Pay attention to your computer settings 
+
+rng(42);   % Fix the random number generator
+
+tic;       % Set the clock to find the time of execution
 
 %% Asset Swap (Point 1)
 
@@ -138,8 +141,8 @@ spreadsCDS_UCG = spreadsCDS_UCG(1:4);
 
 % Compute the marginal probabilities of default (1 - survival probability),
 % the accrual is neglected, set flag == 2 to have exact calculations
-[~, P_ISP, int_ISP] = bootstrapCDS(dates, discounts, completeDates, spreadsCDS_ISP, 1, R_ISP);
-[datesCDS, P_UCG, int_UCG] = bootstrapCDS(dates, discounts, completeDates, spreadsCDS_UCG, 1, R_UCG);
+[~, P_ISP, int_ISP] = bootstrapCDS(dates, discounts, completeDates, spreadsCDS_ISP, 2, R_ISP);
+[datesCDS, P_UCG, int_UCG] = bootstrapCDS(dates, discounts, completeDates, spreadsCDS_UCG, 2, R_UCG);
 
 % Number of simulations
 nSim = 10000;
@@ -157,7 +160,7 @@ fprintf('Confidence Interval at %d%% confidence level is : [%.4f - %.4f] \n\n', 
 
 % Different values of the correlation rho
 rho = -1:0.20:1;
-jj = 0;
+jj = 0; % counter
 h = waitbar(0, 'Calculating prices...');
 
 % Compute the price of the First to Default for each correlation rho
@@ -172,7 +175,7 @@ close(h);
 
 % Plot the results
 figure
-plot(rho, priceFtD * 10000)
+plot(rho, priceFtD * 1e4)
 title('Price First to Default (Spread)')
 xlabel('Correlation (rho)')
 ylabel('Spread')
