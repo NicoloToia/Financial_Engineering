@@ -5,6 +5,8 @@ matlabInVSCodeVariableInfo.csv
 *.code-workspace
 # exclude the venvs
 */venv/
+# exclude the pycache
+__pycache__/
 # exclude pycharm stuff
 .idea/
 

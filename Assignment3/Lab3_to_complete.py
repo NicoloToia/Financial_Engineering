@@ -15,6 +15,7 @@ quotes["Date"] = pd.to_datetime(quotes["Date"], format="%d/%m/%Y")
 quotes = quotes.set_index("Date")
 AAPL = quotes["AAPL"]
 SPX = quotes["SPX"]
+
 # Plot Time Series
 plt.figure(1)
 plt.plot(AAPL, label='AAPL')
@@ -31,9 +32,15 @@ plt.ylabel('Prices')
 plt.show()
 
 # Compute Log_returns
+logReturnAAPL = np.log(1 + AAPL.pct_change())
+logReturnSPX = np.log(1 + SPX.pct_change())
 
-vectorAAPL = quotes['AAPL'].to_numpy()
-logReturnAAPL = np.divide(vectorAAPL[1:], vectorAAPL[:-1])
+# delete the first element (NaN)
+logReturnAAPL = logReturnAAPL[1:]
+logReturnSPX = logReturnSPX[1:]
+
+# plot log returns
+
 plt.figure(3)
 plt.plot(logReturnAAPL, label='LogReturn AAPL')
 plt.title('LogReturn AAPL Time-series')
@@ -41,21 +48,19 @@ plt.xlabel('Datas')
 plt.ylabel('Prices')
 plt.show()
 
-vectorSPX = quotes['SPX'].to_numpy()
-logReturnSPX = np.divide(vectorSPX[1:], vectorSPX[:-1])
 plt.figure(4)
 plt.plot(logReturnSPX, label='LogReturn SPX')
 plt.title('LogReturn SPX Time-series')
 plt.xlabel('Datas')
 plt.ylabel('Prices')
 plt.show()
+
 # Regressions
 model = LinearRegression()
-logReturnSPX = logReturnSPX.reshape(-1, 1)
-model.fit(logReturnSPX, logReturnAAPL)
+model.fit(logReturnSPX.values.reshape(-1, 1), logReturnAAPL.values.reshape(-1, 1))
 
 plt.scatter(logReturnSPX, logReturnAAPL, label='Data')
-plt.plot(logReturnSPX, model.predict(logReturnSPX), color='red')
+plt.plot(logReturnSPX, model.predict(logReturnSPX.values.reshape(-1, 1)), label='Linear regression', color='red')
 plt.xlabel('X')
 plt.ylabel('y')
 plt.legend()
