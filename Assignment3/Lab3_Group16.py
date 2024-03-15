@@ -1,7 +1,3 @@
-# silence the tensorflow warnings by setting `TF_ENABLE_ONEDNN_OPTS=0`
-import os
-os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
-
 # import the necessary libraries
 import pandas as pd
 import numpy as np
