@@ -1,2 +1,7 @@
 pandas
 numpy
+matplotlib
+scipy
+keras
+tensorflow
+statsmodels
