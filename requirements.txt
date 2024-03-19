@@ -5,3 +5,6 @@ scipy
 keras
 tensorflow
 statsmodels
+jupyter
+notebook==6.4.1
+nbconvert
