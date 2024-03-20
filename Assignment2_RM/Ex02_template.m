@@ -36,7 +36,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % clc;
 clear all;
-format("bank")
+% format("bank")
+format long
 
 % Zero Coupon Curve
 ZC_curve = [0.25 0.054; 0.5 0.053; 2.0 0.0487];
@@ -74,7 +75,7 @@ N = 100000;
 
 %% Q1: CreditMetrics' FV (let's start with all bonds rated IG)
 FV = FV_risky_bond(IG_cf_schedule_2y, Q, ZC_curve, Recovery); 
-% E_FV = ?;   %  Present Value in a years%time
+E_FV = Q(1,1)*FV(1) + Q(1,2)*FV(2) + Q(1,3)*FV(3);
 
 disp('––– Part I Q1: Present Value in a years’time of the IG bond –––')
 fprintf('1y fwds: %.2f IG; %.2f HY; %.2f Def \n',FV )
