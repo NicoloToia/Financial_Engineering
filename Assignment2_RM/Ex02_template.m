@@ -71,7 +71,7 @@ rho = sqrt(R);
 
 % Minimum number of Monte Carlo Scenarios
 N = 100000;
-% N = N * 100;       % Uncomment for convergence test (10,000,000 scenarios)
+N = N * 100;       % Uncomment for convergence test (10,000,000 scenarios)
 
 %% Q1: CreditMetrics' FV (let's start with all bonds rated IG)
 FV = FV_risky_bond(IG_cf_schedule_2y, Q, ZC_curve, Recovery); 
@@ -84,8 +84,8 @@ disp(' ')
 
 
 %% Barriers and simulated P/L for a single IG issuer
-% bD = ?;                       % Barrier to Def.
-% bd = ?;                % Barrier to down (HY)
+bD = norminv(Q(1,3));                       % Barrier to Def.
+bd = norminv(Q(1,2)+Q(1,3));                % Barrier to down (HY)
 bu = 1.0e6;                                     % Barrier to up (never)
 L_D = (FV(3) - E_FV)/N_issuers;                 % Loss if default
 L_d = (FV(2) - E_FV)/N_issuers;                 % Loss if down
@@ -103,12 +103,12 @@ scen_d = zeros(N,1);   % int.: Count of "down" events in each MC scenario
 scen_i = zeros(N,1);   % int.: Count of "identical rating" events in each MC scenario
 scen_u = zeros(N,1);   % int.: Count of "up" events in each MC scenario
 for i = 1 : N_issuers
-    % V = ?;           % AVR of i-th issuer
+    V = rho * Y + sqrt(1 - rho^2) * randn(N,1); % Realization of the idiosyncratic factor
     % Update the event counts
-    % scen_D = scen_D + ?;
-    % scen_d = scen_d + ?;
-    % scen_i = scen_i + ?;
-    % scen_u = scen_u + ?;
+    scen_D = scen_D + (V < bD);
+    scen_d = scen_d + (V < bd & V >= bD);
+    scen_i = scen_i + (V >= bd & V < bu);
+    scen_u = scen_u + (V >= bu);
 end
 
 %% Test on MC accuracy
