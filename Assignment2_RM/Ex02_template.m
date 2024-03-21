@@ -34,6 +34,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Code
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% fix seed 
+rng(42);
 % clc;
 clear all;
 % format("bank")
@@ -102,14 +104,20 @@ scen_D = zeros(N,1);   % int.: Count of default events in each MC scenario
 scen_d = zeros(N,1);   % int.: Count of "down" events in each MC scenario
 scen_i = zeros(N,1);   % int.: Count of "identical rating" events in each MC scenario
 scen_u = zeros(N,1);   % int.: Count of "up" events in each MC scenario
-for i = 1 : N_issuers
+h = waitbar(0, 'Loading...'); % Initialize waitbar
+for i = 1:N_issuers
     V = rho * Y + sqrt(1 - rho^2) * randn(N,1); % Realization of the idiosyncratic factor
     % Update the event counts
     scen_D = scen_D + (V < bD);
     scen_d = scen_d + (V < bd & V >= bD);
     scen_i = scen_i + (V >= bd & V < bu);
     scen_u = scen_u + (V >= bu);
+    % Update waitbar
+    waitbar(i/N_issuers, h, sprintf('Loading... %d/%d', i, N_issuers));
 end
+
+close(h); % Close waitbar after loop completes
+
 
 %% Test on MC accuracy
 
