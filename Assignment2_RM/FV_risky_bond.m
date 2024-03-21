@@ -20,7 +20,6 @@ DF = exp(-zeroRates .* dates);
 
 % compute the forward discount factors in one year
 future_DF = DF(3:end) / DF(2);
-size(future_DF)
 
 % get the future coupons and dates
 future_coupons = coupons(3:end);
