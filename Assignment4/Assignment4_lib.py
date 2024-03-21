@@ -67,3 +67,39 @@ def plausibilityCheck(returns, portfolioWeights, alpha, portfolioValue, riskMeas
     VaR = np.sqrt(riskMeasureTimeIntervalInDay) * np.sqrt(sVaR @ corr @ sVaR)
 
     return VaR
+
+def WHSMeasurements(returns, alpha, lmb, weights, portfolioValue, riskMeasureTimeIntervalInDay):
+
+    """
+        This function computes the weighted historical simulation VaR and ES for a given portfolio of assets.
+
+        Args:
+        - returns: a pandas dataframe of asset returns (n, m)
+        - alpha: the confidence level (scalar)
+        - lmb = lambda
+        - weights: a numpy array of portfolio weights (m, )
+        - portfolioValue: the value of the whole portfolio (scalar)
+        - riskMeasureTimeIntervalInDay: the time interval for risk measure expressed in days (scalar)
+
+    """
+    
+    losses = - portfolioValue * (returns @ weights)
+    losses = losses.sort_values(ascending=False)
+    C = (1-lmb)/(1-lmb^(len(losses)))
+    n = len(losses)
+    sumWeights = 0
+    weight = []
+    for jj in range(n-1): 
+        w = C* lmb^(n-jj)
+        sumWeights = sumWeights+w
+        if sumWeights>1-alpha:
+            k = jj-1
+            break
+        else :
+            weight[jj] = w
+                
+    VaR = losses.iloc[k] * np.sqrt(riskMeasureTimeIntervalInDay)
+
+    ES = sum(losses.iloc[:k] @ weights)/sum(weights[:k]) * np.sqrt(riskMeasureTimeIntervalInDay)
+
+    return ES, VaR
