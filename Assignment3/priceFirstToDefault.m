@@ -57,30 +57,30 @@ for i=1:nSim
         feeLeg(i) = deltas'*discountsCDS;
         % contingentLeg(i) = 0; % not needed, zero by default
 
-    elseif isnan(t_ISP) % only UCG defaults
-
-        % only take into consideration the dates before the default time
-        emittedCashflowsIdx = completeDates <= t_UCG;
-        % find the id of the last date before the default time
-        ID_tau = find(emittedCashflowsIdx, 1, 'last');
-        % Find the discount factor at the time of default
-        defaultDF = intExtDF(discounts, dates, t_UCG);
-        % find the fee leg, all payments before the default + the accrual up to default
-        feeLeg(i) = deltas(emittedCashflowsIdx(2:end))'*discountsCDS(emittedCashflowsIdx(2:end)) ...
-            + yearfrac(completeDates(ID_tau), t_UCG,EU_30_360)*defaultDF; % accrual term
-        % Find the contingent leg in tau
-        contingentLeg(i) = (1 - R_UCG) * defaultDF;
-
-    elseif isnan(t_UCG) % only ISP defaults
-
-        % same as before, only for the ISP rather than the UCG
-        emittedCashflowsIdx = completeDates <= t_ISP;
-        ID_tau = find(emittedCashflowsIdx, 1, 'last');
-        defaultDF = intExtDF(discounts, dates, t_ISP);
-        feeLeg(i) = deltas(emittedCashflowsIdx(2:end))'*discountsCDS(emittedCashflowsIdx(2:end)) ...
-            + yearfrac(completeDates(ID_tau), t_ISP, EU_30_360)*defaultDF;
-        % find the contingent leg
-        contingentLeg(i) = (1 - R_ISP) * defaultDF;
+%     elseif isnan(t_ISP) % only UCG defaults
+% 
+%         % only take into consideration the dates before the default time
+%         emittedCashflowsIdx = completeDates <= t_UCG;
+%         % find the id of the last date before the default time
+%         ID_tau = find(emittedCashflowsIdx, 1, 'last');
+%         % Find the discount factor at the time of default
+%         defaultDF = intExtDF(discounts, dates, t_UCG);
+%         % find the fee leg, all payments before the default + the accrual up to default
+%         feeLeg(i) = deltas(emittedCashflowsIdx(2:end))'*discountsCDS(emittedCashflowsIdx(2:end)) ...
+%             + yearfrac(completeDates(ID_tau), t_UCG,EU_30_360)*defaultDF; % accrual term
+%         % Find the contingent leg in tau
+%         contingentLeg(i) = (1 - R_UCG) * defaultDF;
+% 
+%     elseif isnan(t_UCG) % only ISP defaults
+% 
+%         % same as before, only for the ISP rather than the UCG
+%         emittedCashflowsIdx = completeDates <= t_ISP;
+%         ID_tau = find(emittedCashflowsIdx, 1, 'last');
+%         defaultDF = intExtDF(discounts, dates, t_ISP);
+%         feeLeg(i) = deltas(emittedCashflowsIdx(2:end))'*discountsCDS(emittedCashflowsIdx(2:end)) ...
+%             + yearfrac(completeDates(ID_tau), t_ISP, EU_30_360)*defaultDF;
+%         % find the contingent leg
+%         contingentLeg(i) = (1 - R_ISP) * defaultDF;
 
     else % both default
 
