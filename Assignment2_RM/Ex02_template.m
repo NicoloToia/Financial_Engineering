@@ -71,7 +71,7 @@ rho = sqrt(R);
 
 % Minimum number of Monte Carlo Scenarios
 N = 100000;
-N = N * 100;       % Uncomment for convergence test (10,000,000 scenarios)
+% N = N * 100;       % Uncomment for convergence test (10,000,000 scenarios)
 
 %% Q1: CreditMetrics' FV (let's start with all bonds rated IG)
 FV = FV_risky_bond(IG_cf_schedule_2y, Q, ZC_curve, Recovery); 
@@ -135,10 +135,13 @@ disp(' ')
 %% Questions 2 and 3 (and discussion): Credit VaR
 
 % Default only case (DO)
-% VaR_DO = ?;
+EL = L_D * pD_simulated + L_d * pd_simulated + L_i * pi_simulated + L_u * pu_simulated;
+L_y = quantile(-L_D * scen_D,0.999);
+VaR_DO = L_y - EL;
 
 % Default and migration case (DM)
-% VaR_DM = ?;
+L_y = quantile(-L_D * scen_D - L_d * scen_d,0.999);
+VaR_DM = L_y - EL;
 
 fprintf('––– Part I Q2/3: Credit VaR with AVR correlation %.3f (%.0f names)–––\n', [R,N_issuers])
 fprintf('VaR - default only %.2f \n',VaR_DO)
