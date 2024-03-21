@@ -64,7 +64,7 @@ N_issuers = 200;
 R=0.00;
 % R=0.12;
 % R=0.24; 
-% R = R_IRB(Q(1,3));
+R = R_IRB(Q(1,3));
 rho = sqrt(R);
 % disp('––– Part II Q3: Basel II correlation function –––')
 % fprintf('IG correlation: %.3f \n', rho)
