@@ -40,7 +40,7 @@ def bootstrapStatistical(numberOfSamplesToBootstrap, returns):
     returns_new = []
     for i in range(1, numberOfSamplesToBootstrap):
         # extract a random number in range from 1 to the number of rows of the returns
-        n = np.random.randint(1, len(returns);
+        n = np.random.randint(1, len(returns))
         returns_new = returns_new + returns.sample(n, replace=True)
     
     return returns_new
