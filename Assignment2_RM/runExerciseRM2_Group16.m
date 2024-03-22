@@ -59,7 +59,7 @@ Recovery = 0.40;
 
 % Number of issuers in portfolio
 N_issuers = 200;    
-N_issuers = 20; % Uncomment to assess concentration risk
+% N_issuers = 20; % Uncomment to assess concentration risk
 
 % AVR correlation (Schonbucher 10.12) - uncomment for discussion
 R=0.00;
@@ -156,36 +156,3 @@ fprintf('––– Part I Q2/3: Credit VaR with AVR correlation %.3f (%.0f names
 fprintf('VaR - default only %.2f \n',VaR_DO)
 fprintf('VaR - default and migration %.2f \n',VaR_DM)
 disp(' ')
-
-% % repeat the VaR for many rhos
-% rhos = 0:0.01:0.35;
-% VaR_DO = zeros(length(rhos),1);
-% VaR_DM = zeros(length(rhos),1);
-% for i = 1:length(rhos)
-%     [VaR_DO(i), VaR_DM(i)] = credit_var(N, N_issuers, Q, FV, E_FV, rhos(i));
-% end
-
-% % plot the VaR as a function of rho
-% figure
-% plot(rhos, VaR_DO, 'r', 'LineWidth', 2)
-% hold on
-% plot(rhos, VaR_DM, 'b', 'LineWidth', 2)
-% xlabel('Correlation')
-% ylabel('Credit VaR')
-% title('Credit VaR as a function of correlation')
-% legend('Default only', 'Default and migration')
-
-% graph for report
-
-R=[0:0.01:0.3]
-
-for i = R
-    [Var_Def(i), VAr_Mig] = graph_report(R)
-end
-figure
-plot(R,var_Def)
-hold on
-plot(R,var_Mig)
-
-
-
