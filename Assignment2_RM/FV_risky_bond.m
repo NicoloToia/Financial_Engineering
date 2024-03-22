@@ -36,7 +36,7 @@ FV(1) = future_coupons' * B_bar_IG + Recovery * 100 * future_DF' * ([1;Prob_IG(1
 % HY
 Prob_HY = exp( -hazard_rates(2) * (future_dates - dates(2) ) );
 B_bar_HY = future_DF .* Prob_HY;
-FV(2) = future_coupons' * B_bar_HY + Recovery * 100 * future_DF' * (Prob_HY(1:end-1) - Prob_HY);
+FV(2) = future_coupons' * B_bar_HY + Recovery * 100 * future_DF' * ([1;Prob_HY(1:end-1)] - Prob_HY);
 
 % Default
 FV(3) =  Recovery * 100;

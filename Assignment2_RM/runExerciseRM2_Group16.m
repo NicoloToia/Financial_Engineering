@@ -1,5 +1,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Case RM 2
+%% 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   INPUT data are stored as:
 %
@@ -35,7 +36,7 @@
 % Code
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % fix seed 
-rng(42);
+rng(2);
 clc;
 clear all;
 % format("bank")
@@ -58,13 +59,13 @@ Recovery = 0.40;
 
 % Number of issuers in portfolio
 N_issuers = 200;    
-% N_issuers = 20; % Uncomment to assess concentration risk
+N_issuers = 20; % Uncomment to assess concentration risk
 
 % AVR correlation (Schonbucher 10.12) - uncomment for discussion
 R=0.00;
 % R=0.12;
 % R=0.24; 
-R = R_IRB(Q(1,3));
+% R = R_IRB(Q(1,3));
 rho = sqrt(R);
 % disp('––– Part II Q3: Basel II correlation function –––')
 % fprintf('IG correlation: %.3f \n', rho)
@@ -73,7 +74,7 @@ rho = sqrt(R);
 
 % Minimum number of Monte Carlo Scenarios
 N = 100000;
-% N = N * 100;       % Uncomment for convergence test (10,000,000 scenarios)
+N = N * 100;       % Uncomment for convergence test (10,000,000 scenarios)
 
 %% Q1: CreditMetrics' FV (let's start with all bonds rated IG)
 FV = FV_risky_bond(IG_cf_schedule_2y, Q, ZC_curve, Recovery); 
@@ -108,10 +109,10 @@ h = waitbar(0, 'Loading...'); % Initialize waitbar
 for i = 1:N_issuers
     V = rho * Y + sqrt(1 - rho^2) * randn(N,1); % Realization of the idiosyncratic factor
     % Update the event counts
-    scen_D = scen_D + (V < bD);
-    scen_d = scen_d + (V < bd & V >= bD);
-    scen_i = scen_i + (V >= bd & V < bu);
-    scen_u = scen_u + (V >= bu);
+    scen_D = scen_D + (V <= bD);
+    scen_d = scen_d + (V <= bd & V > bD);
+    scen_i = scen_i + (V > bd & V <= bu);
+    scen_u = scen_u + (V > bu);
     % Update waitbar
     waitbar(i/N_issuers, h, sprintf('Loading... %d/%d', i, N_issuers));
 end
@@ -148,10 +149,28 @@ L_y = quantile(-L_D * scen_D,0.999);
 VaR_DO = L_y - EL;
 
 % Default and migration case (DM)
-L_y = quantile(-L_D * scen_D - L_d * scen_d,0.999);
+L_y = quantile(-L_D * scen_D - L_d * scen_d - L_i * scen_i,0.999);
 VaR_DM = L_y - EL;
 
 fprintf('––– Part I Q2/3: Credit VaR with AVR correlation %.3f (%.0f names)–––\n', [R,N_issuers])
 fprintf('VaR - default only %.2f \n',VaR_DO)
 fprintf('VaR - default and migration %.2f \n',VaR_DM)
 disp(' ')
+
+% % repeat the VaR for many rhos
+% rhos = 0:0.01:0.35;
+% VaR_DO = zeros(length(rhos),1);
+% VaR_DM = zeros(length(rhos),1);
+% for i = 1:length(rhos)
+%     [VaR_DO(i), VaR_DM(i)] = credit_var(N, N_issuers, Q, FV, E_FV, rhos(i));
+% end
+
+% % plot the VaR as a function of rho
+% figure
+% plot(rhos, VaR_DO, 'r', 'LineWidth', 2)
+% hold on
+% plot(rhos, VaR_DM, 'b', 'LineWidth', 2)
+% xlabel('Correlation')
+% ylabel('Credit VaR')
+% title('Credit VaR as a function of correlation')
+% legend('Default only', 'Default and migration')
