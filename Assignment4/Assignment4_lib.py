@@ -37,8 +37,13 @@ def bootstrapStatistical(numberOfSamplesToBootstrap, returns):
         - numberOfSamplesToBootstrap: the number of samples to draw from the returns (integer)
         - returns: a pandas dataframe of asset returns (n, m)
     """
-
-    return returns.sample(n=numberOfSamplesToBootstrap, replace=True)
+    returns_new = []
+    for i in range(1, numberOfSamplesToBootstrap):
+        # extract a random number in range from 1 to the number of rows of the returns
+        n = np.random.randint(1, len(returns);
+        returns_new = returns_new + returns.sample(n, replace=True)
+    
+    return returns_new
 
 def plausibilityCheck(returns, portfolioWeights, alpha, portfolioValue, riskMeasureTimeIntervalInDay):
 
