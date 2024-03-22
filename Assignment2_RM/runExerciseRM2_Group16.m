@@ -174,3 +174,18 @@ disp(' ')
 % ylabel('Credit VaR')
 % title('Credit VaR as a function of correlation')
 % legend('Default only', 'Default and migration')
+
+% graph for report
+
+R=[0:0.01:0.3]
+
+for i = R
+    [Var_Def(i), VAr_Mig] = graph_report(R)
+end
+figure
+plot(R,var_Def)
+hold on
+plot(R,var_Mig)
+
+
+
