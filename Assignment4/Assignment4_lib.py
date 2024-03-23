@@ -1,8 +1,39 @@
 
 import numpy as np
 import pandas as pd
+from scipy.stats import norm
 
-# function to compute the historical simulation VaR and ES
+def AnalyticalNormalMeasures(alpha,  weights,  portfolioValue,  riskMeasureTimeIntervalInDay, returns):
+
+    """
+        This function computes the analytical normal VaR and ES for a given portfolio of assets.
+        
+        Args:
+        - alpha: the confidence level (scalar)
+        - weights: a numpy array of portfolio weights (m, )
+        - portfolioValue: the value of the whole portfolio (scalar)
+        - riskMeasureTimeIntervalInDay: the time interval for risk measure expressed in days (scalar)
+        - returns: a pandas dataframe of asset returns (n, m)
+    """
+
+    # find the needed quantile from the normal distribution
+    z_alpha = norm.ppf(alpha)
+
+    # compute mean and variance
+    mu = returns.mean() @ weights
+
+    sigma = np.sqrt(weights @ returns.cov() @ weights)
+
+    # compute the VaR and ES
+    VaR =  portfolioValue * (riskMeasureTimeIntervalInDay * mu +
+        np.sqrt(riskMeasureTimeIntervalInDay) * sigma * z_alpha)
+
+    # compute the ES
+    ES_std = norm.pdf(z_alpha) / (1-alpha)
+    ES =  portfolioValue *  (riskMeasureTimeIntervalInDay * mu +
+        np.sqrt(riskMeasureTimeIntervalInDay) *sigma * ES_std)
+
+    return ES, VaR
 
 def HSMeasurements(returns, alpha, weights, portfolioValue, riskMeasureTimeIntervalInDay):
 
@@ -71,6 +102,7 @@ def WHSMeasurements(returns,  alpha,  lambda_,  weights,  portfolioValue, riskMe
 
     # VaR is the corresponding loss
     VaR = np.sqrt(riskMeasureTimeIntervalInDay) * df_losses.loc[i_star, 'losses']
+
     # ES is the weighted average of the losses
     sum_weights = df_losses.loc[:i_star, 'weights'].sum()
     sum_losses_weighted = (df_losses.loc[:i_star, 'losses'] * df_losses.loc[:i_star, 'weights']).sum()
@@ -106,3 +138,42 @@ def plausibilityCheck(returns, portfolioWeights, alpha, portfolioValue, riskMeas
     VaR = np.sqrt(riskMeasureTimeIntervalInDay) * np.sqrt(sVaR @ corr @ sVaR)
 
     return VaR
+
+def PrincCompAnalysis(yearlyCovariance,  yearlyMeanReturns,  weights,  H,  alpha, numberOfPrincipalComponents, portfolioValue):
+    """"
+        This function computes the non-centered PCA analysis for a given portfolio of assets.
+        
+        Args:
+        - yearlyCovariance: the yearly covariance matrix of the asset returns (m, m)
+        - yearlyMeanReturns: the yearly mean returns of the assets (m, )
+        - weights: the portfolio weights (m, )
+        - H: the number of historical returns to consider (scalar)
+        - alpha: the confidence level (scalar)
+        - numberOfPrincipalComponents: the number of principal components to consider (scalar)
+        - portfolioValue: the value of the whole portfolio (scalar)
+    
+    """
+    # compute eigenvalues and eigenvectors of the covariance matrix
+    eigenvalues, eigenvectors = np.linalg.eig(yearlyCovariance)
+
+    # sort the eigenvalues and eigenvectors
+    idx = eigenvalues.argsort()[::-1]
+    lambdas = eigenvalues[idx]
+    gamma = eigenvectors[:, idx].T
+
+    # compute the new weights and mean
+    w_hat = gamma.T @ weights
+    mu_hat = gamma.T @ yearlyMeanReturns
+
+    # compute the reduced mean and reduced variance
+    mu_red = (w_hat[:numberOfPrincipalComponents] @ mu_hat[:numberOfPrincipalComponents]).sum()
+    sigma2_red = (w_hat[:numberOfPrincipalComponents]**2 @ lambdas[:numberOfPrincipalComponents]).sum()
+
+    # compute the VaR and ES
+    z_alpha = norm.ppf(alpha)
+
+    VaR = portfolioValue * ( H * mu_red + np.sqrt(H) * np.sqrt(sigma2_red) * z_alpha)
+
+    ES = portfolioValue * ( H * mu_red + np.sqrt(H) * np.sqrt(sigma2_red) * norm.pdf(z_alpha) / (1-alpha))
+
+    return ES, VaR
