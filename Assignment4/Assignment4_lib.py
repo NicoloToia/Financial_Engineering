@@ -30,6 +30,7 @@ def HSMeasurements(returns, alpha, weights, portfolioValue, riskMeasureTimeInter
     return ES, VaR
 
 def bootstrapStatistical(numberOfSamplesToBootstrap, returns):
+
     """
         This function computes the bootstrap samples of the returns.
         
@@ -39,6 +40,44 @@ def bootstrapStatistical(numberOfSamplesToBootstrap, returns):
     """
 
     return returns.sample(n=numberOfSamplesToBootstrap, replace=True)
+
+def WHSMeasurements(returns,  alpha,  lambda_,  weights,  portfolioValue, riskMeasureTimeIntervalInDay):
+
+    """
+        This function computes the weighted historical simulation VaR and ES for a given portfolio of assets.
+
+        Args:
+        - returns: a pandas dataframe of asset returns (n, m)
+        - alpha: the confidence level (scalar)
+        - lambda_ : the decay factor (scalar) (cannot use lambda as it is a reserved keyword in Python)
+        - weights: a numpy array of portfolio weights (m, )
+        - portfolioValue: the value of the whole portfolio (scalar)
+        - riskMeasureTimeIntervalInDay: the time interval for risk measure expressed in days (scalar)
+
+    """
+    
+    losses = - portfolioValue * (returns @ weights)
+
+    # compute the corresponding time weights
+    C = (1-lambda_)/(1-lambda_**len(losses)) # normalization factor
+    weights = [C * lambda_**i for i in reversed(range(len(losses)))]
+
+    # make the losses and weights into a dataframe and sort it by losses (greatest first)
+    df_losses = pd.DataFrame({'losses': losses, 'weights': weights})
+    df_losses = df_losses.sort_values('losses', ascending=False)
+
+    # find the index where the cumulative sum of the weights is lower or equal to 1-alpha
+    i_star = df_losses[df_losses['weights'].cumsum() <= 1-alpha].index[-1]
+
+    # VaR is the corresponding loss
+    VaR = np.sqrt(riskMeasureTimeIntervalInDay) * df_losses.loc[i_star, 'losses']
+    # ES is the weighted average of the losses
+    sum_weights = df_losses.loc[:i_star, 'weights'].sum()
+    sum_losses_weighted = (df_losses.loc[:i_star, 'losses'] * df_losses.loc[:i_star, 'weights']).sum()
+
+    ES = np.sqrt(riskMeasureTimeIntervalInDay) * sum_losses_weighted / sum_weights
+
+    return ES, VaR
 
 def plausibilityCheck(returns, portfolioWeights, alpha, portfolioValue, riskMeasureTimeIntervalInDay):
 
@@ -67,39 +106,3 @@ def plausibilityCheck(returns, portfolioWeights, alpha, portfolioValue, riskMeas
     VaR = np.sqrt(riskMeasureTimeIntervalInDay) * np.sqrt(sVaR @ corr @ sVaR)
 
     return VaR
-
-def WHSMeasurements(returns, alpha, lmb, weights, portfolioValue, riskMeasureTimeIntervalInDay):
-
-    """
-        This function computes the weighted historical simulation VaR and ES for a given portfolio of assets.
-
-        Args:
-        - returns: a pandas dataframe of asset returns (n, m)
-        - alpha: the confidence level (scalar)
-        - lmb = lambda
-        - weights: a numpy array of portfolio weights (m, )
-        - portfolioValue: the value of the whole portfolio (scalar)
-        - riskMeasureTimeIntervalInDay: the time interval for risk measure expressed in days (scalar)
-
-    """
-    
-    losses = - portfolioValue * (returns @ weights)
-    losses = losses.sort_values(ascending=False)
-    C = (1-lmb)/(1-lmb^(len(losses)))
-    n = len(losses)
-    sumWeights = 0
-    weight = []
-    for jj in range(n-1): 
-        w = C* lmb^(n-jj)
-        sumWeights = sumWeights+w
-        if sumWeights>1-alpha:
-            k = jj-1
-            break
-        else :
-            weight[jj] = w
-                
-    VaR = losses.iloc[k] * np.sqrt(riskMeasureTimeIntervalInDay)
-
-    ES = sum(losses.iloc[:k] @ weights)/sum(weights[:k]) * np.sqrt(riskMeasureTimeIntervalInDay)
-
-    return ES, VaR
