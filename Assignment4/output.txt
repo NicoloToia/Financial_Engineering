@@ -37,3 +37,33 @@
     -> Thumb Rule:  1.92%
     -> Against the WHS: 1.60%
 
+
+ >--- Principal Component Analysis (n=1) ---<
+    -> Daily VaR:      0.22%
+    -> Daily ES:       0.28%
+    
+
+ >--- Principal Component Analysis (n=2) ---<
+    -> Daily VaR:      0.23%
+    -> Daily ES:       0.28%
+    
+
+ >--- Principal Component Analysis (n=3) ---<
+    -> Daily VaR:      0.48%
+    -> Daily ES:       0.59%
+    
+
+ >--- Principal Component Analysis (n=4) ---<
+    -> Daily VaR:      1.05%
+    -> Daily ES:       1.29%
+    
+
+ >--- Principal Component Analysis (n=5) ---<
+    -> Daily VaR:      1.06%
+    -> Daily ES:       1.30%
+    
+
+ >--- Plausibility Check ---<
+    -> Thumb Rule:  5.46%
+    -> Against the PCA: 1.06%
+

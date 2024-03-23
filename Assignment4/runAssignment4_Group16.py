@@ -8,7 +8,7 @@ from datetime import datetime
 from statsmodels.multivariate.pca import PCA
 # import custom functions and modules
 from Assignment4_lib import HSMeasurements, bootstrapStatistical, WHSMeasurements, \
-    plausibilityCheck
+    PrincCompAnalysis, plausibilityCheck
 
 # overwrite the print function to write to a file
 def print(*args, **kwargs):
@@ -200,4 +200,35 @@ print(f"""
  >--- Plausibility Check ---<
     -> Thumb Rule: {VaR_PC_1_2:>6.2%}
     -> Against the WHS: {VaR_WHS:>.2%}
+""")
+
+## Point 1.3: Principal Component Analysis
+# We take the first 18 returns of the dataset and apply PCA for n = 1,...,5
+
+# select the relevant indexes
+df_1_3 = df_1.dropna(axis=1, how='any').iloc[:, :18]
+Vt_1_3 = 1
+w_1_3 = np.ones(18) / 18
+
+# compute the yearly mean and covariance matrix
+mu_1_3 = 256 * df_1_3.mean()
+Sigma_1_3 = 256 * df_1_3.cov()
+
+for i in range(1,6):
+    # compute the VaR and ES with PrincCompAnalysis
+    ES_PCA, VaR_PCA = PrincCompAnalysis(Sigma_1_3, mu_1_3, w_1_3, 10/256, alpha_1, i, Vt_1_3)
+
+    print(f"""
+ >--- Principal Component Analysis (n={i}) ---<
+    -> Daily VaR: {VaR_PCA:>10.2%}
+    -> Daily ES: {ES_PCA:>11.2%}
+    """)
+
+# Plausibility Check for 1.3
+VaR_PC_1_3 = plausibilityCheck(df_1_3, w_1_3, alpha_1, Vt_1_3, 10)
+
+print(f"""
+ >--- Plausibility Check ---<
+    -> Thumb Rule: {VaR_PC_1_3:>6.2%}
+    -> Against the PCA: {VaR_PCA:>.2%}
 """)
