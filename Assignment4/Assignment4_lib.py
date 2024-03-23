@@ -54,8 +54,8 @@ def plausibilityCheck(returns, portfolioWeights, alpha, portfolioValue, riskMeas
     """
 
     # extract the two quantiles
-    lb = returns.quantile(1-alpha)
-    ub = returns.quantile(alpha)
+    lb = returns.quantile(1-alpha, interpolation='nearest')
+    ub = returns.quantile(alpha, interpolation='nearest')
 
     # compute the signed VaR
     sVaR = portfolioValue * portfolioWeights * (abs(lb) + abs(ub)) / 2
