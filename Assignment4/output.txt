@@ -1,0 +1,39 @@
+
+ >--- Point 0: t-student VaR ---<
+ The daily VaR at 99% confidence level is: 3.86%
+ The daily VaR at 99% confidence level is: 579719.23 EUR
+
+
+ >--- Point 0: t-student ES ---<
+ The daily ES at 99% confidence level is: 5.36%
+ The daily ES at 99% confidence level is: 804473.15 EUR
+
+
+ >--- Historical Simulation ---<
+ alpha = 0.95 V_t = 4731416.99 EUR
+    -> Daily VaR:   95569.56 EUR
+    -> Daily ES:   143630.83 EUR
+
+
+ >--- Bootstrap ---<
+ alpha = 0.95 V_t = 4731416.99 EUR
+    -> Daily VaR:  100454.42 EUR
+    -> Daily ES:   174036.41 EUR
+
+
+ >--- Plausibility Check ---<
+    -> Thumb Rule:     92035.63 EUR
+    -> Against the HS: 95569.56 EUR
+    -> Against the BS: 100454.42 EUR
+
+
+ >--- Weighted Historical Simulation ---<
+ alpha = 0.95 lambda = 0.94
+    -> Daily VaR:      1.60%
+    -> Daily ES:       2.16%
+
+
+ >--- Plausibility Check ---<
+    -> Thumb Rule:  1.92%
+    -> Against the WHS: 1.60%
+
