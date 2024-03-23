@@ -140,18 +140,18 @@ def plausibilityCheck(returns, portfolioWeights, alpha, portfolioValue, riskMeas
     return VaR
 
 def PrincCompAnalysis(yearlyCovariance,  yearlyMeanReturns,  weights,  H,  alpha, numberOfPrincipalComponents, portfolioValue):
-    """"
+
+    """
         This function computes the non-centered PCA analysis for a given portfolio of assets.
         
         Args:
         - yearlyCovariance: the yearly covariance matrix of the asset returns (m, m)
         - yearlyMeanReturns: the yearly mean returns of the assets (m, )
         - weights: the portfolio weights (m, )
-        - H: the number of historical returns to consider (scalar)
+        - H: the time horizon expressed a year fraction (scalar)
         - alpha: the confidence level (scalar)
         - numberOfPrincipalComponents: the number of principal components to consider (scalar)
         - portfolioValue: the value of the whole portfolio (scalar)
-    
     """
     # compute eigenvalues and eigenvectors of the covariance matrix
     eigenvalues, eigenvectors = np.linalg.eig(yearlyCovariance)
