@@ -3,9 +3,7 @@ from contextlib import redirect_stdout
 import pandas as pd
 import numpy as np
 from scipy.stats import t
-from scipy.stats import norm
 from datetime import datetime
-from statsmodels.multivariate.pca import PCA
 # import custom functions and modules
 from Assignment4_lib import HSMeasurements, bootstrapStatistical, WHSMeasurements, \
     PrincCompAnalysis, plausibilityCheck
