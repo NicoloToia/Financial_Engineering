@@ -5,7 +5,7 @@ import numpy as np
 from datetime import datetime
 # import custom functions and modules
 from Assignment4_lib import AnalyticalNormalMeasures, HSMeasurements, bootstrapStatistical, \
-    WHSMeasurements, PrincCompAnalysis, plausibilityCheck, FullMonteCarloVaR
+    WHSMeasurements, PrincCompAnalysis, plausibilityCheck, FullMonteCarloVaR, DeltaNormalVaR
 
 # overwrite the print function to write to a file
 def print(*args, **kwargs):
@@ -216,6 +216,7 @@ print(f"""
 ## Point 2: Full-Monte Carlo and Delta Normal Approach for VaR
 
 valuation_date_2 = datetime(2017, 1, 16)
+num_days_in_year = 256
 
 # retrieve the relevant returns (up to 2 years before the valuation date)
 df_2 = returns[returns.index <= valuation_date_2]
@@ -229,12 +230,12 @@ sigma = 15.4 / 100 # volatility
 delta = 3.1 / 100 # dividend yield
 r = 0.5 / 100 # risk-free rate
 
-ttm = (expiry_date_2 - valuation_date_2).days / 256
+ttm = (expiry_date_2 - valuation_date_2).days / num_days_in_year
 
 # set the parameters and data for the exercise
 alpha_2 = 0.95
 lmd_2 = 0.95
-H = 10 / 256
+H = 10 / num_days_in_year
 
 # deduce the number of shares
 total_val_BMW = 1_186_680
@@ -243,12 +244,16 @@ num_shares_BMW = total_val_BMW / S_t
 num_calls = num_shares_BMW
 
 # compute the VaR with Monte Carlo
-VaR_MC = FullMonteCarloVaR(df_2, num_shares_BMW, num_calls, S_t, K, r, delta, sigma, ttm, H, alpha_2, \
-    lmd_2, 256)
+VaR_MC = FullMonteCarloVaR(df_2, num_shares_BMW, num_calls, S_t, K, r, delta, sigma, ttm, H, alpha_2, lmd_2, num_days_in_year)
 
 print(f"""
  >--- Full Monte Carlo VaR ---<
     -> 10-days VaR: {VaR_MC:.2f}
 """)
 
+VaR_DN = DeltaNormalVaR(df_2, num_shares_BMW, num_calls, S_t, K, r, delta, sigma, ttm, H, alpha_2, lmd_2, num_days_in_year)
 
+print(f""" 
+ >--- Delta Normal VaR ---<
+    -> 10-days VaR: {VaR_DN:.2f}
+""")

@@ -67,3 +67,7 @@
  >--- Full Monte Carlo VaR ---<
     -> 10-days VaR: 3974.53
 
+ 
+ >--- Delta Normal VaR ---<
+    -> 10-days VaR: 188709.08
+
