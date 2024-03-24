@@ -286,3 +286,34 @@ def DeltaNormalVaR(logReturns, numberOfShares, numberOfCalls, stockPrice, strike
 
     return VaR
 
+def DeltaGammaVaR(logReturns, numberOfShares, numberOfCalls, stockPrice, strike, rate, dividend, \
+    volatility, timeToMaturityInYears, riskMeasureTimeIntervalInYears, alpha, lambda_, NumberOfDaysPerYears):
+
+    # compute the delta of the call option
+    d1 = (np.log(stockPrice/strike) + (rate - dividend + 0.5*volatility**2)*timeToMaturityInYears) / (volatility * np.sqrt(timeToMaturityInYears))
+    Delta_call = np.exp(-dividend*timeToMaturityInYears) * norm.cdf(d1)
+
+    # compute the gamma of the call option
+    Gamma_call = np.exp(-dividend*timeToMaturityInYears) * norm.pdf(d1) / (stockPrice * volatility * np.sqrt(timeToMaturityInYears))
+    
+    # compute the loss of the call option
+    loss_call = - numberOfCalls * stockPrice * (Delta_call * logReturns + 0.5 * Gamma_call * logReturns**2)
+
+    # compute the loss of the stock
+    loss_stock = - numberOfShares * stockPrice * logReturns
+
+    # compute the total loss
+    total_loss = loss_stock - loss_call
+
+    # take the WHS approach to compute the VaR
+    C = (1-lambda_)/(1-lambda_**len(total_loss))
+    weights = [C * lambda_**i for i in reversed(range(len(total_loss)))]
+
+    # order the losses and weights and find the VaR
+    df_losses = pd.DataFrame({'losses': total_loss, 'weights': weights})
+    df_losses = df_losses.sort_values('losses', ascending=False)
+    i_star = df_losses[df_losses['weights'].cumsum() <= 1-alpha].index[-1]
+
+    VaR = np.sqrt(riskMeasureTimeIntervalInYears * NumberOfDaysPerYears) * df_losses.loc[i_star, 'losses']
+
+    return VaR

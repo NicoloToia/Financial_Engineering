@@ -5,7 +5,8 @@ import numpy as np
 from datetime import datetime
 # import custom functions and modules
 from Assignment4_lib import AnalyticalNormalMeasures, HSMeasurements, bootstrapStatistical, \
-    WHSMeasurements, PrincCompAnalysis, plausibilityCheck, FullMonteCarloVaR, DeltaNormalVaR
+    WHSMeasurements, PrincCompAnalysis, plausibilityCheck, FullMonteCarloVaR, DeltaNormalVaR, \
+    DeltaGammaVaR
 
 # overwrite the print function to write to a file
 def print(*args, **kwargs):
@@ -255,5 +256,12 @@ VaR_DN = DeltaNormalVaR(df_2, num_shares_BMW, num_calls, S_t, K, r, delta, sigma
 
 print(f""" 
  >--- Delta Normal VaR ---<
-    -> 10-days VaR: {VaR_DN:.2f}
+    -> 10-days VaR: {VaR_DN:.6f}
+""")
+
+VaR_DG = DeltaGammaVaR(df_2, num_shares_BMW, num_calls, S_t, K, r, delta, sigma, ttm, H, alpha_2, lmd_2, num_days_in_year)
+
+print(f"""
+    >--- Delta Gamma VaR ---<
+    -> 10-days VaR: {VaR_DG:.6f}
 """)
