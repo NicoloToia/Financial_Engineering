@@ -269,7 +269,7 @@ def DeltaNormalVaR(logReturns, numberOfShares, numberOfCalls, stockPrice, strike
     d1 = (np.log(stockPrice/strike) + (rate - dividend + 0.5*volatility**2)*timeToMaturityInYears) / (volatility * np.sqrt(timeToMaturityInYears))
     Delta_call = np.exp(-dividend*timeToMaturityInYears) * norm.cdf(d1)
 
-    loss_call = - numberOfCalls * stockPrice * Delta_call * abs(logReturns)
+    loss_call = - numberOfCalls * stockPrice * Delta_call * logReturns
     loss_stock = - numberOfShares * stockPrice * logReturns
     total_loss = loss_stock - loss_call
 

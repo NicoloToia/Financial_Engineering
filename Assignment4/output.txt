@@ -69,5 +69,5 @@
 
  
  >--- Delta Normal VaR ---<
-    -> 10-days VaR: 188709.08
+    -> 10-days VaR: 1051.16
 
