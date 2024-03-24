@@ -214,12 +214,12 @@ Sigma_1_3 = 256 * df_1_3.cov()
 
 for i in range(1,6):
     # compute the VaR and ES with PrincCompAnalysis
-    ES_PCA, VaR_PCA = PrincCompAnalysis(Sigma_1_3, mu_1_3, w_1_3, 10/256, alpha_1, i, Vt_1_3)
+    ES_PCA, VaR_PCA, exp_var = PrincCompAnalysis(Sigma_1_3, mu_1_3, w_1_3, 10/256, alpha_1, i, Vt_1_3)
 
     print(f"""
- >--- Principal Component Analysis (n={i}) ---<
-    -> Daily VaR: {VaR_PCA:>10.2%}
-    -> Daily ES: {ES_PCA:>11.2%}
+ >--- Principal Component Analysis (n={i}, {exp_var:.4%}) ---<
+    -> Daily VaR: {VaR_PCA:>10.6%}
+    -> Daily ES: {ES_PCA:>11.6%}
     """)
 
 # Plausibility Check for 1.3
@@ -227,6 +227,31 @@ VaR_PC_1_3 = plausibilityCheck(df_1_3, w_1_3, alpha_1, Vt_1_3, 10)
 
 print(f"""
  >--- Plausibility Check ---<
-    -> Thumb Rule: {VaR_PC_1_3:>6.2%}
-    -> Against the PCA: {VaR_PCA:>.2%}
+    -> Thumb Rule: {VaR_PC_1_3:>.6%}
+    -> Against the PCA: {VaR_PCA:>.6%}
 """)
+
+## Point 2: Full-Monte Carlo and Delta Normal Approach for VaR
+
+valuation_date_2 = datetime(2017, 1, 16)
+
+# retrieve the relevant returns (up to 2 years before the valuation date)
+df_2 = returns[returns.index <= valuation_date_2]
+df_2 = df_2[df_2.index > valuation_date_2 - pd.DateOffset(years=2)]
+df_2 = df_2['BMWG.DE']
+
+# call parameters (yearly data)
+expiry_date_2 = datetime(2017, 4, 18)
+K = 25 # strike price
+sigma = 15.4 / 100 # volatility
+delta = 3.1 / 100 # dividend yield
+r = 0.5 / 100 # risk-free rate
+
+# set the parameters and data for the exercise
+alpha_2 = 0.95
+lmd_2 = 0.95
+H = 10
+
+# deduce the number of shares
+total_val_BMW = 1_186_680
+num_shares_BMW = total_val_BMW / EuroStoxx50.loc[valuation_date_2]['BMWG.DE']

@@ -159,11 +159,13 @@ def PrincCompAnalysis(yearlyCovariance,  yearlyMeanReturns,  weights,  H,  alpha
     # sort the eigenvalues and eigenvectors
     idx = eigenvalues.argsort()[::-1]
     lambdas = eigenvalues[idx]
-    gamma = eigenvectors[:, idx].T
+    gamma = eigenvectors[:, idx]
 
     # compute the new weights and mean
     w_hat = gamma.T @ weights
     mu_hat = gamma.T @ yearlyMeanReturns
+    print(w_hat)
+    print(mu_hat)
 
     # compute the reduced mean and reduced variance
     mu_red = (w_hat[:numberOfPrincipalComponents] @ mu_hat[:numberOfPrincipalComponents]).sum()
@@ -176,4 +178,59 @@ def PrincCompAnalysis(yearlyCovariance,  yearlyMeanReturns,  weights,  H,  alpha
 
     ES = portfolioValue * ( H * mu_red + np.sqrt(H) * np.sqrt(sigma2_red) * norm.pdf(z_alpha) / (1-alpha))
 
-    return ES, VaR
+    # compute the percentage of explained variance
+    exp_var_perc = lambdas[:numberOfPrincipalComponents].sum() / lambdas.sum()
+
+    return ES, VaR, exp_var_perc
+
+def FullMonteCarloVaR(logReturns, numberOfShares, numberOfCalls, stockPrice, strike, rate, dividend, \
+    volatility, timeToMaturityInYears, riskMeasureTimeIntervalInYears, alpha, NumberOfDaysPerYears):
+
+    """
+        This function computes the full Monte Carlo VaR for a given portfolio of assets.
+        
+        Args:
+        - logReturns: the log returns of the asset (n, )
+        - numberOfShares: the number of shares of the stock (scalar)
+        - numberOfCalls: the number of call options (scalar)
+        - stockPrice: the current stock price (scalar)
+        - strike: the strike price of the put option (scalar)
+        - rate: the risk-free rate (scalar)
+        - dividend: the dividend yield (scalar)
+        - volatility: the volatility of the stock (scalar)
+        - timeToMaturityInYears: the time to maturity of the put option expressed in years (scalar)
+        - riskMeasureTimeIntervalInYears: the time interval for risk measure expressed in years (scalar)
+        - alpha: the confidence level (scalar)
+        - NumberOfDaysPerYears: the number of days per year (scalar)
+    """
+
+    # define the B&S formula for a call
+    def blackScholesCall(S, K, r, d, sigma, T):
+        d1 = (np.log(S/K) + (r - d - 0.5*sigma**2)*T) / (sigma * np.sqrt(T))
+        d2 = d1 - sigma * np.sqrt(T)
+        return S * np.exp(-d*T) * norm.cdf(d1) - K * np.exp(-r*T) * norm.cdf(d2)
+
+    # compute the price of the call option as of the valuation date
+    callPrice = blackScholesCall(stockPrice, strike, rate, dividend, volatility, timeToMaturityInYears)
+
+    # compute the price of the call option as of the valuation date plus the time horizon 
+    S_delta = stockPrice * np.exp(logReturns * timeToMaturityInYears * NumberOfDaysPerYears)
+    callPrice_delta = blackScholesCall(S_delta, strike, rate, dividend, volatility, timeToMaturityInYears)
+
+    # compute the loss as the loss of the stock minus the loss of the call
+    loss_call = - numberOfCalls * (callPrice_delta - callPrice)
+    loss_stock = - numberOfShares * (S_delta - stockPrice)
+    total_loss = loss_stock - loss_call
+
+    # take the WHS approach to compute the VaR
+    C = (1-alpha)/(1-alpha**len(total_loss))
+    weights = [C * alpha**i for i in reversed(range(len(total_loss)))]
+
+    df_losses = pd.DataFrame({'losses': total_loss, 'weights': weights})
+    df_losses = df_losses.sort_values('losses', ascending=False)
+
+    i_star = df_losses[df_losses['weights'].cumsum() <= 1-alpha].index[-1]
+
+    VaR = np.sqrt(riskMeasureTimeIntervalInYears) * df_losses.loc[i_star, 'losses']
+
+    return VaR
