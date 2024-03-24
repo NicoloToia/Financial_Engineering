@@ -244,7 +244,7 @@ num_calls = num_shares_BMW
 
 # compute the VaR with Monte Carlo
 VaR_MC = FullMonteCarloVaR(df_2, num_shares_BMW, num_calls, S_t, K, r, delta, sigma, ttm, H, alpha_2, \
-    256)
+    lmd_2, 256)
 
 print(f"""
  >--- Full Monte Carlo VaR ---<

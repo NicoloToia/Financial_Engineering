@@ -181,7 +181,7 @@ def PrincCompAnalysis(yearlyCovariance,  yearlyMeanReturns,  weights,  H,  alpha
     return ES, VaR, exp_var_perc
 
 def FullMonteCarloVaR(logReturns, numberOfShares, numberOfCalls, stockPrice, strike, rate, dividend, \
-    volatility, timeToMaturityInYears, riskMeasureTimeIntervalInYears, alpha, NumberOfDaysPerYears):
+    volatility, timeToMaturityInYears, riskMeasureTimeIntervalInYears, alpha, lambda_, NumberOfDaysPerYears):
 
     """
         This function computes the full Monte Carlo VaR for a given portfolio of assets.
@@ -231,8 +231,8 @@ def FullMonteCarloVaR(logReturns, numberOfShares, numberOfCalls, stockPrice, str
     total_loss = loss_stock - loss_call
     
     # take the WHS approach to compute the VaR
-    C = (1-alpha)/(1-alpha**len(total_loss))
-    weights = [C * alpha**i for i in reversed(range(len(total_loss)))]
+    C = (1-lambda_)/(1-lambda_**len(total_loss))
+    weights = [C * lambda_**i for i in reversed(range(len(total_loss)))]
 
     # order the losses and weights and find the VaR
     df_losses = pd.DataFrame({'losses': total_loss, 'weights': weights})
