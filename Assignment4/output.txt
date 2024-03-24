@@ -1,12 +1,8 @@
 
  >--- Point 0: t-student VaR ---<
- The daily VaR at 99% confidence level is: 3.86%
- The daily VaR at 99% confidence level is: 579719.23 EUR
-
-
- >--- Point 0: t-student ES ---<
- The daily ES at 99% confidence level is: 5.36%
- The daily ES at 99% confidence level is: 804473.15 EUR
+ The daily VaR at 99% confidence level is: 563000.04
+ The daily ES at 99% confidence level is: 787666.15
+ The plausibility check gives: 390230.71
 
 
  >--- Historical Simulation ---<
@@ -38,32 +34,36 @@
     -> Against the WHS: 1.60%
 
 
- >--- Principal Component Analysis (n=1, 52.6563%) ---<
-    -> Daily VaR:  5.786902%
-    -> Daily ES:   7.214684%
+ >--- Principal Component Analysis (n=1, 52.66%) ---<
+    -> Daily VaR:      5.45%
+    -> Daily ES:       6.88%
     
 
- >--- Principal Component Analysis (n=2, 59.7513%) ---<
-    -> Daily VaR:  5.821166%
-    -> Daily ES:   7.250533%
+ >--- Principal Component Analysis (n=2, 59.75%) ---<
+    -> Daily VaR:      5.43%
+    -> Daily ES:       6.86%
     
 
- >--- Principal Component Analysis (n=3, 64.2770%) ---<
-    -> Daily VaR:  5.819212%
-    -> Daily ES:   7.248597%
+ >--- Principal Component Analysis (n=3, 64.28%) ---<
+    -> Daily VaR:      5.43%
+    -> Daily ES:       6.86%
     
 
- >--- Principal Component Analysis (n=4, 68.7167%) ---<
-    -> Daily VaR:  5.814846%
-    -> Daily ES:   7.244592%
+ >--- Principal Component Analysis (n=4, 68.72%) ---<
+    -> Daily VaR:      5.44%
+    -> Daily ES:       6.87%
     
 
- >--- Principal Component Analysis (n=5, 72.7677%) ---<
-    -> Daily VaR:  5.816472%
-    -> Daily ES:   7.246237%
+ >--- Principal Component Analysis (n=5, 72.77%) ---<
+    -> Daily VaR:      5.44%
+    -> Daily ES:       6.87%
     
 
  >--- Plausibility Check ---<
-    -> Thumb Rule: 5.463153%
-    -> Against the PCA: 5.816472%
+    -> Thumb Rule: 5.46%
+    -> Against the PCA: 5.44%
+
+
+ >--- Full Monte Carlo VaR ---<
+    -> 10-days VaR: 3974.53
 

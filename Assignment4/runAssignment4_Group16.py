@@ -2,11 +2,10 @@
 from contextlib import redirect_stdout
 import pandas as pd
 import numpy as np
-from scipy.stats import t
 from datetime import datetime
 # import custom functions and modules
-from Assignment4_lib import HSMeasurements, bootstrapStatistical, WHSMeasurements, \
-    PrincCompAnalysis, plausibilityCheck
+from Assignment4_lib import AnalyticalNormalMeasures, HSMeasurements, bootstrapStatistical, \
+    WHSMeasurements, PrincCompAnalysis, plausibilityCheck, FullMonteCarloVaR
 
 # overwrite the print function to write to a file
 def print(*args, **kwargs):
@@ -74,32 +73,15 @@ valuation_date_0 = datetime(2020, 2, 20)
 df_0 = df_0[df_0.index <= valuation_date_0]
 df_0 = df_0[df_0.index > valuation_date_0 - pd.DateOffset(years=5)]
 
-# compute mean vector and covariance matrix
-mu_0 = df_0.mean()
-Sigma_0 = df_0.cov()
+ES_0, VaR_0 = AnalyticalNormalMeasures(alpha_0, nu_0, w_0, notional_0, 1, df_0)
 
-# Daily VaR
-
-t_alpha = t.ppf(alpha_0, nu_0)
-
-VaR_0 = mu_0 @ w_0 + np.sqrt(w_0 @ Sigma_0 @ w_0) * t_alpha
+VaR_PC_0 = plausibilityCheck(df_0, w_0, alpha_0, notional_0, 1)
 
 print(f"""
  >--- Point 0: t-student VaR ---<
- The daily VaR at 99% confidence level is: {VaR_0:.2%}
- The daily VaR at 99% confidence level is: {VaR_0 * notional_0:.2f} EUR
-""")
-
-# Daily ES
-
-ES_std = (nu_0 + t_alpha**2) / (nu_0 - 1) * (t.pdf(t_alpha, nu_0) / (1 - alpha_0))
-
-ES_0 = mu_0 @ w_0 + np.sqrt(w_0 @ Sigma_0 @ w_0) * ES_std
-
-print(f"""
- >--- Point 0: t-student ES ---<
- The daily ES at 99% confidence level is: {ES_0:.2%}
- The daily ES at 99% confidence level is: {ES_0 * notional_0:.2f} EUR
+ The daily VaR at 99% confidence level is: {VaR_0:.2f}
+ The daily ES at 99% confidence level is: {ES_0:.2f}
+ The plausibility check gives: {VaR_PC_0:.2f}
 """)
 
 ## Point 1: Historical Simulation, Statistical Bootstrap and PCA approach for VaR and ES in a
@@ -217,9 +199,9 @@ for i in range(1,6):
     ES_PCA, VaR_PCA, exp_var = PrincCompAnalysis(Sigma_1_3, mu_1_3, w_1_3, 10/256, alpha_1, i, Vt_1_3)
 
     print(f"""
- >--- Principal Component Analysis (n={i}, {exp_var:.4%}) ---<
-    -> Daily VaR: {VaR_PCA:>10.6%}
-    -> Daily ES: {ES_PCA:>11.6%}
+ >--- Principal Component Analysis (n={i}, {exp_var:.2%}) ---<
+    -> Daily VaR: {VaR_PCA:>10.2%}
+    -> Daily ES: {ES_PCA:>11.2%}
     """)
 
 # Plausibility Check for 1.3
@@ -227,8 +209,8 @@ VaR_PC_1_3 = plausibilityCheck(df_1_3, w_1_3, alpha_1, Vt_1_3, 10)
 
 print(f"""
  >--- Plausibility Check ---<
-    -> Thumb Rule: {VaR_PC_1_3:>.6%}
-    -> Against the PCA: {VaR_PCA:>.6%}
+    -> Thumb Rule: {VaR_PC_1_3:>.2%}
+    -> Against the PCA: {VaR_PCA:>.2%}
 """)
 
 ## Point 2: Full-Monte Carlo and Delta Normal Approach for VaR
@@ -247,11 +229,26 @@ sigma = 15.4 / 100 # volatility
 delta = 3.1 / 100 # dividend yield
 r = 0.5 / 100 # risk-free rate
 
+ttm = (expiry_date_2 - valuation_date_2).days / 256
+
 # set the parameters and data for the exercise
 alpha_2 = 0.95
 lmd_2 = 0.95
-H = 10
+H = 10 / 256
 
 # deduce the number of shares
 total_val_BMW = 1_186_680
-num_shares_BMW = total_val_BMW / EuroStoxx50.loc[valuation_date_2]['BMWG.DE']
+S_t = EuroStoxx50.loc[valuation_date_2]['BMWG.DE']
+num_shares_BMW = total_val_BMW / S_t
+num_calls = num_shares_BMW
+
+# compute the VaR with Monte Carlo
+VaR_MC = FullMonteCarloVaR(df_2, num_shares_BMW, num_calls, S_t, K, r, delta, sigma, ttm, H, alpha_2, \
+    256)
+
+print(f"""
+ >--- Full Monte Carlo VaR ---<
+    -> 10-days VaR: {VaR_MC:.2f}
+""")
+
+
