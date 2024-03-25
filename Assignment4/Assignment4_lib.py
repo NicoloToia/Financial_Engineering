@@ -220,26 +220,35 @@ def FullMonteCarloVaR(logReturns, numberOfShares, numberOfCalls, stockPrice, str
     # compute the price of the call option as of the valuation date
     callPrice = blackScholesCall(stockPrice, strike, rate, dividend, volatility, timeToMaturityInYears)
 
+    # take the WHS approach to compute the VaR
+    C = (1-lambda_)/(1-lambda_**len(logReturns))
+    weights = [C * lambda_**i for i in reversed(range(len(logReturns)))]
+
+    # add the weights to the log returns and sample with weights
+    df = pd.DataFrame({'logReturns': logReturns, 'weights': weights})
+
+    # sample with weights
+    sample = df.sample(n = len(logReturns), replace=True, weights='weights')
+
     # compute the price of the call option as of the valuation date plus the time horizon 
-    # ???: should we simulate the returns instead of taking the last 2 years
-    S_delta = stockPrice * np.exp(logReturns * riskMeasureTimeIntervalInYears * NumberOfDaysPerYears)
+    S_delta = stockPrice * np.exp(sample['logReturns'] * riskMeasureTimeIntervalInYears * NumberOfDaysPerYears)
     callPrice_delta = blackScholesCall(S_delta, strike, rate, dividend, volatility, timeToMaturityInYears - riskMeasureTimeIntervalInYears)
 
     # compute the loss as the loss of the stock minus the loss of the call
     loss_call = - numberOfCalls * (callPrice_delta - callPrice)
     loss_stock = - numberOfShares * (S_delta - stockPrice)
     total_loss = loss_stock - loss_call
-    
-    # take the WHS approach to compute the VaR
-    C = (1-lambda_)/(1-lambda_**len(total_loss))
-    weights = [C * lambda_**i for i in reversed(range(len(total_loss)))]
 
     # order the losses and weights and find the VaR
-    df_losses = pd.DataFrame({'losses': total_loss, 'weights': weights})
+    df_losses = pd.DataFrame({'losses': total_loss, 'weights': sample['weights']})
     df_losses = df_losses.sort_values('losses', ascending=False)
+    df_losses['weights'] = df_losses['weights'] / df_losses['weights'].sum() # renormalize
     i_star = df_losses[df_losses['weights'].cumsum() <= 1-alpha].index[-1]
 
-    VaR = df_losses.loc[i_star, 'losses']
+    # find the VaR and reduce the dimensionality if needed
+    VaR =  df_losses.loc[i_star, 'losses']
+    if isinstance(VaR, pd.Series):
+        VaR = VaR.values[0]
 
     return VaR
 

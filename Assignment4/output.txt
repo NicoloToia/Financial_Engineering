@@ -65,13 +65,18 @@
 
 
  >--- Full Monte Carlo VaR ---<
-    -> 10-days VaR: 3974.53
+    -> 10-days VaR: 4400.22
 
  
  >--- Delta Normal VaR ---<
     -> 10-days VaR: 1051.157690
 
 
-    >--- Delta Gamma VaR ---<
+ >--- Delta Gamma VaR ---<
     -> 10-days VaR: 1051.157690
+
+[-4.929396874271506e-08, 2.739128233752366e-07, 2.8970563817308083e-07, 3.068986053737892e-07, 3.234633049826418e-07, 3.3831128942651834e-07, 3.524562490894955e-07]
+
+ >--- Clicquet Option ---<
+    The price of the Clicquet option is: nan EUR
 
