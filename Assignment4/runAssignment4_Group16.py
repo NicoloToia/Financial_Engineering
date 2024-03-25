@@ -280,7 +280,7 @@ P_ISP = pd.read_csv('data/P_ISP.csv', sep=',', index_col=0, parse_dates=True)
 DF = pd.read_csv('data/discountsCDS.csv', sep=',', index_col=0, parse_dates=True)
 
 # MC simulation to compute the price of the Clicquet option
-N_sim = 10**4
+N_sim = 10**6
 N_steps = len(DF)
 
 # first MC to simulate the time of default tau
@@ -334,13 +334,10 @@ for i in range(N_sim):
         NPV[i] = (coupons[i, :default_idx[i]] * DF['discount'].values[:default_idx[i]]).sum() + \
             R * (coupons[i, default_idx[i]:] * DF['discount'].values[default_idx[i]:]).sum()
 
-
-    
-
 NPV = NPV.mean()
 
 print(f"""
-    >--- Clicquet Option ---<
+ >--- Clicquet Option ---<
     The price of the Clicquet option is: {NPV:.8f} EUR
 """)
 
@@ -369,7 +366,7 @@ for i in range(N_steps):
     for j in range(i, N_steps):
 
         fwd = DF['discount'].iloc[j] / DF['discount'].iloc[j-1] if j > 0 else DF['discount'].iloc[j]
-        yf = (DF.index[j] - DF.index[j]).days / 365 if j > 0 else (DF.index[j] - valuation_date_3).days / 365
+        yf = (DF.index[j] - DF.index[j-1]).days / 365 if j > 0 else (DF.index[j] - valuation_date_3).days / 365
 
         C_t = blackScholesCall(L / fwd, 1, 0, 0, sigma_3, yf)
 
@@ -380,6 +377,6 @@ for i in range(N_steps):
     s += first_term + second_term
 
 print(f"""
-    >--- Closed Formula Clicquet Option ---<
+ >--- Closed Formula Clicquet Option ---<
     The price of the Clicquet option is: {s:.8f} EUR
 """)

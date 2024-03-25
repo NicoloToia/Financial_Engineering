@@ -182,15 +182,15 @@ def PrincCompAnalysis(yearlyCovariance,  yearlyMeanReturns,  weights,  H,  alpha
 
 def blackScholesCall(S, K, r, d, sigma, T):
     """
-This function computes the price of a call option using the Black-Scholes formula.
+    This function computes the price of a call option using the Black-Scholes formula.
 
-Args:
-- S: the stock price (scalar or numpy array)
-- K: the strike price (scalar)
-- r: the risk-free rate (scalar)
-- d: the dividend yield (scalar)
-- sigma: the volatility of the stock (scalar)
-- T: the time to maturity of the option in years (scalar)
+    Args:
+    - S: the stock price (scalar or numpy array)
+    - K: the strike price (scalar)
+    - r: the risk-free rate (scalar)
+    - d: the dividend yield (scalar)
+    - sigma: the volatility of the stock (scalar)
+    - T: the time to maturity of the option in years (scalar)
     """
     d1 = (np.log(S/K) + (r - d + 0.5*sigma**2)*T) / (sigma * np.sqrt(T))
     d2 = d1 - sigma * np.sqrt(T)

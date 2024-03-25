@@ -79,3 +79,7 @@
     >--- Clicquet Option ---<
     The price of the Clicquet option is: 0.64783177 EUR
 
+
+    >--- Closed Formula Clicquet Option ---<
+    The price of the Clicquet option is: 0.64793566 EUR
+
