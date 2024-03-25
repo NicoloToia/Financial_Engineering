@@ -1,0 +1,85 @@
+
+ >--- Point 0: t-student VaR ---<
+ The daily VaR at 99% confidence level is: 563000.04
+ The daily ES at 99% confidence level is: 787666.15
+ The plausibility check gives: 390230.71
+
+
+ >--- Historical Simulation ---<
+ alpha = 0.95 V_t = 4731416.99 EUR
+    -> Daily VaR:   95569.56 EUR
+    -> Daily ES:   143630.83 EUR
+
+
+ >--- Bootstrap ---<
+ alpha = 0.95 V_t = 4731416.99 EUR
+    -> Daily VaR:  100454.42 EUR
+    -> Daily ES:   174036.41 EUR
+
+
+ >--- Plausibility Check ---<
+    -> Thumb Rule:     92035.63 EUR
+    -> Against the HS: 95569.56 EUR
+    -> Against the BS: 100454.42 EUR
+
+
+ >--- Weighted Historical Simulation ---<
+ alpha = 0.95 lambda = 0.94
+    -> Daily VaR:      1.60%
+    -> Daily ES:       2.16%
+
+
+ >--- Plausibility Check ---<
+    -> Thumb Rule:  1.92%
+    -> Against the WHS: 1.60%
+
+
+ >--- Principal Component Analysis (n=1, 52.66%) ---<
+    -> Daily VaR:      5.45%
+    -> Daily ES:       6.88%
+    
+
+ >--- Principal Component Analysis (n=2, 59.75%) ---<
+    -> Daily VaR:      5.43%
+    -> Daily ES:       6.86%
+    
+
+ >--- Principal Component Analysis (n=3, 64.28%) ---<
+    -> Daily VaR:      5.43%
+    -> Daily ES:       6.86%
+    
+
+ >--- Principal Component Analysis (n=4, 68.72%) ---<
+    -> Daily VaR:      5.44%
+    -> Daily ES:       6.87%
+    
+
+ >--- Principal Component Analysis (n=5, 72.77%) ---<
+    -> Daily VaR:      5.44%
+    -> Daily ES:       6.87%
+    
+
+ >--- Plausibility Check ---<
+    -> Thumb Rule: 5.46%
+    -> Against the PCA: 5.44%
+
+
+ >--- Full Monte Carlo VaR ---<
+    -> 10-days VaR: 4400.22
+
+ 
+ >--- Delta Normal VaR ---<
+    -> 10-days VaR: 1051.157690
+
+
+ >--- Delta Gamma VaR ---<
+    -> 10-days VaR: 1051.157690
+
+
+    >--- Clicquet Option ---<
+    The price of the Clicquet option is: 0.64783177 EUR
+
+
+    >--- Closed Formula Clicquet Option ---<
+    The price of the Clicquet option is: 0.64342540 EUR
+

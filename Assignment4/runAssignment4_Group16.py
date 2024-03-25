@@ -280,7 +280,7 @@ P_ISP = pd.read_csv('data/P_ISP.csv', sep=',', index_col=0, parse_dates=True)
 DF = pd.read_csv('data/discountsCDS.csv', sep=',', index_col=0, parse_dates=True)
 
 # MC simulation to compute the price of the Clicquet option
-N_sim = 10**6
+N_sim = 10**4
 N_steps = len(DF)
 
 # first MC to simulate the time of default tau
@@ -360,17 +360,26 @@ for i in range(N_steps):
     # compute the yearfrac
     yf = (DF.index[i] - DF.index[i-1]).days / 365 if i > 0 else (DF.index[i] - valuation_date_3).days / 365
 
-    C_t = black
+    C_t = blackScholesCall(L / fwd_DF, 1, 0, 0, sigma_3, yf)
+
+    first_term = fwd_DF * P * C_t
 
     second_term = 0
 
     for j in range(i, N_steps):
-        fwd = DF['discount'].iloc[j] / DF['discount'].iloc[i] if i > 0 else DF['discount'].iloc[j]
-        yf = (DF.index[j] - DF.index[i]).days / 365 if i > 0 else (DF.index[j] - valuation_date_3).days / 365
 
-        d_1 = ( np.log(L/fwd) + (sigma_3**2 / 2) * yf) / (sigma_3 * np.sqrt(yf))
-        d_2 = d_1 - sigma_3 * np.sqrt(yf)
+        fwd = DF['discount'].iloc[j] / DF['discount'].iloc[j-1] if j > 0 else DF['discount'].iloc[j]
+        yf = (DF.index[j] - DF.index[j]).days / 365 if j > 0 else (DF.index[j] - valuation_date_3).days / 365
 
-        second_term += S
+        C_t = blackScholesCall(L / fwd, 1, 0, 0, sigma_3, yf)
 
-    second_term = R * DF['discount'].iloc[i] * (prevProb - P) * second_term
+        second_term += C_t
+
+    second_term = R * (prevProb - P) * second_term
+
+    s += first_term + second_term
+
+print(f"""
+    >--- Closed Formula Clicquet Option ---<
+    The price of the Clicquet option is: {s:.8f} EUR
+""")
