@@ -3,10 +3,11 @@ from contextlib import redirect_stdout
 import pandas as pd
 import numpy as np
 from datetime import datetime
+from scipy.stats import norm
 # import custom functions and modules
 from Assignment4_lib import AnalyticalNormalMeasures, HSMeasurements, bootstrapStatistical, \
     WHSMeasurements, PrincCompAnalysis, plausibilityCheck, FullMonteCarloVaR, DeltaNormalVaR, \
-    DeltaGammaVaR
+    DeltaGammaVaR, blackScholesCall
 
 # overwrite the print function to write to a file
 def print(*args, **kwargs):
@@ -262,6 +263,114 @@ print(f"""
 VaR_DG = DeltaGammaVaR(df_2, num_shares_BMW, num_calls, S_t, K, r, delta, sigma, ttm, H, alpha_2, lmd_2, num_days_in_year)
 
 print(f"""
-    >--- Delta Gamma VaR ---<
+ >--- Delta Gamma VaR ---<
     -> 10-days VaR: {VaR_DG:.6f}
 """)
+
+# Point 3: Clicquet option
+
+# problem parameters
+valuation_date_3 = datetime(2008, 2, 19)
+notional_3 = 30
+L = 0.99
+sigma_3 = 20 / 100
+
+# load the discounts and probabilities for the relevant dates
+P_ISP = pd.read_csv('data/P_ISP.csv', sep=',', index_col=0, parse_dates=True)
+DF = pd.read_csv('data/discountsCDS.csv', sep=',', index_col=0, parse_dates=True)
+
+# MC simulation to compute the price of the Clicquet option
+N_sim = 10**6
+N_steps = len(DF)
+
+# first MC to simulate the time of default tau
+
+U = np.random.uniform(size=(N_sim, ))
+
+# inverse survival function
+default_idx = [
+    len(P_ISP[P_ISP['survProb'] > u])
+    for u in U
+]
+
+g = np.random.normal(size=(N_sim, N_steps))
+
+S_t = np.zeros((N_sim, N_steps+1))
+
+# set the initial value
+S_t[:, 0] = 1
+
+for i in range(N_steps):
+
+    # compute the forward discount factor
+    fwd_DF = DF['discount'].iloc[i] / DF['discount'].iloc[i-1] if i > 0 else DF['discount'].iloc[0]
+
+    # compute the drift, diffusion and time step
+    dt = (DF.index[i] - DF.index[i-1]).days / 365 if i > 0 else (DF.index[i] - valuation_date_3).days / 365
+
+    drift = - sigma_3**2 / 2 * dt
+    diffusion = sigma_3 * np.sqrt(dt)
+
+    S_t[:, i+1] = S_t[:, i] * 1/fwd_DF * np.exp(drift + diffusion * g[:, i])
+
+# plt.figure()
+# for i in range(N_sim):
+#     plt.plot(S_t[i, :])
+# plt.show()
+
+# compute the coupon payments as max(L * S_t - S_{t-1}, 0)
+
+coupons = np.maximum(L * S_t[:, 1:] - S_t[:, :-1], 0)
+
+R = 0.4
+
+# loop over the paths
+NPV = np.zeros(N_sim)
+for i in range(N_sim):
+    # no default
+    if default_idx[i] == N_steps:
+        NPV[i] = (coupons[i,:] * DF['discount'].values).sum()
+    else:
+        NPV[i] = (coupons[i, :default_idx[i]] * DF['discount'].values[:default_idx[i]]).sum() + \
+            R * (coupons[i, default_idx[i]:] * DF['discount'].values[default_idx[i]:]).sum()
+
+
+    
+
+NPV = NPV.mean()
+
+print(f"""
+    >--- Clicquet Option ---<
+    The price of the Clicquet option is: {NPV:.8f} EUR
+""")
+
+## closed formula for the Clicquet option
+
+s = 0
+S_0 = 1
+
+for i in range(N_steps):
+    
+    P = P_ISP['survProb'].iloc[i]
+    prevProb = P_ISP['survProb'].iloc[i-1] if i > 0 else 1
+
+    # compute the forward discount factor
+    fwd_DF = DF['discount'].iloc[i] / DF['discount'].iloc[i-1] if i > 0 else DF['discount'].iloc[0]
+
+    # compute the yearfrac
+    yf = (DF.index[i] - DF.index[i-1]).days / 365 if i > 0 else (DF.index[i] - valuation_date_3).days / 365
+
+    C_t = black
+
+    second_term = 0
+
+    for j in range(i, N_steps):
+        fwd = DF['discount'].iloc[j] / DF['discount'].iloc[i] if i > 0 else DF['discount'].iloc[j]
+        yf = (DF.index[j] - DF.index[i]).days / 365 if i > 0 else (DF.index[j] - valuation_date_3).days / 365
+
+        d_1 = ( np.log(L/fwd) + (sigma_3**2 / 2) * yf) / (sigma_3 * np.sqrt(yf))
+        d_2 = d_1 - sigma_3 * np.sqrt(yf)
+
+        second_term += S
+
+    second_term = R * DF['discount'].iloc[i] * (prevProb - P) * second_term
