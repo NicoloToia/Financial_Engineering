@@ -79,6 +79,10 @@ ES_0, VaR_0 = AnalyticalNormalMeasures(alpha_0, nu_0, w_0, notional_0, 1, df_0)
 
 VaR_PC_0 = plausibilityCheck(df_0, w_0, alpha_0, notional_0, 1)
 
+print("""
+        >--- POINT 0 ---<
+    """)
+
 print(f"""
  >--- Point 0: t-student VaR ---<
  The daily VaR at 99% confidence level is: {VaR_0:.2f}
@@ -104,7 +108,9 @@ df_1 = df_1[df_1.index > valuation_date_1 - pd.DateOffset(years=5)]
 # = 20K shares of AXA (AXAF.PA)
 # - 20K shares of Sanofi (SASY.PA)
 # - 10K shares of Volkswagen (VOWG_p.DE)
-
+print("""
+        >--- POINT 1 ---<
+    """)
 # select the relevant indexes
 df_1_1 = df_1[['TTEF.PA', 'AXAF.PA', 'SASY.PA', 'VOWG_p.DE']]
 # compute the value at valuation date
@@ -216,6 +222,9 @@ print(f"""
 """)
 
 ## Point 2: Full-Monte Carlo and Delta Normal Approach for VaR
+print("""
+        >--- POINT 2 ---<
+    """)
 
 valuation_date_2 = datetime(2017, 1, 16)
 num_days_in_year = 256
@@ -267,8 +276,11 @@ print(f"""
     -> 10-days VaR: {VaR_DG:.6f}
 """)
 
-quit()
+
 # Point 3: Clicquet option
+print("""
+        >--- POINT 3 ---<
+    """)
 
 # problem parameters
 valuation_date_3 = datetime(2008, 2, 19)
@@ -340,6 +352,7 @@ NPV = NPV.mean()
 print(f"""
  >--- Clicquet Option ---<
     The price of the Clicquet option is: {NPV:.8f} EUR
+    Notional: {NPV*3000000 :.8f}EUR
 """)
 
 ## closed formula for the Clicquet option
@@ -380,4 +393,5 @@ for i in range(N_steps):
 print(f"""
  >--- Closed Formula Clicquet Option ---<
     The price of the Clicquet option is: {s:.8f} EUR
+    Notional: {s*3000000:.8f} EUR
 """)
