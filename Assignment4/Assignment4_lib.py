@@ -214,6 +214,7 @@ def FullMonteCarloVaR(logReturns, numberOfShares, numberOfCalls, stockPrice, str
         - timeToMaturityInYears: the time to maturity of the put option expressed in years (scalar)
         - riskMeasureTimeIntervalInYears: the time interval for risk measure expressed in years (scalar)
         - alpha: the confidence level (scalar)
+        - lambda_: the decay factor (scalar)
         - NumberOfDaysPerYears: the number of days per year (scalar)
     """
 

@@ -24,9 +24,9 @@
 
 
  >--- Weighted Historical Simulation ---<
- alpha = 0.95 lambda = 0.94
+ alpha = 0.95 lambda = 0.95
     -> Daily VaR:      1.60%
-    -> Daily ES:       2.16%
+    -> Daily ES:       2.15%
 
 
  >--- Plausibility Check ---<
@@ -74,12 +74,4 @@
 
  >--- Delta Gamma VaR ---<
     -> 10-days VaR: 1051.157690
-
-
-    >--- Clicquet Option ---<
-    The price of the Clicquet option is: 0.64783177 EUR
-
-
-    >--- Closed Formula Clicquet Option ---<
-    The price of the Clicquet option is: 0.64793566 EUR
 

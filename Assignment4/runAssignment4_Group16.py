@@ -91,7 +91,7 @@ print(f"""
 
 # set the parameters and data for the exercise
 alpha_1 = 0.95
-lmd_1 = 0.94 # lambda is a reserved keyword
+lmd_1 = 0.95 # lambda is a reserved keyword
 valuation_date_1 = datetime(2019, 3, 20)
 
 # select only the relevant returns up to the valuation date and no older than 5 years
@@ -267,6 +267,7 @@ print(f"""
     -> 10-days VaR: {VaR_DG:.6f}
 """)
 
+quit()
 # Point 3: Clicquet option
 
 # problem parameters
@@ -280,7 +281,7 @@ P_ISP = pd.read_csv('data/P_ISP.csv', sep=',', index_col=0, parse_dates=True)
 DF = pd.read_csv('data/discountsCDS.csv', sep=',', index_col=0, parse_dates=True)
 
 # MC simulation to compute the price of the Clicquet option
-N_sim = 10**6
+N_sim = 10**5
 N_steps = len(DF)
 
 # first MC to simulate the time of default tau
@@ -344,7 +345,7 @@ print(f"""
 ## closed formula for the Clicquet option
 
 s = 0
-S_0 = 1
+S_0 = 1 ; 
 
 for i in range(N_steps):
     
@@ -359,7 +360,7 @@ for i in range(N_steps):
 
     C_t = blackScholesCall(L / fwd_DF, 1, 0, 0, sigma_3, yf)
 
-    first_term = fwd_DF * P * C_t
+    first_term = fwd_DF * S_0 * P * C_t
 
     second_term = 0
 
@@ -372,7 +373,7 @@ for i in range(N_steps):
 
         second_term += C_t
 
-    second_term = R * (prevProb - P) * second_term
+    second_term = R * S_0 * (prevProb - P) * second_term
 
     s += first_term + second_term
 
