@@ -104,7 +104,7 @@ def WHSMeasurements(returns,  alpha,  lambda_,  weights,  portfolioValue, riskMe
     i_star = df_losses[df_losses['weights'].cumsum() <= 1-alpha].index[-1]
 
     # VaR is the corresponding loss
-    VaR = np.sqrt(riskMeasureTimeIntervalInDay) * df_losses.loc[i_star, 'losses']
+    VaR = np.sqrt(riskMeasureTimeIntervalInDay) * df_losses.shift(-1).loc[i_star, 'losses']
 
     # ES is the weighted average of the losses
     sum_weights = df_losses.loc[:i_star, 'weights'].sum()

@@ -31,13 +31,13 @@
 
  >--- Weighted Historical Simulation ---<
  alpha = 0.95 lambda = 0.95
-    -> Daily VaR:  1.597678%
+    -> Daily VaR:  1.593678%
     -> Daily ES:   2.154424%
 
 
  >--- Plausibility Check ---<
     -> Thumb Rule: 1.921928%
-    -> Against the WHS: 1.597678%
+    -> Against the WHS: 1.593678%
 
 
  >--- Principal Component Analysis (n=1, 52.66%) ---<
@@ -87,17 +87,3 @@
 
         >--- POINT 3 ---<
     
-
- >--- Clicquet Option ---<
-    The price of the Clicquet option is: 0.64603225 EUR
-    Notional: 1938096.74790064EUR
-
-
- >--- Closed Formula Clicquet Option ---<
-    The price of the Clicquet option is: 0.64793566 EUR
-    Notional: 1943806.97471207 EUR
-
-
-    >--- Closed Formula Clicquet Option price for 30mln notional ---<
-      The total price of the Clicquet option is: 19438.07 EUR)
-
