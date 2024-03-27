@@ -51,9 +51,11 @@ def HSMeasurements(returns, alpha, weights, portfolioValue, riskMeasureTimeInter
     losses = - portfolioValue * (returns @ weights)
     losses = losses.sort_values(ascending=False)
 
+    # adjust the quantile to the nearest integer
     n_quantile = int( (1-alpha) * len(losses) )
 
-    VaR = losses.iloc[n_quantile] * np.sqrt(riskMeasureTimeIntervalInDay)
+    # adjust the index
+    VaR = losses.iloc[n_quantile-1] * np.sqrt(riskMeasureTimeIntervalInDay)
 
     ES = losses.iloc[:n_quantile].mean() * np.sqrt(riskMeasureTimeIntervalInDay)
 

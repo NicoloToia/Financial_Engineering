@@ -1,6 +1,6 @@
 
-       >--- POINT 0 ---<
-       
+        >--- POINT 0 ---<
+    
 
  >--- Point 0: t-student VaR ---<
  The daily VaR at 99% confidence level is: 563000.04
@@ -8,25 +8,25 @@
  The plausibility check gives: 390230.71
 
 
-       >--- POINT 1 ---<
-       
+        >--- POINT 1 ---<
+    
 
  >--- Historical Simulation ---<
  alpha = 0.95 V_t = 4731416.99 EUR
-    -> Daily VaR:   95569.56 EUR
+    -> Daily VaR:   96039.47 EUR
     -> Daily ES:   143630.83 EUR
 
 
  >--- Bootstrap ---<
  alpha = 0.95 V_t = 4731416.99 EUR
-    -> Daily VaR:  100454.42 EUR
+    -> Daily VaR:  100759.30 EUR
     -> Daily ES:   174036.41 EUR
 
 
  >--- Plausibility Check ---<
     -> Thumb Rule:     92035.63 EUR
-    -> Against the HS: 95569.56 EUR
-    -> Against the BS: 100454.42 EUR
+    -> Against the HS: 96039.47 EUR
+    -> Against the BS: 100759.30 EUR
 
 
  >--- Weighted Historical Simulation ---<
@@ -70,8 +70,8 @@
     -> Against the PCA: 5.44%
 
 
-       >--- POINT 2 ---<
-       
+        >--- POINT 2 ---<
+    
 
  >--- Full Monte Carlo VaR ---<
     -> 10-days VaR: 4400.22
@@ -85,8 +85,8 @@
     -> 10-days VaR: 1051.157690
 
 
-         >--- POINT 3 ---<
-            
+        >--- POINT 3 ---<
+    
 
  >--- Clicquet Option ---<
     The price of the Clicquet option is: 0.64603225 EUR
@@ -96,4 +96,8 @@
  >--- Closed Formula Clicquet Option ---<
     The price of the Clicquet option is: 0.64793566 EUR
     Notional: 1943806.97471207 EUR
+
+
+    >--- Closed Formula Clicquet Option price for 30mln notional ---<
+      The total price of the Clicquet option is: 19438.07 EUR)
 

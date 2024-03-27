@@ -284,7 +284,7 @@ print("""
 
 # problem parameters
 valuation_date_3 = datetime(2008, 2, 19)
-notional_3 = 30 * 10**6
+notional_3 = 30 * 10**3
 L = 0.99
 sigma_3 = 20 / 100
 
