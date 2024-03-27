@@ -293,7 +293,7 @@ P_ISP = pd.read_csv('data/P_ISP.csv', sep=',', index_col=0, parse_dates=True)
 DF = pd.read_csv('data/discountsCDS.csv', sep=',', index_col=0, parse_dates=True)
 
 # MC simulation to compute the price of the Clicquet option
-N_sim = 10**5
+N_sim = 10**3
 N_steps = len(DF)
 
 # first MC to simulate the time of default tau
