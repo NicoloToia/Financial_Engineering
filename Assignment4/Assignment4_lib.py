@@ -21,12 +21,14 @@ def AnalyticalNormalMeasures(alpha, nu, weights, portfolioValue, riskMeasureTime
     t_alpha = t.ppf(alpha, nu)
 
     # compute the mean and standard deviation of the loss
-    L = - portfolioValue * (returns @ weights)
-    mu = np.mean(L)
-    sigma = np.std(L)
+    mu_rtn = returns.mean()
+    cov_rtn = returns.cov()
+
+    mu = - portfolioValue * (mu_rtn @ weights)
+    sigma = portfolioValue * np.sqrt((weights @ cov_rtn @ weights))
 
     # compute the VaR and ES
-    VaR = mu + sigma * t_alpha
+    VaR = riskMeasureTimeIntervalInDay * mu + np.sqrt(riskMeasureTimeIntervalInDay) * sigma * t_alpha
 
     # compute the ES
     ES_std = (nu + t_alpha**2) / (nu - 1) * (t.pdf(t_alpha, nu) / (1 - alpha))

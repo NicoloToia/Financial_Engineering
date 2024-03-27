@@ -177,8 +177,8 @@ ES_WHS, VaR_WHS = WHSMeasurements(df_1_2, alpha_1, lmd_1, w_1_2, V_t_1_2, 1)
 print(f"""
  >--- Weighted Historical Simulation ---<
  alpha = {alpha_1} lambda = {lmd_1}
-    -> Daily VaR: {VaR_WHS:>10.2%}
-    -> Daily ES: {ES_WHS:>11.2%}
+    -> Daily VaR: {VaR_WHS:>10.6%}
+    -> Daily ES: {ES_WHS:>11.6%}
 """)
 
 # Plausibility Check for 1.2
@@ -186,8 +186,8 @@ VaR_PC_1_2 = plausibilityCheck(df_1_2, w_1_2, alpha_1, V_t_1_2, 1)
 
 print(f"""
  >--- Plausibility Check ---<
-    -> Thumb Rule: {VaR_PC_1_2:>6.2%}
-    -> Against the WHS: {VaR_WHS:>.2%}
+    -> Thumb Rule: {VaR_PC_1_2:>6.6%}
+    -> Against the WHS: {VaR_WHS:>.6%}
 """)
 
 ## Point 1.3: Principal Component Analysis
@@ -208,8 +208,8 @@ for i in range(1,6):
 
     print(f"""
  >--- Principal Component Analysis (n={i}, {exp_var:.2%}) ---<
-    -> Daily VaR: {VaR_PCA:>10.2%}
-    -> Daily ES: {ES_PCA:>11.2%}
+    -> Daily VaR: {VaR_PCA:>10.6%}
+    -> Daily ES: {ES_PCA:>11.6%}
     """)
 
 # Plausibility Check for 1.3
@@ -217,8 +217,8 @@ VaR_PC_1_3 = plausibilityCheck(df_1_3, w_1_3, alpha_1, Vt_1_3, 10)
 
 print(f"""
  >--- Plausibility Check ---<
-    -> Thumb Rule: {VaR_PC_1_3:>.2%}
-    -> Against the PCA: {VaR_PCA:>.2%}
+    -> Thumb Rule: {VaR_PC_1_3:>.6%}
+    -> Against the PCA: {VaR_PCA:>.6%}
 """)
 
 ## Point 2: Full-Monte Carlo and Delta Normal Approach for VaR

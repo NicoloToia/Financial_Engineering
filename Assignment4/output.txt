@@ -3,8 +3,8 @@
     
 
  >--- Point 0: t-student VaR ---<
- The daily VaR at 99% confidence level is: 563000.04
- The daily ES at 99% confidence level is: 787666.15
+ The daily VaR at 99% confidence level is: 563223.32
+ The daily ES at 99% confidence level is: 787977.23
  The plausibility check gives: 390230.71
 
 
@@ -31,43 +31,43 @@
 
  >--- Weighted Historical Simulation ---<
  alpha = 0.95 lambda = 0.95
-    -> Daily VaR:      1.60%
-    -> Daily ES:       2.15%
+    -> Daily VaR:  1.597678%
+    -> Daily ES:   2.154424%
 
 
  >--- Plausibility Check ---<
-    -> Thumb Rule:  1.92%
-    -> Against the WHS: 1.60%
+    -> Thumb Rule: 1.921928%
+    -> Against the WHS: 1.597678%
 
 
  >--- Principal Component Analysis (n=1, 52.66%) ---<
-    -> Daily VaR:      5.45%
-    -> Daily ES:       6.88%
+    -> Daily VaR:  5.453693%
+    -> Daily ES:   6.881475%
     
 
  >--- Principal Component Analysis (n=2, 59.75%) ---<
-    -> Daily VaR:      5.43%
-    -> Daily ES:       6.86%
+    -> Daily VaR:  5.431908%
+    -> Daily ES:   6.861275%
     
 
  >--- Principal Component Analysis (n=3, 64.28%) ---<
-    -> Daily VaR:      5.43%
-    -> Daily ES:       6.86%
+    -> Daily VaR:  5.434004%
+    -> Daily ES:   6.863389%
     
 
  >--- Principal Component Analysis (n=4, 68.72%) ---<
-    -> Daily VaR:      5.44%
-    -> Daily ES:       6.87%
+    -> Daily VaR:  5.441210%
+    -> Daily ES:   6.870956%
     
 
  >--- Principal Component Analysis (n=5, 72.77%) ---<
-    -> Daily VaR:      5.44%
-    -> Daily ES:       6.87%
+    -> Daily VaR:  5.439734%
+    -> Daily ES:   6.869500%
     
 
  >--- Plausibility Check ---<
-    -> Thumb Rule: 5.46%
-    -> Against the PCA: 5.44%
+    -> Thumb Rule: 5.463153%
+    -> Against the PCA: 5.439734%
 
 
         >--- POINT 2 ---<
