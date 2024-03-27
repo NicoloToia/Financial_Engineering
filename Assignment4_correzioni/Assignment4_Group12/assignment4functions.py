@@ -4,6 +4,9 @@ from scipy.stats import t
 from scipy.stats import norm
 import math
 
+# ***: this function relies on the ordering of dates as strings, better to using
+# ***: the datetime format for dates
+
 def SliceDataFromStartDate(data, endDate, duration):
     """
     SliceDataFromStartDate takes a dataframe and cuts it above start date of computation of risk measures
