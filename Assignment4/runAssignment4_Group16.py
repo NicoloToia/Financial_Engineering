@@ -284,7 +284,7 @@ print("""
 
 # problem parameters
 valuation_date_3 = datetime(2008, 2, 19)
-notional_3 = 30
+notional_3 = 30 * 10**6
 L = 0.99
 sigma_3 = 20 / 100
 
@@ -394,4 +394,10 @@ print(f"""
  >--- Closed Formula Clicquet Option ---<
     The price of the Clicquet option is: {s:.8f} EUR
     Notional: {s*3000000:.8f} EUR
+""")
+
+# The total price considering the notional
+print(f"""
+    >--- Closed Formula Clicquet Option price for 30mln notional ---<
+      The total price of the Clicquet option is: {s * notional_3:.2f} EUR)
 """)
