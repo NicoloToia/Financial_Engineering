@@ -78,7 +78,7 @@
 
  
  >--- Delta Normal VaR ---<
-    -> 10-days VaR: 1051.157690
+    -> 10-days VaR: 4155.885758
 
 
  >--- Delta Gamma VaR ---<
@@ -87,3 +87,18 @@
 
         >--- POINT 3 ---<
     
+
+ >--- Clicquet Option (MC) ---<
+    The price of the Clicquet option is: 0.62420436 EUR
+    Notional: 18726130.86459995EUR
+    The 99.00% confidence interval is: 17580232.35999946 - 19872029.36920043 EUR
+
+
+ >--- Closed Formula Clicquet Option ---<
+    The price of the Clicquet option is: 0.64793566 EUR
+    Notional: 19438069.74712067 EUR
+
+
+    >--- Closed Formula Clicquet Option price for 30mln notional ---<
+      The total price of the Clicquet option is: 19438069.75 EUR)
+

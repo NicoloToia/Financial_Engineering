@@ -283,20 +283,32 @@ def DeltaNormalVaR(logReturns, numberOfShares, numberOfCalls, stockPrice, strike
     d1 = (np.log(stockPrice/strike) + (rate - dividend + 0.5*volatility**2)*timeToMaturityInYears) / (volatility * np.sqrt(timeToMaturityInYears))
     Delta_call = np.exp(-dividend*timeToMaturityInYears) * norm.cdf(d1)
 
-    loss_call = - numberOfCalls * stockPrice * Delta_call * logReturns
-    loss_stock = - numberOfShares * stockPrice * logReturns
-    total_loss = loss_stock - loss_call
-
+    # simulate the stock price
     # take the WHS approach to compute the VaR
-    C = (1-lambda_)/(1-lambda_**len(total_loss))
-    weights = [C * lambda_**i for i in reversed(range(len(total_loss)))]
+    C = (1-lambda_)/(1-lambda_**len(logReturns))
+    weights = [C * lambda_**i for i in reversed(range(len(logReturns)))]
+
+    # add the weights to the log returns and sample with weights
+    df = pd.DataFrame({'logReturns': logReturns, 'weights': weights})
+
+    # sample with weights
+    sample = df.sample(n = len(logReturns), replace=True, weights='weights')
+    S_delta = stockPrice * np.exp(sample['logReturns'] * riskMeasureTimeIntervalInYears * NumberOfDaysPerYears)
+
+    loss_call = - numberOfCalls * (S_delta - stockPrice) * Delta_call
+    loss_stock = - numberOfShares * (S_delta - stockPrice)
+    total_loss = loss_stock - loss_call
 
     # order the losses and weights and find the VaR
     df_losses = pd.DataFrame({'losses': total_loss, 'weights': weights})
     df_losses = df_losses.sort_values('losses', ascending=False)
+    # renormalize the weights
+    df_losses['weights'] = df_losses['weights'] / df_losses['weights'].sum()
     i_star = df_losses[df_losses['weights'].cumsum() <= 1-alpha].index[-1]
 
-    VaR = np.sqrt(riskMeasureTimeIntervalInYears * NumberOfDaysPerYears) * df_losses.loc[i_star, 'losses']
+    VaR = df_losses.loc[i_star, 'losses']
+    if isinstance(VaR, pd.Series):
+        VaR = VaR.values[0]
 
     return VaR
 

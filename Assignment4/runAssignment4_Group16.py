@@ -284,7 +284,7 @@ print("""
 
 # problem parameters
 valuation_date_3 = datetime(2008, 2, 19)
-notional_3 = 30 * 10**3
+notional_3 = 30 * 10**6
 L = 0.99
 sigma_3 = 20 / 100
 
@@ -347,18 +347,30 @@ for i in range(N_sim):
         NPV[i] = (coupons[i, :default_idx[i]] * DF['discount'].values[:default_idx[i]]).sum() + \
             R * (coupons[i, default_idx[i]:] * DF['discount'].values[default_idx[i]:]).sum()
 
+# compute the variance for the IC
+std_dev = NPV.std()
+
 NPV = NPV.mean()
 
+alpha = 0.99
+z_99 = norm.ppf(0.99)
+
+# compute the IC with the notional and the confidence level
+IC = [NPV - z_99 * std_dev / np.sqrt(N_sim), NPV + z_99 * std_dev / np.sqrt(N_sim)]
+
+IC[0], IC[1] = IC[0] * notional_3, IC[1] * notional_3
+
 print(f"""
- >--- Clicquet Option ---<
+ >--- Clicquet Option (MC) ---<
     The price of the Clicquet option is: {NPV:.8f} EUR
-    Notional: {NPV*3000000 :.8f}EUR
+    Notional: {NPV*notional_3 :.8f}EUR
+    The {alpha:.2%} confidence interval is: {IC[0]:.8f} - {IC[1]:.8f} EUR
 """)
 
 ## closed formula for the Clicquet option
 
 s = 0
-S_0 = 1 ; 
+S_0 = 1
 
 for i in range(N_steps):
     
@@ -393,7 +405,7 @@ for i in range(N_steps):
 print(f"""
  >--- Closed Formula Clicquet Option ---<
     The price of the Clicquet option is: {s:.8f} EUR
-    Notional: {s*3000000:.8f} EUR
+    Notional: {s*notional_3:.8f} EUR
 """)
 
 # The total price considering the notional
