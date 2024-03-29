@@ -293,7 +293,7 @@ P_ISP = pd.read_csv('data/P_ISP.csv', sep=',', index_col=0, parse_dates=True)
 DF = pd.read_csv('data/discountsCDS.csv', sep=',', index_col=0, parse_dates=True)
 
 # MC simulation to compute the price of the Clicquet option
-N_sim = 10**3
+N_sim = 10**6
 N_steps = len(DF)
 
 # first MC to simulate the time of default tau
@@ -352,8 +352,8 @@ std_dev = NPV.std()
 
 NPV = NPV.mean()
 
-alpha = 0.99
-z_99 = norm.ppf(0.99)
+alpha = 0.95
+z_99 = norm.ppf(alpha)
 
 # compute the IC with the notional and the confidence level
 IC = [NPV - z_99 * std_dev / np.sqrt(N_sim), NPV + z_99 * std_dev / np.sqrt(N_sim)]

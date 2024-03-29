@@ -89,9 +89,9 @@
     
 
  >--- Clicquet Option (MC) ---<
-    The price of the Clicquet option is: 0.62420436 EUR
-    Notional: 18726130.86459995EUR
-    The 99.00% confidence interval is: 17580232.35999946 - 19872029.36920043 EUR
+    The price of the Clicquet option is: 0.64787061 EUR
+    Notional: 19436118.25562239EUR
+    The 95.00% confidence interval is: 19409295.63541795 - 19462940.87582682 EUR
 
 
  >--- Closed Formula Clicquet Option ---<
