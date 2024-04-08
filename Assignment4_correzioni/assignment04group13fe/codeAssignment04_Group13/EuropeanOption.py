@@ -31,6 +31,8 @@ class EuropeanOption(OptionDerivative):
         return blsprice(self.underlyingPrice, self.strike, self.riskFreeRate, self.dividend, self.volatility,
                         self.timeToMaturity, flag)
 
+    # !!!: missing error handling for invalid optionType, should raise ValueError
+
     def delta(self):
         """
         Calculates the delta of the European option
@@ -41,3 +43,5 @@ class EuropeanOption(OptionDerivative):
         """
 
         return blsdelta(self.underlyingPrice, self.strike, self.dividend, self.volatility, self.timeToMaturity)
+    
+    # !!!: same as above

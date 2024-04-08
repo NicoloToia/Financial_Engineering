@@ -8,6 +8,7 @@ from CliquetOption import CliquetOption
 from datetime import datetime
 import matplotlib.pyplot as plt
 
+# !!!: global variables are usually not a good idea, should really be a class attribute
 global numberOfDaysPerYears
 numberOfDaysPerYears = 256
 
@@ -22,6 +23,7 @@ prices = pd.read_csv('EUROSTOXX50/EUROSTOXX50_Dataset.csv', index_col=0)
 
 # Fill missing data
 prices.ffill(inplace=True)
+# TODO: ERROR! No backward fill
 prices.bfill(inplace=True)
 # Convert the string index in dates
 prices.index = pd.to_datetime(prices.index, format='%Y-%m-%d')
@@ -32,6 +34,7 @@ newExercise("0")
 assetsZero = ['Adidas', 'Allianz', 'Munich Re', "L'Oréal"]
 assetVec = tg.getTickers(tickers, assetsZero)
 portfolio0 = Portfolio(assetVec, prices, np.array([0.25, 0.25, 0.25, 0.25]), 15000000)
+# !!!: second date is a non-trading day
 portfolio0.setDates(pd.to_datetime('2015-02-20'), pd.to_datetime('2020-02-20'))
 
 VaR0 = portfolio0.VaR(0.99, 1, "t", 4)

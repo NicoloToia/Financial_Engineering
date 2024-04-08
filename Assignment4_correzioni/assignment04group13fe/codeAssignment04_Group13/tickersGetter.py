@@ -1,3 +1,5 @@
+# !!! why the fuck is this a function????
+
 def getTickers(df, names):
     """
     The function retrieves the tickers for the given names from the provided dataframe.

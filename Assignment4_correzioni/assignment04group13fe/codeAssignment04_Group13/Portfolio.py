@@ -170,8 +170,9 @@ class Portfolio:
          A private method to calculate daily logarithmic returns from price data. It updates the portfolio object
          with a DataFrame of these log returns.
          """
-        self.logReturns = np.log(self.prices / self.prices.shift(1)) # Computes log returns
-        self.logReturns.dropna(inplace=True)    # Removes any NaN values from the DataFrame
+        self.returns = np.log(self.prices / self.prices.shift(1)) # Computes log returns
+        # !!!: this could be wrong
+        self.returns.dropna(inplace=True)    # Removes any NaN values from the DataFrame
 
     def setDates(self, start, end=0):
         """
@@ -191,23 +192,34 @@ class Portfolio:
             - This method directly affects the 'self.prices' attribute, which is subsequently used for all
               financial calculations within the class.
         """
+        # !!!: bruh why, just default to the self value
+        # !!!: also relies on the ordering of dates
         if end == 0:  # Default end date handling: if not provided, use the last date from the asset prices DataFrame
             end = self.dfAssetPrices.index[-1]
 
         # Setting the internal start and end date attributes for future reference
+        # !!!: qui hanno proprio cagato fuori dal vaso, DO NOT add or delete attributes dynamically
         self.startDate = start
         self.endDate = end
 
         # Filtering the asset prices DataFrame for the specified date range
         datesPrice = ((self.dfAssetPrices.index >= start) & (self.dfAssetPrices.index <= end))
+        # !!!: here we are discarding information, what if we want to change dates again to a
+        # !!!: wider range? We should just filter the prices when we need them or just pass already filtered prices
         self.prices = self.dfAssetPrices[datesPrice]
 
+        # !!!: why do we recompute when dates are changed?
         # Initiating the computation of daily and logarithmic returns based on the filtered price data
         self.__computeReturns()     # Computes simple daily returns
         self.__computeLogReturns()  # Computes logarithmic returns
 
+        # !!! why already? Should be done when needed (this is asking for a performance hit and trouble)
+        # !!!: these should be computed only when needed and then cached
         self.meanReturns = self.returns.mean()  # Computes mean daily returns of the assets of interest
         self.covReturns = self.returns.cov()    # Computes covariance matrix of the returns of the assets of interest
+
+        # !!!: I get this is called in the constructor but should really be a private method not
+        # !!!: callable from outside
 
     def setPortfolioValue(self, portfolioValue):
         self.portfolioValue = portfolioValue
@@ -235,6 +247,9 @@ class Portfolio:
             - This method assumes that the portfolio already contains the underlying asset and its price history.
             - The ID for the added option is constructed in a specific format for easy identification.
         """
+        # !!!: should just pass a EuropeanOption object
+        # !!!: why is this method? Why not use a more general version of addOption?
+
         # Fetching the last available price of the underlying asset from the portfolio's price data
         underlyingPrice = self.prices.iloc[-1][underlying].values[0]
 
@@ -267,6 +282,9 @@ class Portfolio:
             - The options dictionary is keyed by option IDs, which allows for efficient retrieval and management of options.
         """
 
+        # !!!: options is not private, why is this method private?
+        # !!!: better idea would be to just have a list rather than a dictionary
+
         # Adding or updating the option in the portfolio's options dictionary with its details
         self.options[ID] = {
             'nContracts': nContracts,
@@ -291,6 +309,7 @@ class Portfolio:
             float: The calculated Value at Risk for the linear portfolio (it does not consider derivative)
         """
 
+        #!!! using returns instead of logReturns
         # Calculate portfolio mean return and standard deviation
         mu = - self.weights.dot(self.meanReturns)
         std = np.sqrt( (self.weights.T.dot(self.covReturns)).dot(self.weights))
@@ -301,8 +320,11 @@ class Portfolio:
         else: # if normal
             VaR_std = norm.ppf(alpha)
 
+        # !!!: why does this return the VaR for the linear portfolio? Shouldn't it return the VaR for the whole portfolio?
+        # !!!: bruh, you shit the bed on this, shoulda use the logreturns
         # Return the VaR value for the linear portfolio (it does not consider derivative)
         return self.portfolioValue * (riskMeasureTimeIntervalInDay * mu + np.sqrt(riskMeasureTimeIntervalInDay) * std * VaR_std)
+
     def ES(self, alpha=0.99, riskMeasureTimeIntervalInDay=1, type='normal', nu=4):
         """
         Computes the Expected Shortfall (ES) for the traditional assets in the portfolio over a specified time interval and
@@ -319,6 +341,7 @@ class Portfolio:
         Returns:
             float: The calculated Expected Shortfall for the linear portfolio (it does not consider derivative)
         """
+        #!!! using returns instead of logReturns
         mu = - self.weights.dot(self.meanReturns)
         std = np.sqrt( (self.weights.T.dot(self.covReturns)).dot(self.weights))
 
@@ -328,11 +351,16 @@ class Portfolio:
             phi_nu = t.pdf(t_inv_alpha, df=nu)
             ES_std = ((nu + t_inv_alpha ** 2) * phi_nu) / ((nu - 1) * (1 - alpha))
         else: # If normal
+            # !!!: should be else if type == 'normal'
             z_alpha = norm.ppf(alpha)
             phi_z = norm.pdf(z_alpha)
             ES_std = phi_z / (1 - alpha)
 
+        # !!!: error handling is missing
+
         # Return the ES value for the linear portfolio (it does not consider derivative)
+        # !!!: should be D * mu + sqrt(D) * std * ES_std
+        # ***: correct when D = 1
         return riskMeasureTimeIntervalInDay * self.portfolioValue * (mu + std * ES_std)
 
     def HSM(self, alpha=0.99, riskMeasureTimeIntervalInDay=1, print=False):
@@ -347,8 +375,10 @@ class Portfolio:
             riskMeasureTimeIntervalInDay (int): The time period over which the risk is measured.
 
         Returns:
+            !!! Why does this not consider derivatives? Shouldn't it return the VaR and ES for the whole portfolio?
             tuple: VaR, ES values for the linear portfolio (it does not consider derivative)
         """
+        # !!! using returns instead of logReturns
         VaR, ES = HSMeasurements(self.returns, alpha, self.weights, self.portfolioValue, riskMeasureTimeIntervalInDay)
         if print:
             self.printPortfolioDetails('Historical Simulation Method', VaR, ES)
@@ -367,6 +397,7 @@ class Portfolio:
         Returns:
             tuple: VaR, ES values for the portfolio.
         """
+        # !!! using returns instead of logReturns
         samples = bootstrapStatistical(numberOfSamplesToBootstrap, self.returns)
         VaR, ES = HSMeasurements(samples, alpha,  self.weights, self.portfolioValue, riskMeasureTimeIntervalInDay)
         if print:
@@ -386,6 +417,7 @@ class Portfolio:
         Returns:
             tuple: VaR, ES values for the portfolio.
         """
+        #!!! using returns instead of logReturns
         VaR, ES = WHSMeasurements(self.returns, alpha, lambda_, self.weights, self.portfolioValue, riskMeasureTimeIntervalInDay)
         if print:
             self.printPortfolioDetails('Weighted Historical Simulation', VaR, ES)
@@ -404,6 +436,7 @@ class Portfolio:
         Returns:
             tuple: VaR, ES values for the portfolio.
         """
+        #!!! using returns instead of logReturns
         daysInYear = 256
         yearlyCovariance = daysInYear * self.covReturns
         yearlyMeanReturns = daysInYear * self.meanReturns
@@ -424,6 +457,7 @@ class Portfolio:
         Returns:
             float: The plausibility-checked VaR for the portfolio.
         """
+        #!!! using returns instead of logReturns
         VaR = plausibilityCheck(self.returns, self.weights, alpha, self.portfolioValue, riskMeasureTimeIntervalInDay)
         if print:
             self.printPortfolioDetails('Plausibility Check', VaR)

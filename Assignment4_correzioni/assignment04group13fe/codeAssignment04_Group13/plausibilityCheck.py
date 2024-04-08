@@ -18,6 +18,7 @@ def plausibilityCheck(returns, portfolioWeights, alpha, portfolioValue, riskMeas
     C = np.corrcoef(returns, rowvar=False)  # correlation coefficients
     l = np.percentile(returns, (1 - alpha) * 100, axis=0)  # lower percentile
     u = np.percentile(returns, alpha * 100, axis=0)  # upper percentile
+    # !!!: wrong formula for sensitivities, no minus!!!
     sens = - portfolioValue * portfolioWeights  # compute sensitivities (linear portfolio)
     sVaR = sens * (abs(l) + abs(u)) / 2
     VaR = np.sqrt(riskMeasureTimeIntervalInDay) * np.sqrt(np.dot(sVaR.T, np.dot(C, sVaR)))

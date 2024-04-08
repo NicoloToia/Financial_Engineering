@@ -18,6 +18,8 @@ class OptionDerivative:
         self.timeToMaturity = timeToMaturity    # Time to maturity of the option, in years
         self.volatility = volatility            # Volatility of the underlying asset's returns
 
+    # !!!: actually proper OOP requires a pure virtual function
+    # ***: should add decorator @abstractmethod
     def price(self):
         pass
     def delta(self):
