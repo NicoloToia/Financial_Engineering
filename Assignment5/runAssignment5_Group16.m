@@ -143,15 +143,31 @@ alpha = (party_A_leg - start_payment_B) / maturity_payment_B
 % Price with Black Formula
 Notional = 1e7;
 % Underlying price
-S_digital = cSelect20230131.reference;
+S_digital = cSelect.reference;
 % Strike
 k = S_digital;
-% 
+% maturity
 T = yearfrac(t0, t0 + calyears(1), ACT_365);
+% value of the digital option at maturity if s > k
+payoff = 0.05 * S_digital;
+% compute the discount factor at 1 year
+discount_1y = intExtDF(discounts, dates, datenum(t0 + calyears(1))); 
 
-d_1 = (log(S_digital / k) + (S_digital + 0.5 * sigma_ENEL^2) * T) / (sigma_ENEL * sqrt(T));
-d_2 = d_1 - sigma * sqrt(T);
+% Load volatility smile
+strikes = cSelect.strikes;
+surface = cSelect.surface;
 
+sigma_digial = interp1(strikes, surface, k, 'spline');
+
+plot(strikes, surface); hold on;
+plot(k, sigma_digial,'x')
+
+d_1 = (log(S_digital / k) + (S_digital + 0.5 * sigma_digial) * T) / (sigma_digial * sqrt(T));
+d_2 = d_1 - sigma_digial * sqrt(T);
+
+price_digital_black = payoff * discount_1y * normcdf(d_2);
+
+price = price_digital_black * Notional
 
 
 %% Point 3: Pricing
@@ -165,7 +181,7 @@ eta = 3;
 t = 1;
 % moneyness
 x = -25:1:25 / 100;
-F_0 = 
+%F_0 = 
 
 
 %% Point 4: Volatility Surface Calibration
