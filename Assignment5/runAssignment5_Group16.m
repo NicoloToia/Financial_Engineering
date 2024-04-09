@@ -138,6 +138,18 @@ alpha = (party_A_leg - start_payment_B) / maturity_payment_B
 
 %% Point 2: Pricing Digital Option
 
+% Price with Black Formula
+Notional = 1e7;
+% Underlying price
+S_digital = cSelect20230131.reference;
+% Strike
+k = S_digital;
+% 
+T = yearfrac(t0, t0 + calyears(1), ACT_365);
+
+d_1 = (log(S_digital / k) + (S_digital + 0.5 * sigma_ENEL^2) * T) / (sigma_ENEL * sqrt(T));
+d_2 = d_1 - sigma * sqrt(T);
+
 
 %% Point 3: Pricing
 
