@@ -194,6 +194,9 @@ S = S_digital * exp((r - 0.5 * sigma_digial^2) * T + sigma_digial * sqrt(T) * Z)
 payoff = payment *  (S > k);
 price_digital_monte_carlo = mean(payoff) * discount_1y
 
+% compute the error
+error = abs(price_digital_implied - price_digital_black);
+disp(['The error between the implied and black price is: ', num2str(error*1e4), ' bps']);
 
 %% Point 3: Pricing
 
