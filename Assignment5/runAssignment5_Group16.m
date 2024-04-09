@@ -79,7 +79,7 @@ discounts_fixed = intExtDF(discounts, dates, fixedLegDates);
 forward_discounts_fixed = discounts_fixed(2:end) ./ discounts_fixed(1:end-1);
 
 % number of simulations
-N = 1e6;
+N = 1e7;
 
 % variables to store the simulations
 ENEL = zeros(N, 5);
@@ -139,6 +139,60 @@ alpha = (party_A_leg - start_payment_B) / maturity_payment_B
 
 %% Point 2: Pricing Digital Option
 
+% Price with Black Formula
+Notional = 1e7;
+% strike
+k = cSelect.reference;
+% maturity
+T = yearfrac(t0, t0 + calyears(1), ACT_365);
+% value of the digital option at maturity if s > k
+payment = 0.05 * Notional;
+% compute the discount factor at 1 year
+discount_1y = intExtDF(discounts, dates, datenum(t0 + calyears(1)));
+% find the corrisponding interest rate
+r = -log(discount_1y) / T;
+S_digital  = k * discount_1y;
+
+% Load volatility smile
+strikes = cSelect.strikes;
+surface = cSelect.surface;
+
+sigma_digial = interp1(strikes, surface, k, 'spline');
+
+plot(strikes, surface); hold on;
+plot(k, sigma_digial,'x')
+
+d_1 = (log(k / k) + (0.5 * sigma_digial^2) * T) / (sigma_digial * sqrt(T));
+d_2 = d_1 - sigma_digial * sqrt(T);
+
+price_digital_black = payment * discount_1y * normcdf(d_2)
+
+% Now use a volatility approach
+% Find k_1 and k_2 that contain k
+k_1 = strikes(find(strikes < k, 1, 'last'));
+k_2 = strikes(find(strikes > k, 1, 'first'));
+
+% Find the corresponding volatilities
+sigma_1 = interp1(strikes, surface, k_1, 'spline');
+sigma_2 = interp1(strikes, surface, k_2, 'spline');
+
+% compute the skew in that point
+m = (sigma_2 - sigma_1) / (k_2 - k_1);
+
+% Compute the vega under black model
+vega = S_digital * normpdf(d_1) * sqrt(T);
+
+% Now compute the digital price
+
+price_digital_implied = price_digital_black - vega * m
+
+% now implement monte carlo simulation
+N = 1e7;
+Z = randn(N, 1);
+S = S_digital * exp((r - 0.5 * sigma_digial^2) * T + sigma_digial * sqrt(T) * Z);
+% payoff digital option pays 0.05 
+payoff = payment *  (S > k);
+price_digital_monte_carlo = mean(payoff) * discount_1y
 
 
 %% Point 3: Pricing
