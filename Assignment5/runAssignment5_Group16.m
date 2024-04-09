@@ -65,7 +65,6 @@ fixedLegDates = datenum(fixedLegDates);
 % floating leg (quarterly for 4 years)
 floatingLegDates = t0 + calmonths(0:3:48);
 floatingLegDates(~isbusday(floatingLegDates,0)) = busdate(floatingLegDates(~isbusday(floatingLegDates,0)), "follow", 0);
-disp(floatingLegDates)
 floatingLegDates = datenum(floatingLegDates);
 
 %% Simulate underlying prices and compute the party B leg
@@ -153,8 +152,20 @@ eta = 3;
 t = 1;
 % moneyness
 x = -25:1:25 / 100;
-F_0 = 
+F_0 = cSelect.reference;
 
+% compute the laplace exponent as a function of omega and alpha
+ln_L = @(omega) t/kappa * (1 - alpha)/alpha * ...
+    (1 - (1 + (omega .* kappa * sigma^2)/(1-alpha)).^alpha );
+ln_L_eta = ln_L(eta);
+
+% compute the characteristic function
+phi = @(xi) exp(-1i * xi * ln_L_eta) .* exp( ln_L (0.5 * ((xi.^2) + 1i * (1+2*eta) * xi)));
+
+% compute the integral with FFT
+M = 3;
+xi_1 = -100;
+I = FFT(phi, M, xi_1)
 
 %% Point 4: Volatility Surface Calibration
 
