@@ -25,6 +25,8 @@ tic;       % Set the clock to find the time of execution
 
 % import the discounts factors
 load("discounts.mat");
+% load the data for the second and third exercises
+load("cSelect20230131_B.mat");
 
 %% Point 1: Certificate Pricing
 
@@ -139,7 +141,19 @@ alpha = (party_A_leg - start_payment_B) / maturity_payment_B
 %% Point 2: Pricing Digital Option
 
 
+
 %% Point 3: Pricing
+
+
+% parameters of the mean-variance mixture model
+alpha = 0.5;
+sigma = 20 / 100;
+kappa = 1;
+eta = 3;
+t = 1;
+% moneyness
+x = -25:1:25 / 100;
+F_0 = 
 
 
 %% Point 4: Volatility Surface Calibration
