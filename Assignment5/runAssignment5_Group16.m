@@ -25,6 +25,8 @@ tic;       % Set the clock to find the time of execution
 
 % import the discounts factors
 load("discounts.mat");
+% load the data for the second and third exercises
+load("cSelect20230131_B.mat");
 
 %% Point 1: Certificate Pricing
 
@@ -151,7 +153,19 @@ d_1 = (log(S_digital / k) + (S_digital + 0.5 * sigma_ENEL^2) * T) / (sigma_ENEL 
 d_2 = d_1 - sigma * sqrt(T);
 
 
+
 %% Point 3: Pricing
+
+
+% parameters of the mean-variance mixture model
+alpha = 0.5;
+sigma = 20 / 100;
+kappa = 1;
+eta = 3;
+t = 1;
+% moneyness
+x = -25:1:25 / 100;
+F_0 = 
 
 
 %% Point 4: Volatility Surface Calibration
