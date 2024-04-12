@@ -14,7 +14,7 @@
         "idx_end_oos_preds": {
             "y": 2017,
             "m": 1,
-            "d": 1
+            "d": 10
         },
         "keep_past_train_samples": false,
         "steps_lag_win": 2,

@@ -392,7 +392,7 @@ class PrTsfRecalibEngine:
         test_block_timestamps = pd.date_range(start=self.dataset.iloc[self.data_configs.idx_start_oos_preds]
                                                     [columns_keys['Date']],
                                               end=end_date,
-                                              freq='H')
+                                              freq='h')
         # Set datetime index to the dataframe
         results_df['Datetime'] = test_block_timestamps
         results_df.set_index(results_df['Datetime'], inplace=True)
