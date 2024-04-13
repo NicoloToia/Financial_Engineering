@@ -26,21 +26,13 @@ while real(f(upper, 0)) > 1e-10
     upper = upper + 1;
 end
 
-% Compute the nodes of integration
-xi = linspace(lower, upper, 2^M);
-
-% Compute the weights
-w = ones(1, 2^M);
-w(1) = 1/2;
-w(end) = 1/2;
-
-% Compute the integrals for each query point
-I = zeros(size(queryPoints));
-for i = 1:length(queryPoints)
-    I(i) = sum(w .* f(xi, queryPoints(i)));
-end
+disp(['The integral is computed between ', num2str(lower), ' and ', num2str(upper)]);
 
 % return only the real part
-I = real(I);
+I = zeros(size(queryPoints));
+
+for i = 1:length(queryPoints)
+    I(i) = integral(@(xi) real(f(xi, queryPoints(i))), lower, upper, 'ArrayValued', true);
+end
 
 end

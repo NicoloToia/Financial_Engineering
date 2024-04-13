@@ -1,35 +1,48 @@
-function I = integralFFT(phi, M, log_moneyness, xi_1) 
+function I = FFT(phi, M, dz, queryPoints)
+% I = FFT(integrand, M, xi_1)
+%
+% This function computes the Fourier Transform of the input integrand
+% using the FFT algorithm.
+%
+% INPUTS:
+%   f: function handle to the integrand
+%   M: N = 2^M number of points to use in the FFT
+%   xi_1: the fourier inferior limit
+%
+% OUTPUTS:
+%   I: The integral of the integrand
+%
 
-% Compute the number of nodes and the z for the FFT
+% compute N
 N = 2^M;
-z_1 = -(N-1)/2*dz;
-z = z_1:dz: -z_1; 
 
-% Compute the nodes of integration
-dx = 2*pi/(N*dz);
-x_1 = -(N-1)/2*dx;
-x = x_1:dx:-x_1;
+% compute the x values
+z_1 = -(N-1)/2 * dz;
+z = z_1:dz:-z_1;
+
+% compute the dxi value
+d_xi = 2 * pi / (N * dz);
+xi_1 = -(N-1)/2 * d_xi;
+xi = xi_1:d_xi:-xi_1;
 
 
-% Compute the mu coefficient for the Martingale condition
-mu = -log(L(eta));
+% use the lewis formula to compute the function to integrate
+f = 1 / (2*pi) *  phi(-xi - 1i/2) ./ (xi.^2 + 1/4);
+f_tilde = f .* exp(-1i * z_1 * d_xi .* (0:N-1));
 
-% Perform FFT
-pref = dx * exp(-1i*x(1)*z); % Computation of the prefactor
+% compute the FFT
+FFT = fft(f_tilde);
 
-% Computation of the characteristic function of the forward
-phi = @(x) exp(1i*x*mu) .* L( 1i*x*(1/2+eta) +0.5*x.^2);
+% compute the prefactor
+prefactor = d_xi * exp(-1i * xi_1 * z);
 
-% Adjust the f to exploit FFT
-f = phi(-x-1i/2)./(x.^2+0.25)/(2*pi);
-f = f .* exp(-1i*z_1*dx*(0:N-1));
+% compute the integral by multiplying by the prefactor
+I = prefactor .* FFT;
 
-% Exploit FFT, multiply by the prefactor and the exponential term 
-% of moneyness as in Lewis formula
-integral = exp(-z/2).*fft(f).*pref ;
+% get only the real part
+I = real(I);
 
-% I want only the values that I require and take the real part only
-integral = real(interp1(z,integral, moneyness));
-prices = B*F0*(1 - integral);
+% interpolate the values
+I = interp1(z, I, queryPoints);
 
 end

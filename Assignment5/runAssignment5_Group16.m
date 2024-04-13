@@ -149,13 +149,29 @@ kappa = 1;
 eta = 3;
 t = 1;
 % moneyness
-x = -25:1:25 / 100;
+x = (-25:1:25) / 100;
 F_0 = cSelect.reference;
 
 % compute the call prices with the quadrature method
-M = 7;
+M = 15;
 flag = 'quad';
-callPrices_quad = callIntegral(discounts(1), F_0, alpha, sigma, kappa, eta, t, x, M, flag)
+callPrices_quad = callIntegral(discounts(1), F_0, alpha, sigma, kappa, eta, t, x, M, flag);
+
+% plot the call prices
+figure;
+plot(x, callPrices_quad);
+title('Call prices with quadrature method');
+xlabel('Moneyness');
+
+% compute the call prices with the FFT method
+flag = 'FFT';
+callPrices_FFT = callIntegral(discounts(1), F_0, alpha, sigma, kappa, eta, t, x, M, flag);
+
+% plot the call prices
+hold on
+plot(x, callPrices_FFT);
+title('Call prices with FFT method');
+xlabel('Moneyness');
 
 %% Point 4: Volatility Surface Calibration
 
