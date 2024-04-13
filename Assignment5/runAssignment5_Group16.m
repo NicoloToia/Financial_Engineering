@@ -141,7 +141,6 @@ disp(['The error between the implied and black price is: ', num2str(error*1e4), 
 
 %% Point 3: Pricing
 
-
 % parameters of the mean-variance mixture model
 alpha = 0.5;
 sigma = 20 / 100;
@@ -150,23 +149,10 @@ eta = 3;
 t = 1;
 % moneyness
 x = (-25:1:25) / 100;
-F_0 = cSelect.reference;
+S_0 = cSelect.reference;
+F_0 = S_0 / discount_1y;
 
-% compute the call prices with the quadrature method
-M_quad = 21;
-flag = 'quad';
-callPrices_quad = callIntegral(discount_1y, F_0, alpha, sigma, kappa, eta, t, x, M_quad, flag);
-
-% put the results in a txt file
-fileID = fopen('callPrices_quad.txt', 'w');
-fprintf(fileID, '%12.8f\n', callPrices_quad);
-fclose(fileID);
-
-% plot the call prices
-figure;
-plot(x, callPrices_quad);
-title('Call prices with quadrature method');
-xlabel('Moneyness');
+%% Point 3.a: FFT method, alpha = 1/2
 
 % compute the call prices with the FFT method
 M_FFT = 15;
@@ -178,11 +164,18 @@ fileID = fopen('callPrices_FFT.txt', 'w');
 fprintf(fileID, '%12.8f\n', callPrices_FFT);
 fclose(fileID);
 
-% plot the call prices
-hold on
-plot(x, callPrices_FFT);
-title('Call prices with FFT method');
-xlabel('Moneyness');
+%% Point 3.b: Quadrature method, alpha = 1/2
+% compute the call prices with the quadrature method
+M_quad = 21;
+flag = 'quad';
+callPrices_quad = callIntegral(discount_1y, F_0, alpha, sigma, kappa, eta, t, x, M_quad, flag);
+
+% put the results in a txt file
+fileID = fopen('callPrices_quad.txt', 'w');
+fprintf(fileID, '%12.8f\n', callPrices_quad);
+fclose(fileID);
+
+%% Point 3.c: Monte Carlo simulation with alpha = 1/2
 
 % use a MonteCarlo simulation to compute the call prices
 N = 1e7;
@@ -210,12 +203,7 @@ fileID = fopen('callPrices_MC.txt', 'w');
 fprintf(fileID, '%12.8f\n', callPrices_MC);
 fclose(fileID);
 
-% plot the call prices
-hold on
-plot(x, callPrices_MC);
-title('Call prices with Monte Carlo method');
-xlabel('Moneyness');
-
+%% Point 3.c: Black prices (check)
 
 % compute the real price
 realVols = cSelect.surface;
@@ -229,10 +217,95 @@ for i = 1:length(realStrikes)
     realPrices(i) = discount_1y * F_0 * exp(-realDividend * t) * normcdf(d_1) - realStrikes(i) * discount_1y * normcdf(d_2);
 end
 
-% plot the real prices
+%% Plot results with alpha = 1/2
+
+figure;
+
+% plot quadrature
+plot(x, callPrices_quad);
+hold on
+% plot FFT
+plot(x, callPrices_FFT);
+% plot the Monte Carlo
+plot(x, callPrices_MC);
+% plot the Black prices
 hold on
 plot(log(F_0 ./ realStrikes), realPrices, 'x');
 
+title('Call prices with different methods and alpha = 1/2');
+xlabel('Moneyness');
+legend('Quadrature', 'FFT', 'Monte Carlo', 'Black prices');
+
+%% Point 3.d: Use alpha = 2/3
+
+% run the FFT with alpha= 2/3
+alpha = 2/3;
+callPrices_FFT_2_3 = callIntegral(discount_1y, F_0, alpha, sigma, kappa, eta, t, x, M_FFT, 'FFT');
+callPrices_quad_2_3 = callIntegral(discount_1y, F_0, alpha, sigma, kappa, eta, t, x, M_FFT, 'quad');
+
+% put the results in a txt file
+fileID = fopen('callPrices_FFT_2_3.txt', 'w');
+fprintf(fileID, '%12.8f\n', callPrices_FFT_2_3);
+fclose(fileID);
+
+%% Point 3.d: Plot the results
+
+% plot the call prices
+figure;
+% plot FFT
+plot(x, callPrices_FFT_2_3);
+hold on
+% plot quadrature
+plot(x, callPrices_quad_2_3);
+% plot old results
+plot(x, callPrices_FFT);
+title('Call prices with different methods and alpha = 2/3');
+xlabel('Moneyness');
+legend('FFT', 'Quadrature', 'FFT alpha = 1/2');
+
 %% Point 4: Volatility Surface Calibration
+
+% alpha = 1/3
+alpha = 1/3;
+% compute the log moneyess from the strikes
+log_moneyness = log(realStrikes / F_0);
+
+% create a function that the prices of the call options given the strikes
+prices = @(sigma, kappa, eta) callIntegral(discount_1y, F_0, alpha, sigma, kappa, eta, t, log_moneyness, M_FFT, 'FFT');
+
+% compute the lower bound for eta
+omega_down = (1 - alpha) / (kappa * sigma^2);
+
+% calibrate the model using fmincon
+% initial guess
+x0 = [0.2, 1, 1];
+
+% lower bounds
+lb = [0, 0, -omega_down];
+
+% calibration
+options = optimoptions('fmincon', 'Display', 'iter', 'MaxFunctionEvaluations', 1e4, 'MaxIterations', 1e4);
+
+[x, fval] = fmincon(@(x) norm(prices(x(1), x(2), x(3)) - realPrices), x0, [], [], [], [], lb, [], [], options);
+
+% compute the prices with the calibrated parameters
+prices_calibrated = prices(x(1), x(2), x(3));
+
+% invert the prices using black formula
+implied_vols = zeros(size(realStrikes));
+for i = 1:length(realStrikes)
+    d_1 = (log(F_0 / realStrikes(i)) + (-realDividend + 0.5 * implied_vols(i)^2) * t) / (implied_vols(i) * sqrt(t));
+    d_2 = d_1 - implied_vols(i) * sqrt(t);
+    implied_vols(i) = fmincon(@(x) abs(prices(x(1), x(2), x(3)) - realPrices(i)), x0, [], [], [], [], lb, [], [], options);
+end
+
+% plot the results
+figure;
+plot(realStrikes, implied_vols);
+hold on
+plot(realStrikes, realVols, 'x');
+title('Implied volatilities');
+xlabel('Strikes');
+legend('Implied volatilities', 'Real volatilities');
 
 toc
