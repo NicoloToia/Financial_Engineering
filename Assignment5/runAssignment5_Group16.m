@@ -152,18 +152,10 @@ t = 1;
 x = -25:1:25 / 100;
 F_0 = cSelect.reference;
 
-% compute the laplace exponent as a function of omega and alpha
-ln_L = @(omega) t/kappa * (1 - alpha)/alpha * ...
-    (1 - (1 + (omega .* kappa * sigma^2)/(1-alpha)).^alpha );
-ln_L_eta = ln_L(eta);
-
-% compute the characteristic function
-phi = @(xi) exp(-1i * xi * ln_L_eta) .* exp( ln_L (0.5 * ((xi.^2) + 1i * (1+2*eta) * xi)));
-
-% compute the integral with FFT
-M = 3;
-xi_1 = -100;
-I = FFT(phi, M, xi_1)
+% compute the call prices with the quadrature method
+M = 7;
+flag = 'quad';
+callPrices_quad = callIntegral(discounts(1), F_0, alpha, sigma, kappa, eta, t, x, M, flag)
 
 %% Point 4: Volatility Surface Calibration
 
