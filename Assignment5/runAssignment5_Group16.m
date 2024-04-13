@@ -38,7 +38,7 @@ principal_Amount = 100e6; % 100M
 % parameters for the underlying (Black model)
 
 % initial date (datetime) 18/02/2008
-t0 = datetime(2008, 2, 18, 'Format', formatData);
+t0 = datetime(dates(1), 'ConvertFrom', 'datenum');
 % initial prices
 ENEL_0 = 100;
 AXA_0 = 200;
@@ -81,8 +81,10 @@ disp(['The participation coefficient is: ', num2str(alpha)]);
 
 % Price with Black Formula
 Notional = 1e7;
-% strike
-k = cSelect.reference;
+% spot and strike
+S_0 = cSelect.reference;
+k = S_0;
+d = cSelect.dividend;
 % maturity
 ACT_365 = 3;
 T = yearfrac(t0, t0 + calyears(1), ACT_365);
@@ -92,21 +94,23 @@ payment = 0.05 * Notional;
 discount_1y = intExtDF(discounts, dates, datenum(t0 + calyears(1)));
 % find the corrisponding interest rate
 r = -log(discount_1y) / T;
-S_digital  = k * discount_1y;
+% compute the forward price
+F_0  = S_0 / discount_1y * exp(-d * T);
 
 % Load volatility smile
 strikes = cSelect.strikes;
 surface = cSelect.surface;
 
-sigma_digial = interp1(strikes, surface, k, 'spline');
+sigma_digital = interp1(strikes, surface, k, 'spline');
 
-plot(strikes, surface); hold on;
-plot(k, sigma_digial,'x')
+plot(strikes, surface);
+hold on;
+plot(k, sigma_digital,'x')
 
-d_1 = (log(k / k) + (0.5 * sigma_digial^2) * T) / (sigma_digial * sqrt(T));
-d_2 = d_1 - sigma_digial * sqrt(T);
+d_1 = (log(F_0 / k) + (0.5 * sigma_digital^2) * T) / (sigma_digital * sqrt(T));
+d_2 = d_1 - sigma_digital * sqrt(T);
 
-price_digital_black = payment * discount_1y * normcdf(d_2)
+price_digital_black = payment * discount_1y * normcdf(d_2);
 
 % Now use a volatility approach
 % Find k_1 and k_2 that contain k
@@ -121,23 +125,28 @@ sigma_2 = interp1(strikes, surface, k_2, 'spline');
 m = (sigma_2 - sigma_1) / (k_2 - k_1);
 
 % Compute the vega under black model
-vega = S_digital * normpdf(d_1) * sqrt(T);
+vega = F_0 * discount_1y * normpdf(d_1) * sqrt(T) * 0.01;
 
 % Now compute the digital price
-
-price_digital_implied = price_digital_black - vega * m
+price_digital_implied = price_digital_black - vega * m;
 
 % now implement monte carlo simulation
 N = 1e7;
 Z = randn(N, 1);
-S = S_digital * exp((r - 0.5 * sigma_digial^2) * T + sigma_digial * sqrt(T) * Z);
+F_t = F_0 * exp(-0.5 * sigma_digital^2 * T + sigma_digital * sqrt(T) * Z);
 % payoff digital option pays 0.05 
-payoff = payment *  (S > k);
-price_digital_monte_carlo = mean(payoff) * discount_1y
+payoff = payment *  (F_t > k);
+price_digital_monte_carlo = mean(payoff) * discount_1y;
 
 % compute the error
 error = abs(price_digital_implied - price_digital_black);
 disp(['The error between the implied and black price is: ', num2str(error*1e4), ' bps']);
+disp(['The black price is: ', num2str(price_digital_black)]);
+disp(['The implied price is: ', num2str(price_digital_implied)]);
+disp(['The monte carlo price is: ', num2str(price_digital_monte_carlo)]);
+
+% stop execution
+return;
 
 %% Point 3: Pricing
 
