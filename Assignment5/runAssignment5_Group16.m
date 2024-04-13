@@ -150,7 +150,8 @@ t = 1;
 % moneyness
 x = (-25:1:25) / 100;
 S_0 = cSelect.reference;
-F_0 = S_0 / discount_1y;
+d = cSelect.dividend;
+F_0 = S_0 / discount_1y * exp(-d * t);
 
 %% Point 3.a: FFT method, alpha = 1/2
 
@@ -208,13 +209,10 @@ fclose(fileID);
 % compute the real price
 realVols = cSelect.surface;
 realStrikes = cSelect.strikes;
-realDividend = cSelect.dividend;
 % for each strike compute the black price
 realPrices = zeros(size(realStrikes));
 for i = 1:length(realStrikes)
-    d_1 = (log(F_0 / realStrikes(i)) + (-realDividend + 0.5 * realVols(i)^2) * t) / (realVols(i) * sqrt(t));
-    d_2 = d_1 - realVols(i) * sqrt(t);
-    realPrices(i) = discount_1y * F_0 * exp(-realDividend * t) * normcdf(d_1) - realStrikes(i) * discount_1y * normcdf(d_2);
+    realPrices(i) = blkprice(F_0, realStrikes(i), 0, t, realVols(i));
 end
 
 %% Plot results with alpha = 1/2
@@ -268,7 +266,7 @@ legend('FFT', 'Quadrature', 'FFT alpha = 1/2');
 % alpha = 1/3
 alpha = 1/3;
 % compute the log moneyess from the strikes
-log_moneyness = log(realStrikes / F_0);
+log_moneyness = log(F_0 ./ realStrikes);
 
 % create a function that the prices of the call options given the strikes
 prices = @(sigma, kappa, eta) callIntegral(discount_1y, F_0, alpha, sigma, kappa, eta, t, log_moneyness, M_FFT, 'FFT');
@@ -284,24 +282,38 @@ x0 = [0.2, 1, 1];
 lb = [0, 0, -omega_down];
 
 % calibration
-options = optimoptions('fmincon', 'Display', 'iter', 'MaxFunctionEvaluations', 1e4, 'MaxIterations', 1e4);
+options = optimoptions('fmincon', 'MaxFunctionEvaluations', 1e4, 'MaxIterations', 1e4);
 
 [x, fval] = fmincon(@(x) norm(prices(x(1), x(2), x(3)) - realPrices), x0, [], [], [], [], lb, [], [], options);
 
 % compute the prices with the calibrated parameters
 prices_calibrated = prices(x(1), x(2), x(3));
 
+% plot the results
+figure;
+plot(realStrikes, prices_calibrated);
+hold on
+plot(realStrikes, realPrices, 'x');
+title('Calibrated prices');
+xlabel('Strikes');
+legend('Calibrated prices', 'Real prices');
+
+%% Point 4: plot the model implied volatilities
+
 % invert the prices using black formula
-implied_vols = zeros(size(realStrikes));
+model_implied_vols = zeros(size(realStrikes));
 for i = 1:length(realStrikes)
-    d_1 = (log(F_0 / realStrikes(i)) + (-realDividend + 0.5 * implied_vols(i)^2) * t) / (implied_vols(i) * sqrt(t));
-    d_2 = d_1 - implied_vols(i) * sqrt(t);
-    implied_vols(i) = fmincon(@(x) abs(prices(x(1), x(2), x(3)) - realPrices(i)), x0, [], [], [], [], lb, [], [], options);
+    callPrice = @(s) blkprice(F_0, realStrikes(i), 0, t, s);
+    % initial guess and lower bound
+    x0 = 0.2; lb = 0;
+    % compute the price with the calibrated parameters
+    model_price = prices_calibrated(i);
+    model_implied_vols(i) = fmincon(@(s) abs(model_price- callPrice(s)), x0, [], [], [], [], lb, [], [], options);
 end
 
 % plot the results
 figure;
-plot(realStrikes, implied_vols);
+plot(realStrikes, model_implied_vols);
 hold on
 plot(realStrikes, realVols, 'x');
 title('Implied volatilities');
