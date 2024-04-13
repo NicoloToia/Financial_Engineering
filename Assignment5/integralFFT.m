@@ -1,4 +1,4 @@
-function I = FFT(phi, M, dz, queryPoints)
+function I = integralFFT(phi, M, dz, queryPoints)
 % I = FFT(integrand, M, xi_1)
 %
 % This function computes the Fourier Transform of the input integrand
