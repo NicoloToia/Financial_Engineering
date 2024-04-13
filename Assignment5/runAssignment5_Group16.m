@@ -195,7 +195,7 @@ g = randn(N, 1);
 % draw the inverse gaussian random variables
 G = random('inversegaussian', 1, kappa/t, N, 1);
 
-ft = sqrt(t) * sigma * sqrt(G) .* g - (0.5 * eta) * t * sigma^2 * G - ln_L(eta);
+ft = sqrt(t) * sigma * sqrt(G) .* g - (0.5 + eta) * t * sigma^2 * G - ln_L(eta);
 
 FT = F_0 * exp(ft);
 
