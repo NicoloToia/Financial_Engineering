@@ -153,9 +153,14 @@ x = (-25:1:25) / 100;
 F_0 = cSelect.reference;
 
 % compute the call prices with the quadrature method
-M = 15;
+M_quad = 21;
 flag = 'quad';
-callPrices_quad = callIntegral(discounts(1), F_0, alpha, sigma, kappa, eta, t, x, M, flag);
+callPrices_quad = callIntegral(discount_1y, F_0, alpha, sigma, kappa, eta, t, x, M_quad, flag);
+
+% put the results in a txt file
+fileID = fopen('callPrices_quad.txt', 'w');
+fprintf(fileID, '%12.8f\n', callPrices_quad);
+fclose(fileID);
 
 % plot the call prices
 figure;
@@ -164,14 +169,69 @@ title('Call prices with quadrature method');
 xlabel('Moneyness');
 
 % compute the call prices with the FFT method
+M_FFT = 15;
 flag = 'FFT';
-callPrices_FFT = callIntegral(discounts(1), F_0, alpha, sigma, kappa, eta, t, x, M, flag);
+callPrices_FFT = callIntegral(discount_1y, F_0, alpha, sigma, kappa, eta, t, x, M_FFT, flag);
+
+% put the results in a txt file
+fileID = fopen('callPrices_FFT.txt', 'w');
+fprintf(fileID, '%12.8f\n', callPrices_FFT);
+fclose(fileID);
 
 % plot the call prices
 hold on
 plot(x, callPrices_FFT);
 title('Call prices with FFT method');
 xlabel('Moneyness');
+
+% use a MonteCarlo simulation to compute the call prices
+N = 1e7;
+
+% compute the Laplace exponent
+ln_L = @(omega) t/kappa * (1 - alpha)/alpha * ...
+    (1 - (1 + (omega .* kappa * sigma^2)/(1-alpha)).^alpha );
+% draw the standard normal random variables
+g = randn(N, 1);
+% draw the inverse gaussian random variables
+G = random('inversegaussian', 1, kappa/t, N, 1);
+
+ft = sqrt(t) * sigma * sqrt(G) .* g - (0.5 * eta) * t * sigma^2 * G - ln_L(eta);
+
+FT = F_0 * exp(ft);
+
+% compute the call prices
+callPrices_MC = zeros(size(x));
+for i = 1:length(x)
+    callPrices_MC(i) = mean(max(FT - exp(-x(i))*F_0, 0)) * discount_1y;
+end
+
+% put the results in a txt file
+fileID = fopen('callPrices_MC.txt', 'w');
+fprintf(fileID, '%12.8f\n', callPrices_MC);
+fclose(fileID);
+
+% plot the call prices
+hold on
+plot(x, callPrices_MC);
+title('Call prices with Monte Carlo method');
+xlabel('Moneyness');
+
+
+% compute the real price
+realVols = cSelect.surface;
+realStrikes = cSelect.strikes;
+realDividend = cSelect.dividend;
+% for each strike compute the black price
+realPrices = zeros(size(realStrikes));
+for i = 1:length(realStrikes)
+    d_1 = (log(F_0 / realStrikes(i)) + (-realDividend + 0.5 * realVols(i)^2) * t) / (realVols(i) * sqrt(t));
+    d_2 = d_1 - realVols(i) * sqrt(t);
+    realPrices(i) = discount_1y * F_0 * exp(-realDividend * t) * normcdf(d_1) - realStrikes(i) * discount_1y * normcdf(d_2);
+end
+
+% plot the real prices
+hold on
+plot(log(F_0 ./ realStrikes), realPrices, 'x');
 
 %% Point 4: Volatility Surface Calibration
 
