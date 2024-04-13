@@ -26,6 +26,7 @@ function alpha = priceCertificate(S1_0,  sigma_1, d_1, S2_0, sigma_2, d_2, rho, 
 %  - alpha: participation coefficient of the certificate
 
 %% First part: fixed leg (or party B leg)
+format long
 
 % compute the year fraction between fixedLegDates
 ACT_365 = 3;
@@ -50,8 +51,8 @@ for i = 1:length(partyB_dates)
     Z_1= Z(:, 1);
     Z_2= Z(:, 2);
     % update the prices
-    S_1(:, i+1) = 1/forward_discounts_B(i) * S_1(:, i) .* exp((-d_1- 0.5 * sigma_2^2) * deltas_B(i) + ...
-        sigma_2* sqrt(deltas_B(i)) * Z_1);
+    S_1(:, i+1) = 1/forward_discounts_B(i) * S_1(:, i) .* exp((-d_1- 0.5 * sigma_1^2) * deltas_B(i) + ...
+        sigma_1* sqrt(deltas_B(i)) * Z_1);
     S_2(:, i+1) = 1/forward_discounts_B(i) * S_2(:, i) .* exp((-d_2 - 0.5 * sigma_2^2) * deltas_B(i) + ...
         sigma_2 * sqrt(deltas_B(i)) * Z_2);
 end 
