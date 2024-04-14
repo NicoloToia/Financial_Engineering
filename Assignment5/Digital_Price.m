@@ -1,4 +1,4 @@
-function [price_digital] = Digital_Price(Notional , T , F_0 , discount_1y , sigma_digital , k , strikes , surface , flag);
+function [price_digital] = Digital_Price(Notional , T , F_0 , dividend, discount_1y , sigma_digital , k , strikes , surface , flag);
 % Digital_Price: Computes the price of a digital option
 %
 % INPUT: 
@@ -24,25 +24,43 @@ if flag==1
     price_digital = payment * discount_1y * normcdf(d_2);
 end
 if flag==2
-    % Now use a volatility approach
-    % Find k_1 and k_2 that contain k
-    k_1 = strikes(find(strikes < k, 1, 'last'));
-    k_2 = strikes(find(strikes > k, 1, 'first'));
 
-    % Find the corresponding volatilities
-    sigma_1 = interp1(strikes, surface, k_1, 'spline');
-    sigma_2 = interp1(strikes, surface, k_2, 'spline');
+    % compute the skew for the entire surface
+    skew = zeros(size(strikes));
+    skew(1) = (surface(2) - surface(1)) / (strikes(2) - strikes(1));
+    
+    for i = 2:length(strikes) - 1
+        skew(i) = (surface(i + 1) - surface(i - 1)) / (strikes(i + 1) - strikes(i - 1));
+    end
 
-    % compute the skew in that point
-    m = (sigma_2 - sigma_1) / (k_2 - k_1);
+    % plot the skew vs the strikes
+    figure;
+    plot(strikes, skew);
+    xlabel('Strikes'); 
+    ylabel('Skew');
+    title('Skew vs Strikes');
+    
+    % find the skew in that point
+    m = interp1(strikes, skew, k, 'spline');
 
     % Compute the vega under black model
-    vega = F_0 * discount_1y * normpdf(d_1) * sqrt(T) * 0.01;
+    F0_values = strikes/discount_1y * exp(-dividend * T);
+    d_1 = (log(F0_values ./ k) + (0.5 * surface.^2) * T) ./ (surface .* sqrt(T));
+    vega = F0_values .* discount_1y .* normpdf(d_1) * sqrt(T).* 0.01;
+
+    % plot the vega vs the strikes
+    figure;
+    plot(strikes, vega);
+    xlabel('Strikes');
+    ylabel('Vega');
+    title('Vega vs Strikes');
+
+    vega_k = interp1(strikes, vega, F_0, 'spline');
 
     price_digital_black = payment * discount_1y * normcdf(d_2);
 
     % Now compute the digital price
-    price_digital = price_digital_black - vega * m * payment;
+    price_digital = price_digital_black - vega_k * m * payment;
 end
 if flag==3
     % now implement monte carlo simulation

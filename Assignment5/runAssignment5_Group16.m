@@ -112,9 +112,9 @@ legend('Volatility smile', 'Volatility at the money');
 % flag = 2: Implied volatility
 % flag = 3: Monte Carlo
 
-price_digital_black = Digital_Price(Notional , T , F_0 , discount_1y , sigma_digital , k , strikes , surface , 1);
-price_digital_implied = Digital_Price(Notional , T , F_0 , discount_1y , sigma_digital , k , strikes , surface , 2);
-price_digital_monte_carlo = Digital_Price(Notional , T , F_0 , discount_1y , sigma_digital , k , strikes , surface , 3);
+price_digital_black = Digital_Price(Notional , T , F_0 , d , discount_1y , sigma_digital , k , strikes , surface , 1);
+price_digital_implied = Digital_Price(Notional , T , F_0 , d , discount_1y , sigma_digital , k , strikes , surface , 2);
+price_digital_monte_carlo = Digital_Price(Notional , T , F_0 , d , discount_1y , sigma_digital , k , strikes , surface , 3);
 
 % compute the error
 error = abs(price_digital_implied - price_digital_black);
@@ -122,6 +122,8 @@ disp(['The error between the implied and black price is: ', num2str(error*1e4), 
 disp(['The black price is: ', num2str(price_digital_black)]);
 disp(['The implied price is: ', num2str(price_digital_implied)]);
 disp(['The monte carlo price is: ', num2str(price_digital_monte_carlo)]);
+
+return
 
 %% Point 3: Pricing
 
