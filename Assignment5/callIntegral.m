@@ -30,7 +30,7 @@ phi = @(xi) exp(-1i * xi * ln_L_eta) .* exp( ln_L (0.5 * ((xi.^2) + 1i * (1+2*et
 if strcmp(flag, 'FFT')
     I = integralFFT(phi, M, 0.01, log_moneyness);
 elseif strcmp(flag, 'quad')
-    I = integralQuad(phi, M, log_moneyness);
+    I = integralQuad(phi, M, 0.01, log_moneyness);
 else
     error('Flag not recognized');
 end

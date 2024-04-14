@@ -72,10 +72,11 @@ partyA_dates = datenum(partyA_dates);
 
 N_sim = 1e7;
 
-alpha = priceCertificate(ENEL_0,  sigma_ENEL, d_ENEL, AXA_0, sigma_AXA, d_AXA, rho, s_spol, P, X, ...
-    principal_Amount, N_sim, partyA_dates, partyB_dates, dates, discounts);
+[alpha, IC_alpha] = priceCertificate(ENEL_0,  sigma_ENEL, d_ENEL, AXA_0, sigma_AXA, d_AXA, rho, s_spol, P, X, ...
+    principal_Amount, N_sim, partyA_dates, partyB_dates, dates, discounts, 0.95);
 
 disp(['The participation coefficient is: ', num2str(alpha)]);
+disp(['The confidence interval is: [', num2str(IC_alpha(1)), ', ', num2str(IC_alpha(2)), ']']);
 
 %% Point 2: Pricing Digital Option
 
@@ -289,7 +290,7 @@ x0 = [0.2, 1, 1];
 lb = [0, 0, -omega_down];
 
 % calibration
-options = optimoptions('fmincon', 'MaxFunctionEvaluations', 1e4, 'MaxIterations', 1e4);
+options = optimoptions('fmincon', 'MaxFunctionEvaluations', 1e4, 'MaxIterations', 1e4, 'Display', 'off');
 
 [x, fval] = fmincon(@(x) norm(prices(x(1), x(2), x(3)) - realPrices), x0, [], [], [], [], lb, [], [], options);
 

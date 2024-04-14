@@ -1,5 +1,5 @@
-function alpha = priceCertificate(S1_0,  sigma_1, d_1, S2_0, sigma_2, d_2, rho, s_spol, P, X, ...
-    principal, N, partyA_dates, partyB_dates, dates, discounts)
+function [alpha, IC] = priceCertificate(S1_0,  sigma_1, d_1, S2_0, sigma_2, d_2, rho, s_spol, P, X, ...
+    principal, N, partyA_dates, partyB_dates, dates, discounts, confidence_level)
 % priceCertificate: function to compute the participation coefficient of a certificate
 %   - party A pays the Euribor 3M + s_spol quarterly with ACT/360 convention and modified following convention
 %     and at maturity pays (1-P) * principal
@@ -94,5 +94,13 @@ party_A_leg = NPV_libor + NPV_s_spol + maturity_payment_A;
 %% Compute the partecipation coefficient
 
 alpha = (party_A_leg - start_payment_B) / maturity_payment_B;
+
+%% Compute the confidence interval
+
+% compute the standard deviation
+std_alpha = std((NPV_libor + NPV_s_spol + disc_payoff - start_payment_B) / maturity_payment_B);
+% compute the confidence interval
+z = norminv(1 - (1 - confidence_level) / 2);
+IC = [alpha - z * std_alpha / sqrt(N), alpha + z * std_alpha / sqrt(N)];
 
 end

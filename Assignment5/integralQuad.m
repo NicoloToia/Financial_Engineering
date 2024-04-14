@@ -1,4 +1,4 @@
-function I = integralQuad(phi, M, queryPoints)
+function I = integralQuad(phi, M, dz, queryPoints)
 % Compute the price of the integral using the quadrature method between lower and upper
 %
 % Inputs:
@@ -15,24 +15,23 @@ function I = integralQuad(phi, M, queryPoints)
 % Transform the function to match the Lewis definition
 f = @(xi,x) exp(-1i * xi .* x) / (2 * pi) .* phi(-xi-1i/2) .* 1 ./ (xi.^2 + 1/4);
 
-% find the extrema of the integral if not provided
-lower = 0;
-while real(f(lower, 0)) > 1e-10
-    lower = lower - 1;
-end
+% compute N
+N = 2^M;
 
-upper = 0;
-while real(f(upper, 0)) > 1e-10
-    upper = upper + 1;
-end
+% compute the dxi value
+d_xi = 2 * pi / (N * dz);
+xi_1 = -(N-1)/2 * d_xi;
 
-disp(['The integral is computed between ', num2str(lower), ' and ', num2str(upper)]);
+% check that -xi_1 has a value less than 1e-10
+if (f(xi_1, 0) > 1e-10)
+    error('The function is not integrable at -xi_1, increase the number of nodes M');
+end
 
 % return only the real part
 I = zeros(size(queryPoints));
 
 for i = 1:length(queryPoints)
-    I(i) = integral(@(xi) real(f(xi, queryPoints(i))), lower, upper, 'ArrayValued', true);
+    I(i) = quadgk(@(xi) real(f(xi, queryPoints(i))), xi_1, -xi_1);
 end
 
 end
