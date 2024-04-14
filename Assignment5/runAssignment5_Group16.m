@@ -131,6 +131,7 @@ fprintf('\nThe error between the implied and black price is: %.2f€ which is %.
 
 fprintf(['\nThe monte carlo price is: ', num2str(price_digital_monte_carlo), '\n']);
 
+plot = plotpayoff(strikes, k);
 return
 
 %% Point 3: Pricing
