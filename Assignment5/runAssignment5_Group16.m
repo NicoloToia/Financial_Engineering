@@ -101,7 +101,7 @@ F_0  = S_0 / discount_1y * exp(-d * T);
 strikes = cSelect.strikes;
 surface = cSelect.surface;
 
-sigma_digital = interp1(strikes, surface, k, 'spline');
+sigma_digital = interp1(strikes, surface, k, 'spline')
 
 plot(strikes, surface);
 hold on;
@@ -128,7 +128,7 @@ m = (sigma_2 - sigma_1) / (k_2 - k_1);
 vega = F_0 * discount_1y * normpdf(d_1) * sqrt(T) * 0.01;
 
 % Now compute the digital price
-price_digital_implied = price_digital_black - vega * m;
+price_digital_implied = price_digital_black - vega * m * payment;
 
 % now implement monte carlo simulation
 N = 1e7;
