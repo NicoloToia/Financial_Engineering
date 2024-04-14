@@ -101,7 +101,7 @@ F_0  = S_0 / discount_1y * exp(-d * T);
 strikes = cSelect.strikes;
 surface = cSelect.surface;
 
-sigma_digital = interp1(strikes, surface, k, 'spline')
+sigma_digital = interp1(strikes, surface, k, 'spline');
 
 plot(strikes, surface);
 hold on;
@@ -141,14 +141,10 @@ price_digital_monte_carlo = mean(payoff) * discount_1y;
 
 % compute the error
 error = abs(price_digital_implied - price_digital_black);
-disp(['The error between the implied and black price is: ', num2str(error*1e4), ' bps\n']);
-disp(['The black price is: ', num2str(price_digital_black), '\n']);
-disp(['The implied price is: ', num2str(price_digital_implied), '\n']);
-disp(['The monte carlo price is: ', num2str(price_digital_monte_carlo), '\n']);
-
-
-% stop execution
-return;
+disp(['The error between the implied and black price is: ', num2str(error*1e4), ' bps']);
+disp(['The black price is: ', num2str(price_digital_black)]);
+disp(['The implied price is: ', num2str(price_digital_implied)]);
+disp(['The monte carlo price is: ', num2str(price_digital_monte_carlo)]);
 
 %% Point 3: Pricing
 
