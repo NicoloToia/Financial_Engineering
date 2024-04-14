@@ -1,4 +1,4 @@
-function [price_digital] = Digital_Price(Notional , T , F_0 , dividend, discount_1y , sigma_digital , k , strikes , surface , flag);
+function [price_digital] = DigitalPrice(Notional , T , F_0 , dividend, discount_1y , sigma_digital , k , strikes , surface , flag);
 % Digital_Price: Computes the price of a digital option
 %
 % INPUT: 
