@@ -1,4 +1,4 @@
-function [price_digital] = Digital_Price(Notional , T ,F_0,discount_1y ,payment, strikes, surface, k, flag)
+function [price_digital] = Digital_Price(Notional , T , F_0 , discount_1y , sigma_digital , k , strikes , surface , flag);
 % Digital_Price: Computes the price of a digital option
 %
 % INPUT: 
@@ -6,16 +6,17 @@ function [price_digital] = Digital_Price(Notional , T ,F_0,discount_1y ,payment,
 % T: Time to maturity
 % F_0: Forward price
 % discount_1y: Discount factor at 1 year
-% payment: Payment of the digital option
+% sigma_digital: Volatility of the digital option
+% k: Strike price
 % strikes: Vector of strikes
 % surface: Vector of volatilities
 % flag: Flag to choose the pricing method
+
 % OUTPUT:
 % price_digital: Price of the digital option
 
-
-sigma_digital = interp1(strikes, surface, k, 'spline');
-
+% value of the digital option at maturity if s > k
+payment = 0.05 * Notional;
 d_1 = (log(F_0 / k) + (0.5 * sigma_digital^2) * T) / (sigma_digital * sqrt(T));
 d_2 = d_1 - sigma_digital * sqrt(T);
 

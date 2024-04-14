@@ -89,8 +89,6 @@ d = cSelect.dividend;
 % maturity
 ACT_365 = 3;
 T = yearfrac(t0, t0 + calyears(1), ACT_365);
-% value of the digital option at maturity if s > k
-payment = 0.05 * Notional;
 % compute the discount factor at 1 year
 discount_1y = intExtDF(discounts, dates, datenum(t0 + calyears(1)));
 % find the corrisponding interest rate
@@ -101,48 +99,26 @@ F_0  = S_0 / discount_1y * exp(-d * T);
 % Load volatility smile
 strikes = cSelect.strikes;
 surface = cSelect.surface;
-
+% sigma digital
 sigma_digital = interp1(strikes, surface, k, 'spline');
-
+% plot the volatility smile
 plot(strikes, surface);
 hold on;
 plot(k, sigma_digital,'x', 'MarkerSize', 5, 'LineWidth', 5);
 legend('Volatility smile', 'Volatility at the money');
 
-d_1 = (log(F_0 / k) + (0.5 * sigma_digital^2) * T) / (sigma_digital * sqrt(T));
-d_2 = d_1 - sigma_digital * sqrt(T);
+% compute the price
+% flag = 1: Black formula
+% flag = 2: Implied volatility
+% flag = 3: Monte Carlo
 
-price_digital_black = payment * discount_1y * normcdf(d_2);
-
-% Now use a volatility approach
-% Find k_1 and k_2 that contain k
-k_1 = strikes(find(strikes < k, 1, 'last'));
-k_2 = strikes(find(strikes > k, 1, 'first'));
-
-% Find the corresponding volatilities
-sigma_1 = interp1(strikes, surface, k_1, 'spline');
-sigma_2 = interp1(strikes, surface, k_2, 'spline');
-
-% compute the skew in that point
-m = (sigma_2 - sigma_1) / (k_2 - k_1);
-
-% Compute the vega under black model
-vega = F_0 * discount_1y * normpdf(d_1) * sqrt(T) * 0.01;
-
-% Now compute the digital price
-price_digital_implied = price_digital_black - vega * m * payment;
-
-% now implement monte carlo simulation
-N = 1e7;
-Z = randn(N, 1);
-F_t = F_0 * exp(-0.5 * sigma_digital^2 * T + sigma_digital * sqrt(T) * Z);
-% payoff digital option pays 0.05 
-payoff = payment *  (F_t > k);
-price_digital_monte_carlo = mean(payoff) * discount_1y;
+price_digital_black = Digital_Price(Notional , T , F_0 , discount_1y , sigma_digital , k , strikes , surface , 1);
+price_digital_implied = Digital_Price(Notional , T , F_0 , discount_1y , sigma_digital , k , strikes , surface , 2);
+price_digital_monte_carlo = Digital_Price(Notional , T , F_0 , discount_1y , sigma_digital , k , strikes , surface , 3);
 
 % compute the error
 error = abs(price_digital_implied - price_digital_black);
-disp(['The error between the implied and black price is: ', num2str(error*1e4), ' bps']);
+disp(['The error between the implied and black price is: ', num2str(error*1e4), ' bps which is ', num2str(error/price_digital_black*100), '% of the black price']);
 disp(['The black price is: ', num2str(price_digital_black)]);
 disp(['The implied price is: ', num2str(price_digital_implied)]);
 disp(['The monte carlo price is: ', num2str(price_digital_monte_carlo)]);
