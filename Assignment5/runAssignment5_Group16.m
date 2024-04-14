@@ -115,9 +115,9 @@ legend('Volatility smile', 'Volatility at the money');
 % flag = 2: Volatility Approach
 % flag = 3: Monte Carlo (Black dynamics)
 
-price_digital_black = DigitalPrice(Notional , T , F_0 , d , discount_1y , sigma_digital , k , strikes , surface , 1);
-price_digital_implied = DigitalPrice(Notional , T , F_0 , d , discount_1y , sigma_digital , k , strikes , surface , 2);
-price_digital_monte_carlo = DigitalPrice(Notional , T , F_0 , d , discount_1y , sigma_digital , k , strikes , surface , 3);
+price_digital_black = DigitalPrice(Notional , T , F_0 , d , discount_1y , k , strikes , surface , 1);
+price_digital_implied = DigitalPrice(Notional , T , F_0 , d , discount_1y , k , strikes , surface , 2);
+price_digital_monte_carlo = DigitalPrice(Notional , T , F_0 , d , discount_1y , k , strikes , surface , 3);
 
 % compute the error
 error = abs(price_digital_implied - price_digital_black);
