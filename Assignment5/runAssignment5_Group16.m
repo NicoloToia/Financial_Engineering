@@ -70,11 +70,14 @@ partyA_dates = datenum(partyA_dates);
 
 %% Compute the partecipation coefficient
 
+% set number of simulations
 N_sim = 1e7;
 
+% compute the participation coefficient
 [alpha, IC_alpha] = priceCertificate(ENEL_0,  sigma_ENEL, d_ENEL, AXA_0, sigma_AXA, d_AXA, rho, s_spol, P, X, ...
     principal_Amount, N_sim, partyA_dates, partyB_dates, dates, discounts, 0.95);
 
+% display the results
 disp(['The participation coefficient is: ', num2str(alpha)]);
 disp(['The confidence interval is: [', num2str(IC_alpha(1)), ', ', num2str(IC_alpha(2)), ']']);
 
@@ -82,7 +85,7 @@ disp(['The confidence interval is: [', num2str(IC_alpha(1)), ', ', num2str(IC_al
 
 % Price with Black Formula
 Notional = 1e7;
-% spot and strike
+% spot and strike from data
 S_0 = cSelect.reference;
 k = S_0;
 d = cSelect.dividend;
@@ -91,7 +94,7 @@ ACT_365 = 3;
 T = yearfrac(t0, t0 + calyears(1), ACT_365);
 % compute the discount factor at 1 year
 discount_1y = intExtDF(discounts, dates, datenum(t0 + calyears(1)));
-% find the corrisponding interest rate
+% find the corrisponding zero rate
 r = -log(discount_1y) / T;
 % compute the forward price
 F_0  = S_0 / discount_1y * exp(-d * T);
@@ -107,21 +110,26 @@ hold on;
 plot(k, sigma_digital,'x', 'MarkerSize', 5, 'LineWidth', 5);
 legend('Volatility smile', 'Volatility at the money');
 
-% compute the price
+% compute the price via DigitalPrice function
 % flag = 1: Black formula
-% flag = 2: Implied volatility
-% flag = 3: Monte Carlo
+% flag = 2: Volatility Approach
+% flag = 3: Monte Carlo (Black dynamics)
 
-price_digital_black = Digital_Price(Notional , T , F_0 , d , discount_1y , sigma_digital , k , strikes , surface , 1);
-price_digital_implied = Digital_Price(Notional , T , F_0 , d , discount_1y , sigma_digital , k , strikes , surface , 2);
-price_digital_monte_carlo = Digital_Price(Notional , T , F_0 , d , discount_1y , sigma_digital , k , strikes , surface , 3);
+price_digital_black = DigitalPrice(Notional , T , F_0 , d , discount_1y , sigma_digital , k , strikes , surface , 1);
+price_digital_implied = DigitalPrice(Notional , T , F_0 , d , discount_1y , sigma_digital , k , strikes , surface , 2);
+price_digital_monte_carlo = DigitalPrice(Notional , T , F_0 , d , discount_1y , sigma_digital , k , strikes , surface , 3);
 
 % compute the error
 error = abs(price_digital_implied - price_digital_black);
-disp(['The error between the implied and black price is: ', num2str(error*1e4), ' bps which is ', num2str(error/price_digital_black*100), '% of the black price']);
-disp(['The black price is: ', num2str(price_digital_black)]);
-disp(['The implied price is: ', num2str(price_digital_implied)]);
-disp(['The monte carlo price is: ', num2str(price_digital_monte_carlo)]);
+
+error_percentage = (error / price_digital_black) * 100;
+
+% display results
+fprintf(['\nThe black price is: ', num2str(price_digital_black)]);
+fprintf(['\nThe implied price is: ', num2str(price_digital_implied)]);
+fprintf('\nThe error between the implied and black price is: %.2f€ which is %.2f%% of the black price', error, error_percentage);
+
+fprintf(['\nThe monte carlo price is: ', num2str(price_digital_monte_carlo), '\n']);
 
 return
 
