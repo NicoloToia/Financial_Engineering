@@ -1,5 +1,6 @@
 function [alpha, IC] = priceCertificate(S1_0,  sigma_1, d_1, S2_0, sigma_2, d_2, rho, s_spol, P, X, ...
     principal, N, partyA_dates, partyB_dates, dates, discounts, confidence_level)
+
 % priceCertificate: function to compute the participation coefficient of a certificate
 %   - party A pays the Euribor 3M + s_spol quarterly with ACT/360 convention and modified following convention
 %     and at maturity pays (1-P) * principal
