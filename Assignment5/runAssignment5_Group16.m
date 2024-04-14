@@ -105,7 +105,8 @@ sigma_digital = interp1(strikes, surface, k, 'spline')
 
 plot(strikes, surface);
 hold on;
-plot(k, sigma_digital,'x')
+plot(k, sigma_digital,'x', 'MarkerSize', 5, 'LineWidth', 5);
+legend('Volatility smile', 'Volatility at the money');
 
 d_1 = (log(F_0 / k) + (0.5 * sigma_digital^2) * T) / (sigma_digital * sqrt(T));
 d_2 = d_1 - sigma_digital * sqrt(T);
@@ -140,10 +141,11 @@ price_digital_monte_carlo = mean(payoff) * discount_1y;
 
 % compute the error
 error = abs(price_digital_implied - price_digital_black);
-disp(['The error between the implied and black price is: ', num2str(error*1e4), ' bps']);
-disp(['The black price is: ', num2str(price_digital_black)]);
-disp(['The implied price is: ', num2str(price_digital_implied)]);
-disp(['The monte carlo price is: ', num2str(price_digital_monte_carlo)]);
+disp(['The error between the implied and black price is: ', num2str(error*1e4), ' bps\n']);
+disp(['The black price is: ', num2str(price_digital_black), '\n']);
+disp(['The implied price is: ', num2str(price_digital_implied), '\n']);
+disp(['The monte carlo price is: ', num2str(price_digital_monte_carlo), '\n']);
+
 
 % stop execution
 return;
