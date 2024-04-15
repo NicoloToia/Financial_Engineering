@@ -331,7 +331,7 @@ omega_down = (1 - alpha) / (kappa * sigma^2);
 
 % calibrate the model using fmincon
 % initial guess
-x0 = [0.2, 1, 1];
+x0 = [0.2, 1, 3];
 
 % lower bounds
 lb = [0, 0, -omega_down];
@@ -340,6 +340,12 @@ lb = [0, 0, -omega_down];
 options = optimoptions('fmincon', 'MaxFunctionEvaluations', 1e4, 'MaxIterations', 1e4, 'Display', 'off');
 
 [x, fval] = fmincon(@(x) norm(prices(x(1), x(2), x(3)) - realPrices), x0, [], [], [], [], lb, [], [], options);
+
+% display the results
+disp(['Calibrated parameters']);
+disp(['Sigma: ', num2str(x(1))]);
+disp(['Kappa: ', num2str(x(2))]);
+disp(['Eta: ', num2str(x(3))]);
 
 % compute the prices with the calibrated parameters
 prices_calibrated = prices(x(1), x(2), x(3));
@@ -358,12 +364,12 @@ legend('Calibrated prices', 'Real prices');
 % invert the prices using black formula
 model_implied_vols = zeros(size(realStrikes));
 for i = 1:length(realStrikes)
-    callPrice = @(s) blkprice(F_0, realStrikes(i), 0, t, s);
+    callPrice = @(s) blackPrice(F_0, realStrikes(i), t, s, discount_1y, 'call');
     % initial guess and lower bound
     x0 = 0.2; lb = 0;
     % compute the price with the calibrated parameters
     model_price = prices_calibrated(i);
-    model_implied_vols(i) = fmincon(@(s) abs(model_price- callPrice(s)), x0, [], [], [], [], lb, [], [], options);
+    model_implied_vols(i) = fmincon(@(s) abs(model_price - callPrice(s)), x0, [], [], [], [], lb, [], [], options);
 end
 
 % plot the results
@@ -374,6 +380,16 @@ plot(realStrikes, realVols, 'x');
 title('Implied volatilities');
 xlabel('Strikes');
 legend('Implied volatilities', 'Real volatilities');
+
+% compute the error between the two volatilities as MAPE
+distance = 1 / length(realStrikes) * sum(abs(realVols - model_implied_vols) ./ realVols) * 100;
+
+disp(['The MAPE between the two volatilities is: ', num2str(distance)]);
+
+% compute the maximum percentage error
+max_error = max(abs(realVols - model_implied_vols) ./ realVols) * 100;
+
+disp(['The MRE is: ', num2str(max_error)]);
 
 % compute computation time
 disp(['The computation time is: ', num2str(toc), ' seconds']);
