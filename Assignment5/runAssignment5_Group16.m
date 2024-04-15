@@ -237,14 +237,14 @@ hold on
 % plot FFT
 plot(x, callPrices_FFT);
 % plot the Monte Carlo
-plot(x, callPrices_MC,'--o');
-% % plot the Black prices
-% hold on
-% plot(log(F_0 ./ realStrikes), realPrices, 'x');
+plot(x, callPrices_MC);
+% plot the Black prices
+hold on
+plot(log(F_0 ./ realStrikes), realPrices, 'x');
 
 title('Call prices with different methods and alpha = 1/2');
 xlabel('Moneyness');
-legend('Quadrature', 'FFT', 'Monte Carlo');
+legend('Quadrature', 'FFT', 'Monte Carlo','Black prices');
 
 return;
 
