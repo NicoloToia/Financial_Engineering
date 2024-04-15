@@ -291,8 +291,10 @@ else
 end
 
 % compute the average difference between the two methods
-differences = mean(abs(callPrices_FFT_2_3 - callPrices_FFT));
+average_diff = mean(abs(callPrices_FFT_2_3 - callPrices_FFT));
+average_diff_pct = mean(abs(callPrices_FFT_2_3 - callPrices_FFT)) / mean(callPrices_FFT) * 100;
 disp(['The average difference between the two alphas is: ', num2str(average_diff)]);
+disp(['The average difference in percentage is: ', num2str(average_diff_pct)]);
 
 % put the results in a txt file
 fileID = fopen('callPrices_FFT_2_3.txt', 'w');
