@@ -143,8 +143,7 @@ fprintf(fileID, '%12.8f\n', price_digital_implied);
 fprintf(fileID, '%12.8f\n', price_digital_monte_carlo);
 fclose(fileID);
 
-plot = plotpayoff(strikes, k);
-return
+plot_payoff = plotpayoff(strikes, k);
 
 %% Point 3: Pricing
 
@@ -155,7 +154,7 @@ kappa = 1;
 eta = 3;
 t = 1;
 % moneyness
-x = (-25:1:25) / 100;
+x = (-25:1:25) ./ 100;
 S_0 = cSelect.reference;
 d = cSelect.dividend;
 F_0 = S_0 / discount_1y * exp(-d * t);
@@ -164,8 +163,9 @@ F_0 = S_0 / discount_1y * exp(-d * t);
 
 % compute the call prices with the FFT method
 M_FFT = 15;
+dz = 0.0025;
 flag = 'FFT';
-callPrices_FFT = callIntegral(discount_1y, F_0, alpha, sigma, kappa, eta, t, x, M_FFT, flag);
+callPrices_FFT = callIntegral(discount_1y, F_0, alpha, sigma, kappa, eta, t, x, M_FFT, dz, flag);
 
 % put the results in a txt file
 fileID = fopen('callPrices_FFT.txt', 'w');
@@ -176,7 +176,7 @@ fclose(fileID);
 % compute the call prices with the quadrature method
 M_quad = 21;
 flag = 'quad';
-callPrices_quad = callIntegral(discount_1y, F_0, alpha, sigma, kappa, eta, t, x, M_quad, flag);
+callPrices_quad = callIntegral(discount_1y, F_0, alpha, sigma, kappa, eta, t, x, M_quad, dz, flag)
 
 % put the results in a txt file
 fileID = fopen('callPrices_quad.txt', 'w');
@@ -245,8 +245,8 @@ legend('Quadrature', 'FFT', 'Monte Carlo', 'Black prices');
 
 % run the FFT with alpha= 2/3
 alpha = 2/3;
-callPrices_FFT_2_3 = callIntegral(discount_1y, F_0, alpha, sigma, kappa, eta, t, x, M_FFT, 'FFT');
-callPrices_quad_2_3 = callIntegral(discount_1y, F_0, alpha, sigma, kappa, eta, t, x, M_FFT, 'quad');
+callPrices_FFT_2_3 = callIntegral(discount_1y, F_0, alpha, sigma, kappa, eta, t, x, M_FFT, dz, 'FFT');
+callPrices_quad_2_3 = callIntegral(discount_1y, F_0, alpha, sigma, kappa, eta, t, x, M_FFT, dz, 'quad');
 
 % put the results in a txt file
 fileID = fopen('callPrices_FFT_2_3.txt', 'w');
@@ -276,7 +276,7 @@ alpha = 1/3;
 log_moneyness = log(F_0 ./ realStrikes);
 
 % create a function that the prices of the call options given the strikes
-prices = @(sigma, kappa, eta) callIntegral(discount_1y, F_0, alpha, sigma, kappa, eta, t, log_moneyness, M_FFT, 'FFT');
+prices = @(sigma, kappa, eta) callIntegral(discount_1y, F_0, alpha, sigma, kappa, eta, t, log_moneyness, M_FFT, dz, 'FFT');
 
 % compute the lower bound for eta
 omega_down = (1 - alpha) / (kappa * sigma^2);
