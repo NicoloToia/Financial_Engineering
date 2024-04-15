@@ -199,7 +199,7 @@ ln_L = @(omega) t/kappa * (1 - alpha)/alpha * ...
 % draw the standard normal random variables
 g = randn(N, 1);
 % draw the inverse gaussian random variables
-G = random('inversegaussian', 1, kappa/t, N, 1);
+G = random('inversegaussian', 1, t/kappa, N, 1);
 
 ft = sqrt(t) * sigma * sqrt(G) .* g - (0.5 + eta) * t * sigma^2 * G - ln_L(eta);
 
@@ -215,6 +215,33 @@ end
 fileID = fopen('callPrices_MC.txt', 'w');
 fprintf(fileID, '%12.8f\n', callPrices_MC);
 fclose(fileID);
+
+% check moments of inverse gaussian
+
+% numerical first 4 moments
+mu = mean(G);
+mu_2 = mean(G.^2);
+mu_3 = mean(G.^3);
+mu_4 = mean(G.^4);
+
+% analytical first 4 moments
+mu = 1;
+lambda = t/kappa;
+mu_an = 1;
+mu_2_an = mu^2 * (lambda + mu) / lambda;
+mu_3_an = mu^3 * (lambda^2 + 3 * lambda * mu + 3 * mu^2) / lambda^2;
+mu_4_an = 5 * mu^2 / lambda * mu_3_an + mu_2_an * mu^2;
+
+% print a table of the moments
+
+disp('The first 4 moments of the inverse gaussian distribution are:');
+disp(' ');
+disp('Numerical | Analytical');
+disp('-----------------------');
+disp([mu, mu_an]);
+disp([mu_2, mu_2_an]);
+disp([mu_3, mu_3_an]);
+disp([mu_4, mu_4_an]);
 
 %% Point 3.c: Black prices (check)
 
