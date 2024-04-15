@@ -158,7 +158,7 @@ F_0 = S_0 / discount_1y * exp(-d * t);
 %% Point 3.a: FFT method, alpha = 1/2
 
 % compute the call prices with the FFT method
-M_FFT = 20;
+M_FFT = 12;
 dz = 0.0025;
 flag = 'FFT';
 callPrices_FFT = callIntegral(discount_1y, F_0, alpha, sigma, kappa, eta, t, x, M_FFT, dz, flag);
