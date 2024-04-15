@@ -158,7 +158,7 @@ F_0 = S_0 / discount_1y * exp(-d * t);
 %% Point 3.a: FFT method, alpha = 1/2
 
 % compute the call prices with the FFT method
-M_FFT = 15;
+M_FFT = 14;
 dz = 0.0025;
 flag = 'FFT';
 callPrices_FFT = callIntegral(discount_1y, F_0, alpha, sigma, kappa, eta, t, x, M_FFT, dz, flag);
@@ -219,7 +219,7 @@ fclose(fileID);
 % check moments of inverse gaussian
 
 % numerical first 4 moments
-mu = mean(G);
+mu_1 = mean(G);
 mu_2 = mean(G.^2);
 mu_3 = mean(G.^3);
 mu_4 = mean(G.^4);
@@ -227,7 +227,7 @@ mu_4 = mean(G.^4);
 % analytical first 4 moments
 mu = 1;
 lambda = t/kappa;
-mu_an = 1;
+mu_1_an = 1;
 mu_2_an = mu^2 * (lambda + mu) / lambda;
 mu_3_an = mu^3 * (lambda^2 + 3 * lambda * mu + 3 * mu^2) / lambda^2;
 mu_4_an = 5 * mu^2 / lambda * mu_3_an + mu_2_an * mu^2;
@@ -238,7 +238,7 @@ disp('The first 4 moments of the inverse gaussian distribution are:');
 disp(' ');
 disp('Numerical | Analytical');
 disp('-----------------------');
-disp([mu, mu_an]);
+disp([mu_1, mu_1_an]);
 disp([mu_2, mu_2_an]);
 disp([mu_3, mu_3_an]);
 disp([mu_4, mu_4_an]);
@@ -273,14 +273,26 @@ title('Call prices with different methods and alpha = 1/2');
 xlabel('Moneyness');
 legend('Quadrature', 'FFT', 'Monte Carlo','Black prices');
 
-return;
-
 %% Point 3.d: Use alpha = 2/3
 
 % run the FFT with alpha= 2/3
 alpha = 2/3;
+M_FFT = 14;
 callPrices_FFT_2_3 = callIntegral(discount_1y, F_0, alpha, sigma, kappa, eta, t, x, M_FFT, dz, 'FFT');
 callPrices_quad_2_3 = callIntegral(discount_1y, F_0, alpha, sigma, kappa, eta, t, x, M_FFT, dz, 'quad');
+
+% compute the MSE between the two methods
+distance = 1 / length(x) * sum((callPrices_FFT_2_3 - callPrices_quad_2_3).^2);
+
+if distance < 1e-4 % one bp of tolerance
+    disp('The two methods converge');
+else
+    disp('The two methods do not converge');
+end
+
+% compute the average difference between the two methods
+differences = mean(abs(callPrices_FFT_2_3 - callPrices_FFT));
+disp(['The average difference between the two alphas is: ', num2str(average_diff)]);
 
 % put the results in a txt file
 fileID = fopen('callPrices_FFT_2_3.txt', 'w');
