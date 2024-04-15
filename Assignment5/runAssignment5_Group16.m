@@ -57,16 +57,12 @@ d_AXA = 2.7 / 100; % 2.7%
 partyB_dates = t0 + calyears(1:4);
 % move to business days if needed (modified follow convention, no holidays)
 partyB_dates(~isbusday(partyB_dates,0)) = busdate(partyB_dates(~isbusday(partyB_dates,0)), "modifiedfollow", 0);
-disp('Party B dates: ');
-disp(partyB_dates);
 % convert to datenums
 partyB_dates = datenum(partyB_dates);
 
 % party A dates (quarterly for 4 years) 12 dates
 partyA_dates = t0 + calmonths(3:3:48);
 partyA_dates(~isbusday(partyA_dates,0)) = busdate(partyA_dates(~isbusday(partyA_dates,0)), "follow", 0);
-disp('Party A dates: ');
-disp(partyA_dates);
 partyA_dates = datenum(partyA_dates);
 
 %% Compute the partecipation coefficient
@@ -162,7 +158,7 @@ F_0 = S_0 / discount_1y * exp(-d * t);
 %% Point 3.a: FFT method, alpha = 1/2
 
 % compute the call prices with the FFT method
-M_FFT = 15;
+M_FFT = 20;
 dz = 0.0025;
 flag = 'FFT';
 callPrices_FFT = callIntegral(discount_1y, F_0, alpha, sigma, kappa, eta, t, x, M_FFT, dz, flag);
@@ -174,14 +170,23 @@ fclose(fileID);
 
 %% Point 3.b: Quadrature method, alpha = 1/2
 % compute the call prices with the quadrature method
-M_quad = 21;
+M_quad = 20;
 flag = 'quad';
-callPrices_quad = callIntegral(discount_1y, F_0, alpha, sigma, kappa, eta, t, x, M_quad, dz, flag)
+callPrices_quad = callIntegral(discount_1y, F_0, alpha, sigma, kappa, eta, t, x, M_quad, dz, flag);
 
 % put the results in a txt file
 fileID = fopen('callPrices_quad.txt', 'w');
 fprintf(fileID, '%12.8f\n', callPrices_quad);
 fclose(fileID);
+
+% compute the MSE between the two methods
+distance = 1 / length(x) * sum((callPrices_FFT - callPrices_quad).^2);
+
+if distance < 1e-4 % one bp of tolerance
+    disp('The two methods converge');
+else
+    disp('The two methods do not converge');
+end
 
 %% Point 3.c: Monte Carlo simulation with alpha = 1/2
 
@@ -240,6 +245,8 @@ plot(log(F_0 ./ realStrikes), realPrices, 'x');
 title('Call prices with different methods and alpha = 1/2');
 xlabel('Moneyness');
 legend('Quadrature', 'FFT', 'Monte Carlo', 'Black prices');
+
+return;
 
 %% Point 3.d: Use alpha = 2/3
 

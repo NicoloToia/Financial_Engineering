@@ -31,7 +31,7 @@ end
 I = zeros(size(queryPoints));
 
 for i = 1:length(queryPoints)
-    I(i) = quadgk(@(xi) real(f(xi, queryPoints(i))), xi_1, -xi_1);
+    I(i) = quadgk(@(xi) real(f(xi, queryPoints(i))), xi_1, -xi_1, 'MaxIntervalCount', N);
 end
 
 end
