@@ -19,7 +19,7 @@ function [price_digital] = DigitalPrice(Notional , T , F_0 , dividend, discount_
 % OUTPUT:
 % price_digital : Price of the digital option
 
-% find the corresponfing volatility from the smile
+% find the corresponding volatility from the smile
 sigma_digital = interp1(strikes, surface, k, 'spline');
 
 % value of the digital option at maturity if s > k
@@ -52,7 +52,7 @@ elseif flag==2 % Implied Volatility Approach
     title('Skew vs Strikes');
     
     % find the skew in the given strike
-    m = interp1(strikes, skew, k, 'spline');
+    m = interp1(strikes, skew, k, 'linear');
 
     % Compute the vega under black model
     F0_values = strikes/discount_1y * exp(-dividend * T);
@@ -87,4 +87,6 @@ elseif flag==3 % MC Black dynamics
 
 else
     disp('Flag not recognized');
+end
+
 end
