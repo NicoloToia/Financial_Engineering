@@ -1,4 +1,11 @@
 function payoffplot = plotpayoff(strikes, k)
+% Plot the payoff graph for a digital call option
+% INPUT:
+% strikes: vector of strike prices
+% k: ATM strike price
+% OUTPUT:
+% payoffplot: plot for payoff graph for a digital call option and a BUll spread
+
 
 % Parameters
 S = 2600:0.1:strikes(end); % Underlying asset's price range
@@ -58,7 +65,6 @@ ylim([0, 1.2]);
 % Add x-axis ticks for K and K + delta_K
 xticks([K_lower, K_upper]);
 xticklabels({['K'], ['K + \Delta K']});
-
 
 
 

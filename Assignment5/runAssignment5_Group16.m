@@ -9,6 +9,7 @@
 clear all;
 close all;
 clc;
+close all;
 
 %% Settings
 
@@ -81,6 +82,13 @@ N_sim = 1e7;
 disp(['The participation coefficient is: ', num2str(alpha)]);
 disp(['The confidence interval is: [', num2str(IC_alpha(1)), ', ', num2str(IC_alpha(2)), ']']);
 
+% put the results in a txt file
+fileID = fopen('patrtecipation_coefficient.txt', 'w');
+fprintf(fileID, '%12.8f\n', alpha);
+fprintf(fileID, '%12.8f\n', IC_alpha);
+fclose(fileID);
+
+
 %% Point 2: Pricing Digital Option
 
 % Price with Black Formula
@@ -114,7 +122,6 @@ legend('Volatility smile', 'Volatility at the money');
 % flag = 1: Black formula
 % flag = 2: Volatility Approach
 % flag = 3: Monte Carlo (Black dynamics)
-
 price_digital_black = DigitalPrice(Notional , T , F_0 , d , discount_1y , k , strikes , surface , 1);
 price_digital_implied = DigitalPrice(Notional , T , F_0 , d , discount_1y , k , strikes , surface , 2);
 price_digital_monte_carlo = DigitalPrice(Notional , T , F_0 , d , discount_1y , k , strikes , surface , 3);
@@ -128,8 +135,13 @@ error_percentage = (error / price_digital_black) * 100;
 fprintf(['\nThe black price is: ', num2str(price_digital_black)]);
 fprintf(['\nThe implied price is: ', num2str(price_digital_implied)]);
 fprintf('\nThe error between the implied and black price is: %.2f€ which is %.2f%% of the black price', error, error_percentage);
-
 fprintf(['\nThe monte carlo price is: ', num2str(price_digital_monte_carlo), '\n']);
+
+fileID = fopen('digital_prices.txt', 'w');
+fprintf(fileID, '%12.8f\n', price_digital_black);
+fprintf(fileID, '%12.8f\n', price_digital_implied);
+fprintf(fileID, '%12.8f\n', price_digital_monte_carlo);
+fclose(fileID);
 
 plot = plotpayoff(strikes, k);
 return
@@ -315,4 +327,5 @@ title('Implied volatilities');
 xlabel('Strikes');
 legend('Implied volatilities', 'Real volatilities');
 
-toc
+% compute computation time
+disp(['The computation time is: ', num2str(toc), ' seconds']);

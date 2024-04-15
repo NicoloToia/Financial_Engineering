@@ -1,7 +1,7 @@
 function callPrices = callIntegral(B0, F0, alpha, sigma, kappa, eta, t, log_moneyness, M, flag)
 % Compute the price of a call option using the integral of Normal Mean-Variance Mixture model
 %
-% Inputs:
+% INPUT:
 %   B0: discount factor at time 0
 %   F0: forward price at time 0
 %   alpha: exponent of the model
@@ -13,7 +13,7 @@ function callPrices = callIntegral(B0, F0, alpha, sigma, kappa, eta, t, log_mone
 %   M: N = 2^M, number of nodes for the FFT and quadrature
 %   flag: flag to choose the integration method ("FFT" or "quad")
 %
-% Outputs:
+% OUTPUT:
 %   callPrices: price of the call option (same size as log_moneyness)
 
 % Compute the Laplace exponent as a function of omega and alpha
