@@ -55,9 +55,8 @@ elseif flag==2 % Implied Volatility Approach
     m = interp1(strikes, skew, k, 'spline');
 
     % Compute the vega under black model
-    F0_values = strikes/discount_1y * exp(-dividend * T);
-    d_1 = (log(F0_values ./ k) + (0.5 * surface.^2) * T) ./ (surface .* sqrt(T));
-    vega = F0_values .* discount_1y .* normpdf(d_1) * sqrt(T);
+    d_1 = (log(F_0 ./ strikes) + (0.5 * surface.^2) * T) ./ (surface .* sqrt(T));
+    vega = F_0 .* discount_1y .* normpdf(d_1) * sqrt(T);
 
     % plot the vega vs the strikes
     figure;
