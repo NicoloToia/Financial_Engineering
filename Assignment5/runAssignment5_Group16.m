@@ -158,7 +158,7 @@ F_0 = S_0 / discount_1y * exp(-d * t);
 %% Point 3.a: FFT method, alpha = 1/2
 
 % compute the call prices with the FFT method
-M_FFT = 14;
+M_FFT = 15;
 dz = 0.0025;
 flag = 'FFT';
 callPrices_FFT = callIntegral(discount_1y, F_0, alpha, sigma, kappa, eta, t, x, M_FFT, dz, flag);
@@ -277,7 +277,7 @@ legend('Quadrature', 'FFT', 'Monte Carlo','Black prices');
 
 % run the FFT with alpha= 2/3
 alpha = 2/3;
-M_FFT = 14;
+M_FFT = 15;
 callPrices_FFT_2_3 = callIntegral(discount_1y, F_0, alpha, sigma, kappa, eta, t, x, M_FFT, dz, 'FFT');
 callPrices_quad_2_3 = callIntegral(discount_1y, F_0, alpha, sigma, kappa, eta, t, x, M_FFT, dz, 'quad');
 
