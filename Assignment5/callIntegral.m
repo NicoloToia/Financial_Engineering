@@ -1,4 +1,4 @@
-function callPrices = callIntegral(B0, F0, alpha, sigma, kappa, eta, t, log_moneyness, M, flag)
+function callPrices = callIntegral(B0, F0, alpha, sigma, kappa, eta, t, log_moneyness, M, dz, flag)
 % Compute the price of a call option using the integral of Normal Mean-Variance Mixture model
 %
 % INPUT:
@@ -28,9 +28,9 @@ phi = @(xi) exp(-1i * xi * ln_L_eta) .* exp( ln_L (0.5 * ((xi.^2) + 1i * (1+2*et
 
 % Compute the integral with the flag
 if strcmp(flag, 'FFT')
-    I = integralFFT(phi, M, 0.01, log_moneyness);
+    I = integralFFT(phi, M, dz, log_moneyness);
 elseif strcmp(flag, 'quad')
-    I = integralQuad(phi, M, 0.01, log_moneyness);
+    I = integralQuad(phi, M, dz, log_moneyness);
 else
     error('Flag not recognized');
 end
