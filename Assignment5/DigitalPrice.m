@@ -52,7 +52,7 @@ elseif flag==2 % Implied Volatility Approach
     title('Skew vs Strikes');
     
     % find the skew in the given strike
-    m = interp1(strikes, skew, k, 'linear');
+    m = interp1(strikes, skew, k, 'spline');
 
     % Compute the vega under black model
     F0_values = strikes/discount_1y * exp(-dividend * T);

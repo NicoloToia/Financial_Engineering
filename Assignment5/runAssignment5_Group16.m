@@ -251,7 +251,7 @@ realStrikes = cSelect.strikes;
 % for each strike compute the black price
 realPrices = zeros(size(realStrikes));
 for i = 1:length(realStrikes)
-    realPrices(i) = blkprice(F_0, realStrikes(i), 0, t, realVols(i));
+    realPrices(i) = blackPrice(F_0, realStrikes(i), t, realVols(i), discount_1y, 'call');
 end
 
 %% Plot results with alpha = 1/2
