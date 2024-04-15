@@ -158,7 +158,7 @@ F_0 = S_0 / discount_1y * exp(-d * t);
 %% Point 3.a: FFT method, alpha = 1/2
 
 % compute the call prices with the FFT method
-M_FFT = 12;
+M_FFT = 15;
 dz = 0.0025;
 flag = 'FFT';
 callPrices_FFT = callIntegral(discount_1y, F_0, alpha, sigma, kappa, eta, t, x, M_FFT, dz, flag);
@@ -232,19 +232,19 @@ end
 figure;
 
 % plot quadrature
-plot(x, callPrices_quad);
+plot(x, callPrices_quad,'--x');
 hold on
 % plot FFT
 plot(x, callPrices_FFT);
 % plot the Monte Carlo
-plot(x, callPrices_MC);
-% plot the Black prices
-hold on
-plot(log(F_0 ./ realStrikes), realPrices, 'x');
+plot(x, callPrices_MC,'--o');
+% % plot the Black prices
+% hold on
+% plot(log(F_0 ./ realStrikes), realPrices, 'x');
 
 title('Call prices with different methods and alpha = 1/2');
 xlabel('Moneyness');
-legend('Quadrature', 'FFT', 'Monte Carlo', 'Black prices');
+legend('Quadrature', 'FFT', 'Monte Carlo');
 
 return;
 
