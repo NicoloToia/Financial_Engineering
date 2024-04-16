@@ -4,11 +4,26 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Load the data from a csv with readcsv function
-data = csvread('C:\Users\andre\gitFE\FE-group-16\contest_2\functions\Lottery_Powerball_Winning_Numbers__Beginning_2010.csv');
-% save it in a .mat file
-save('C:\Users\andre\gitFE\FE-group-16\contest_2\functions\Lottery_Powerball_Winning_Numbers__Beginning_2010.csv', 'data');
-% load the data from the .mat file
+% clear workspace
+clc;
+clear all;
+close all;
+
+tic
+
+%% filename in .csv
+filename = 'Lottery.csv';
+
+% read excel data from filename
+% INPUT filename, formatData, interval of rows and columns to read e.g. 'E8:F36'
+% 
+[~, var] = xlsread(filename,1,'A1:F36');
+disp(var)
+
+% repeat for every column of interest
+
+
+
 
 
 % % Compute Z_scores
@@ -20,6 +35,10 @@ save('C:\Users\andre\gitFE\FE-group-16\contest_2\functions\Lottery_Powerball_Win
 % %
 % % OUTPUT
 % % z = z_score
+
+% ZC_curve = ;
+% couponSchedule = ;
+% dirtyPrice = ;
 
 % z = zscore(ZC_curve, couponSchedule, dirtyPrice)
 
@@ -36,6 +55,10 @@ save('C:\Users\andre\gitFE\FE-group-16\contest_2\functions\Lottery_Powerball_Win
 % % OUTPUTS:
 % %   FV: fair value of the bond in one year for IG, HY and Default
 
+% IG_cf_schedule_2y = ;
+% Q = ;
+% ZC_curve = ;
+% Recovery = ;
 
 % FV = FV_risky_bond(IG_cf_schedule_2y, Q, ZC_curve, Recovery) 
 
@@ -48,6 +71,8 @@ save('C:\Users\andre\gitFE\FE-group-16\contest_2\functions\Lottery_Powerball_Win
 % %
 % % OUTPUTS
 % % R: correlation factor
+
+%PD = ;
 
 % R= R_IRB(PD)
 
@@ -63,6 +88,9 @@ save('C:\Users\andre\gitFE\FE-group-16\contest_2\functions\Lottery_Powerball_Win
 % % OUTPUT
 % % Q: market-implied rating transition matrix
 
+% IG_h = ;
+% HY_h = ;
+
 % Q = Qmatrix(IG_h,HY_h)
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -77,6 +105,10 @@ save('C:\Users\andre\gitFE\FE-group-16\contest_2\functions\Lottery_Powerball_Win
 % %
 % % OUTPUT
 % %   PV : Dirty price for a given risky bond (from scalar Z-spread)
+
+% z = ;
+% cf_schedule = ;
+% ZC_curve = ;
 
 % PV = PV_risky_bond_Z(z, cf_schedule, ZC_curve)
 
@@ -95,6 +127,11 @@ save('C:\Users\andre\gitFE\FE-group-16\contest_2\functions\Lottery_Powerball_Win
 % % OUTPUT
 % %   PV : Dirty price for a given risky bond (from hazard rate curve - fixed recoovery rate R)
 
+% cf_schedule = ;
+% ZC_curve = ;
+% h_curve = ;
+% R = ;
+
 % PV = PV_risky_bond_h(cf_schedule, h_curve, ZC_curve, R)
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -112,9 +149,18 @@ save('C:\Users\andre\gitFE\FE-group-16\contest_2\functions\Lottery_Powerball_Win
 % % OUTPUT
 % % h_curve : Hazard curve [yearfrac; h]
 
+% zeroCurve = ;
+% R = ;
+% dirtyPrice_1y = ;
+% dirtyPrice_2y = ;
+% couponSchedule_1y = ;
+% couponSchedule_2y = ;
+
+
 % h_curve = hazardCurve(zeroCurve, R, dirtyPrice_1y, dirtyPrice_2y, ...
 %     couponSchedule_1y, couponSchedule_2y)
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+toc
