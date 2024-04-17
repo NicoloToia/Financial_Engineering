@@ -12,15 +12,9 @@ close all;
 tic
 
 %% filename in .csv
-filename = 'Lottery.csv';
+% DATA
 
-% read excel data from filename
-% INPUT filename, formatData, interval of rows and columns to read e.g. 'E8:F36'
-% 
-[~, var] = xlsread(filename,1,'A1:F36');
-disp(var)
-
-% repeat for every column of interest
+% IG Corporate Bonds DEsk
 
 
 
@@ -94,45 +88,65 @@ disp(var)
 % Q = Qmatrix(IG_h,HY_h)
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% % Compute the present value of a risky bond using the zero curve
-% % and the Z-score
-% %
-% % INPUTS
-% % zScore: the Z-score of the bond
-% % couponSchedule: a matrix with the coupon dates and values
-% % ZC_curve: a matrix with the zero curve
-% %
-% % OUTPUT
-% %   PV : Dirty price for a given risky bond (from scalar Z-spread)
-
-% z = ;
-% cf_schedule = ;
-% ZC_curve = ;
-
-% PV = PV_risky_bond_Z(z, cf_schedule, ZC_curve)
-
+% 
+% Compute the present value of a risky bond using the zero curve
+% and the Z-score
+% 
+% INPUTS
+% zScore: the Z-score of the bond
+% couponSchedule: a matrix with the coupon dates and values
+% ZC_curve: a matrix with the zero curve
+% 
+% OUTPUT
+%   PV : Dirty price for a given risky bond (from scalar Z-spread)
+% 
+% z = 30 * 10^-4;
+% cf_schedule = [0.5 0; 1.0 105.00] ;
+% ZC_curve = [0.25 0.064; 0.5 0.063; 2.0 0.042];
+% 
+% PV_1y = PV_risky_bond_Z(z, cf_schedule, ZC_curve)
+% 
+% z = 50 * 10^-4;
+% cf_schedule = [0.5 0; 1.0 5.5; 1.5 0; 2.0 105.50];
+% 
+% PV_2Y = PV_risky_bond_Z(z, cf_schedule, ZC_curve)
+% 
+% PV = (PV_1y * 4 + PV_2Y * 7 ) / 100
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% % PV_risky_bond_h: computes the present value of a risky bond using the
-% % survival probabilities (derived from the hazard rates) and the zero
-% % coupon curve
-% %
-% % INPUT
-% %   cf_schedule: a 2xN matrix with the cash flow schedule of the bond
-% %   h_curve: a 2xN matrix with the hazard rates
-% %   ZC_curve: a 2xN matrix with the zero coupon curve
-% %   R: recovery rate
-% %
-% % OUTPUT
-% %   PV : Dirty price for a given risky bond (from hazard rate curve - fixed recoovery rate R)
+% PV_risky_bond_h: computes the present value of a risky bond using the
+% survival probabilities (derived from the hazard rates) and the zero
+% coupon curve
+%
+% INPUT
+%   cf_schedule: a 2xN matrix with the cash flow schedule of the bond
+%   h_curve: a 2xN matrix with the hazard rates
+%   ZC_curve: a 2xN matrix with the zero coupon curve
+%   R: recovery rate
+%
+% OUTPUT
+%   PV : Dirty price for a given risky bond (from hazard rate curve - fixed recoovery rate R)
 
-% cf_schedule = ;
-% ZC_curve = ;
-% h_curve = ;
-% R = ;
+ZC_curve = [0.25 0.064; 0.5 0.063; 2.0 0.042];
 
-% PV = PV_risky_bond_h(cf_schedule, h_curve, ZC_curve, R)
+h_curve = [1 , 59*10^-4; 2, 679*10^-4];
+R = 0.25;
+
+% One year bond IG
+Notional_1y = 4*10^6;
+cf_schedule = [0.5 0; 1.0 105.00];
+IG_Bond_dirty_price_1y = 98.5234;
+ 
+PV_1 = PV_risky_bond_h(cf_schedule, h_curve, ZC_curve, R)
+
+% Two year bond IG
+Notional_2y = 7 * 10^6;
+cf_schedule = [0.5 0; 1.0 5.5; 1.5 0; 2.0 105.50];
+IG_Bond_dirty_price_2y = 98.5336;
+
+PV_2 = PV_risky_bond_h(cf_schedule, h_curve, ZC_curve, R)
+
+PV = (PV_1 * 4 + PV_2 * 7 ) / 100
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
