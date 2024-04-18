@@ -21,10 +21,11 @@ class ARXRegressor:
 
     def __build_model__(self, loss):
         x_in = tf.keras.layers.Input(shape=(self.settings['input_size'],))
+        # l1 regularization (lasso)
         logit = tf.keras.layers.Dense(self.settings['pred_horiz'],
-                                      activation='linear',
-                                      kernel_regularizer=tf.keras.regularizers.l1(self.settings['l1'])
-                                      )(x_in)
+            activation='linear', kernel_regularizer=tf.keras.regularizers.l1_l2(
+                l1 = self.settings['l1'], l2 = self.settings['l2'])
+        )(x_in)
         #output = tf.reshape(logit, (-1, self.settings['pred_horiz'], 1))
         output = tf.keras.layers.Reshape((self.settings['pred_horiz'], 1))(logit)
 
@@ -32,21 +33,17 @@ class ARXRegressor:
         self.model= tf.keras.Model(inputs=[x_in], outputs=[output])
         # Compile the model
         self.model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=self.settings['lr']),
-                           loss=loss
-                           )
+            loss=loss)
 
     def fit(self, train_x, train_y, val_x, val_y, verbose=0, pruning_call=None):
         # Convert the data into the input format using the internal converter
         train_x = self.build_model_input_from_series(x=train_x,
-                                                     col_names=self.settings['x_columns_names'],
-                                                     pred_horiz=self.settings['pred_horiz'])
+            col_names=self.settings['x_columns_names'], pred_horiz=self.settings['pred_horiz'])
         val_x = self.build_model_input_from_series(x=val_x,
-                                                   col_names=self.settings['x_columns_names'],
-                                                   pred_horiz=self.settings['pred_horiz'])
+            col_names=self.settings['x_columns_names'], pred_horiz=self.settings['pred_horiz'])
 
         es = tf.keras.callbacks.EarlyStopping(monitor="val_loss",
-                                              patience=self.settings['patience'],
-                                              restore_best_weights=False)
+            patience=self.settings['patience'], restore_best_weights=False)
 
         # Create folder to temporally store checkpoints
         checkpoint_path = os.path.join(os.getcwd(), 'tmp_checkpoints', 'cp.weights.h5')
@@ -55,9 +52,7 @@ class ARXRegressor:
             os.makedirs(checkpoint_dir)
 
         cp = tf.keras.callbacks.ModelCheckpoint(filepath=checkpoint_path,
-                                                monitor="val_loss", mode="min",
-                                                save_best_only=True,
-                                                save_weights_only=True, verbose=0)
+            monitor="val_loss", mode="min", save_best_only=True, save_weights_only=True, verbose=0)
 
         if pruning_call==None:
             callbacks = [es, cp]
@@ -65,12 +60,8 @@ class ARXRegressor:
             callbacks = [es, cp, pruning_call]
 
         history = self.model.fit(train_x,
-                                 train_y,
-                                 validation_data=(val_x, val_y),
-                                 epochs=self.settings['max_epochs'],
-                                 batch_size=self.settings['batch_size'],
-                                 callbacks=callbacks,
-                                 verbose=verbose)
+            train_y, validation_data=(val_x, val_y), epochs=self.settings['max_epochs'],
+            batch_size=self.settings['batch_size'], callbacks=callbacks, verbose=verbose)
 
         # Load best weights: do not use restore_best_weights from early stop since works only in case it stops training
         self.model.load_weights(checkpoint_path)
@@ -80,29 +71,27 @@ class ARXRegressor:
 
     def predict(self, x):
         x = self.build_model_input_from_series(x=x,
-                                               col_names=self.settings['x_columns_names'],
-                                               pred_horiz=self.settings['pred_horiz'])
+            col_names=self.settings['x_columns_names'], pred_horiz=self.settings['pred_horiz'])
         return self.model(x)
 
     def evaluate(self, x, y):
         x = self.build_model_input_from_series(x=x,
-                                               col_names=self.settings['x_columns_names'],
-                                               pred_horiz=self.settings['pred_horiz'])
+            col_names=self.settings['x_columns_names'], pred_horiz=self.settings['pred_horiz'])
         return self.model.evaluate(x=x, y=y)
 
     @staticmethod
     def build_model_input_from_series(x, col_names: List, pred_horiz: int):
         # get index of target and past features
         past_col_idxs = [index for (index, item) in enumerate(col_names)
-                         if features_keys['target'] in item or features_keys['past'] in item]
+            if features_keys['target'] in item or features_keys['past'] in item]
 
         # get index of const features
         const_col_idxs = [index for (index, item) in enumerate(col_names)
-                          if features_keys['const'] in item]
+            if features_keys['const'] in item]
 
         # get index of futu features
         futu_col_idxs = [index for (index, item) in enumerate(col_names)
-                         if features_keys['futu'] in item]
+            if features_keys['futu'] in item]
 
         # build conditioning variables for past features
         past_feat = [x[:, :-pred_horiz, feat_idx] for feat_idx in past_col_idxs]
@@ -136,8 +125,12 @@ class ARXRegressor:
     def plot_weights(self):
         w_b = self.model.layers[1].get_weights()
         plt.imshow(w_b[0].T)
-        l1=str(self.settings['l1'])
-        plt.title('ARX Weights - l1:' + l1)
+        l1 = str(self.settings['l1'])
+        l2 = str(self.settings['l2'])
+        # plt.title('ARX Weights - l1:' + l1)
+        plt.title('ARX Weights - l2:' + l2 + ' - l1:' + l1)
+        # save the figure with a random name
+        # plt.savefig('ARX_weights' + str(np.random.randint(0, 10000)) + '.png')
         plt.show()
 
 
