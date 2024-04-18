@@ -23,6 +23,8 @@ from optuna.trial import TrialState
 import tensorflow as tf
 from tools.prediction_quantiles_tools import plot_quantiles
 
+from matplotlib import pyplot as plt
+
 from tools.data_utils import columns_keys, features_keys
 from tools.models.models_tools import regression_model, Ensemble, get_model_class_from_conf
 
@@ -49,7 +51,7 @@ class RecalibSamples:
 
     def add_recal_block(self,x_train, y_train, x_vali, y_vali):
         self.recalibBlocks.append(RecalibBlock(x_train=x_train, y_train=y_train,
-                                               x_vali=x_vali, y_vali=y_vali))
+            x_vali=x_vali, y_vali=y_vali))
 
 
 class WindowGenerator:
@@ -57,19 +59,19 @@ class WindowGenerator:
     Creates the shifting windows, following the approach reported in the TF docs
     """
     def __init__(self,
-                 input_width: int,
-                 label_width: int,
-                 shift: int,
-                 data_columns: List,
-                 target_columns: List = None):
+        input_width: int,
+        label_width: int,
+        shift: int,
+        data_columns: List,
+        target_columns: List = None):
 
         # Work out the label column indices.
         self.label_columns = target_columns
         if target_columns is not None:
             self.label_columns_indices = {name: i for i, name in
-                                          enumerate(target_columns)}
+                enumerate(target_columns)}
         self.column_indices = {name: i for i, name in
-                               enumerate(data_columns)}
+                enumerate(data_columns)}
 
         # Store the window parameters.
         self.input_width = input_width
@@ -111,19 +113,19 @@ class PrTsfDataloaderConfigs:
     Class used to handle the dataloader configuration
     """
     def __init__(self,
-                 task_name: str,
-                 exper_setup: str,
-                 dataset_name:str,
-                 idx_start_train: Union[int, date],
-                 idx_start_oos_preds: Union[int, date],
-                 idx_end_oos_preds: Union[int, date],
-                 num_vali_samples: int=180,
-                 steps_lag_win: int=7,
-                 pred_horiz: int=24,
-                 preprocess: str='StandardScaler',
-                 keep_past_train_samples: bool=True,
-                 shuffle_mode: str='none'
-                 ):
+        task_name: str,
+        exper_setup: str,
+        dataset_name:str,
+        idx_start_train: Union[int, date],
+        idx_start_oos_preds: Union[int, date],
+        idx_end_oos_preds: Union[int, date],
+        num_vali_samples: int=180,
+        steps_lag_win: int=7,
+        pred_horiz: int=24,
+        preprocess: str='StandardScaler',
+        keep_past_train_samples: bool=True,
+        shuffle_mode: str='none'
+    ):
         self.task_name = task_name
         self.exper_setup = exper_setup
         self.dataset_name = dataset_name
@@ -149,14 +151,11 @@ def load_data_model_configs(task_name: str, exper_setup: str, run_id: str):
         expe_confs = json.load(f)
 
     expe_confs['data_config']['idx_start_train'] = date(year=expe_confs['data_config']['idx_start_train']['y'],
-                                                        month=expe_confs['data_config']['idx_start_train']['m'],
-                                                        day=expe_confs['data_config']['idx_start_train']['d'])
+        month=expe_confs['data_config']['idx_start_train']['m'], day=expe_confs['data_config']['idx_start_train']['d'])
     expe_confs['data_config']['idx_start_oos_preds'] = date(year=expe_confs['data_config']['idx_start_oos_preds']['y'],
-                                                            month=expe_confs['data_config']['idx_start_oos_preds']['m'],
-                                                            day=expe_confs['data_config']['idx_start_oos_preds']['d'])
+        month=expe_confs['data_config']['idx_start_oos_preds']['m'], day=expe_confs['data_config']['idx_start_oos_preds']['d'])
     expe_confs['data_config']['idx_end_oos_preds'] = date(year=expe_confs['data_config']['idx_end_oos_preds']['y'],
-                                                          month=expe_confs['data_config']['idx_end_oos_preds']['m'],
-                                                          day=expe_confs['data_config']['idx_end_oos_preds']['d'])
+        month=expe_confs['data_config']['idx_end_oos_preds']['m'], day=expe_confs['data_config']['idx_end_oos_preds']['d'])
     # Store exper run id
     expe_confs['model_config']['run_id'] = run_id
 
@@ -175,16 +174,14 @@ def load_data_model_configs(task_name: str, exper_setup: str, run_id: str):
         keep_past_train_samples=expe_confs['data_config']['keep_past_train_samples'],
         shuffle_mode=expe_confs['data_config']['shuffle_mode'],
     )
-    return {'data_config': data_configs,
-            'model_config': expe_confs['model_config']}
+    return {'data_config': data_configs, 'model_config': expe_confs['model_config']}
 
 
 class PrTsfRecalibEngine:
     """
     Main class executing the recalibration process
     """
-    def __init__(self, data_configs: PrTsfDataloaderConfigs,
-                 model_configs: Dict):
+    def __init__(self, data_configs: PrTsfDataloaderConfigs, model_configs: Dict):
 
         self.data_configs = data_configs
         # load dataset csv file
@@ -205,8 +202,8 @@ class PrTsfRecalibEngine:
         self.model_configs['target_quantiles'] = self.__build_target_quantiles__(self.model_configs['target_alpha'])
         # Build maping between quantile idx and alpha/median
         self.model_configs['q_alpha_map'] = self.__build_alpha_quantiles_map__(
-                                                            target_quantiles=self.model_configs['target_quantiles'],
-                                                            target_alpha=self.model_configs['target_alpha'])
+            target_quantiles=self.model_configs['target_quantiles'],
+            target_alpha=self.model_configs['target_alpha'])
 
     @staticmethod
     def __load_dataset_from_file__(dataset_name: str):
@@ -239,8 +236,8 @@ class PrTsfRecalibEngine:
         Get train/test periods from configs and store
         """
         if (type(data_configs.idx_start_train) is date and
-                type(data_configs.idx_start_oos_preds) is date and
-                type(data_configs.idx_end_oos_preds) is date):
+            type(data_configs.idx_start_oos_preds) is date and
+            type(data_configs.idx_end_oos_preds) is date):
             self.data_configs = data_configs
             # set idx from input date
             self.data_configs.idx_start_train = self.__get_global_idx_from_date__(self.data_configs.idx_start_train, mode='start')
@@ -268,8 +265,7 @@ class PrTsfRecalibEngine:
 
     def __build_test_samples_idxs__(self):
         return np.arange(start=self.data_configs.idx_start_oos_preds,
-                         stop=self.data_configs.idx_end_oos_preds,
-                         step=self.data_configs.pred_horiz)
+            stop=self.data_configs.idx_end_oos_preds, step=self.data_configs.pred_horiz)
 
     def __instantiate_preproc__(self):
         if self.data_configs.preprocess == 'StandardScaler':
@@ -321,7 +317,7 @@ class PrTsfRecalibEngine:
         # Convert the series into samples
         series_np = np.array(df_scaled.values).astype(np.float32)
         series_samples = np.stack([series_np[i:i + self._win_gen.total_window_size] for i in
-                                  range(0, series_np.shape[0] - self._win_gen.total_window_size + 1, self._win_gen.label_width)])
+            range(0, series_np.shape[0] - self._win_gen.total_window_size + 1, self._win_gen.label_width)])
 
         # Extract the last sample for test (by step-wise recalibration)
         recalib_test_sample = np.copy(series_samples[-1:])
@@ -350,10 +346,8 @@ class PrTsfRecalibEngine:
 
         # Instantiate recalibration object
         rec_samples = RecalibSamples(x_test=x_test, y_test=y_test)
-        rec_samples.add_recal_block(x_train=x_train,
-                                    y_train=y_train,
-                                    x_vali=vali_samples_x,
-                                    y_vali=vali_samples_y)
+        rec_samples.add_recal_block(x_train=x_train, y_train=y_train, x_vali=vali_samples_x,
+            y_vali=vali_samples_y)
 
         return rec_samples
 
@@ -390,9 +384,7 @@ class PrTsfRecalibEngine:
         end_date= self.dataset.iloc[self.data_configs.idx_end_oos_preds][columns_keys['Date']] + ' 23:00'
         end_date = datetime.strptime(end_date, date_format)
         test_block_timestamps = pd.date_range(start=self.dataset.iloc[self.data_configs.idx_start_oos_preds]
-                                                    [columns_keys['Date']],
-                                              end=end_date,
-                                              freq='h')
+            [columns_keys['Date']], end=end_date, freq='h')
         # Set datetime index to the dataframe
         results_df['Datetime'] = test_block_timestamps
         results_df.set_index(results_df['Datetime'], inplace=True)
@@ -400,7 +392,7 @@ class PrTsfRecalibEngine:
 
         # add target column
         df_target = self.dataset.filter(regex=features_keys['target']).iloc[self.data_configs.idx_start_oos_preds:
-                                                                            self.data_configs.idx_end_oos_preds+1]
+            self.data_configs.idx_end_oos_preds+1]
         results_df[df_target.columns[0]] = df_target.values
 
         return results_df
@@ -410,7 +402,7 @@ class PrTsfRecalibEngine:
         returns the experiment path
         """
         return os.path.join(os.getcwd(), 'experiments', 'tasks', self.data_configs.task_name,
-                            self.data_configs.exper_setup, self.model_configs['run_id'])
+            self.data_configs.exper_setup, self.model_configs['run_id'])
 
 
     def __save_results__(self, test_results_df):
@@ -460,7 +452,7 @@ class PrTsfRecalibEngine:
             # Build the current recalibratin batch including preprocessing (preprocess option)
             rec_samples = self.__build_recalib_dataset_batches__(
                 self.dataset[init_sample:test_sample_idx+self.data_configs.pred_horiz],
-                                         fit_preproc=True)
+                fit_preproc=True)
 
             # Get first rec_block in list
             rec_block = rec_samples.recalibBlocks[0]
@@ -477,18 +469,18 @@ class PrTsfRecalibEngine:
             for e in range(settings['num_ense']):
                 tf.keras.backend.clear_session()
                 model = regression_model(settings=settings,
-                                         sample_x=rec_samples.x_test)
+                    sample_x=rec_samples.x_test)
 
                 model.fit(train_x=rec_block.x_train, train_y=rec_block.y_train,
-                          val_x=rec_block.x_vali, val_y=rec_block.y_vali,
-                          plot_history=plot_history
-                          )
+                    val_x=rec_block.x_vali, val_y=rec_block.y_vali,
+                    plot_history=plot_history
+                )
 
                 # Store ensemble component prediction on test sample
                 preds_test_e.append(model.predict(rec_samples.x_test))
                 if plot_weights:
                     model.plot_weights()
-
+            
             # Aggregate ensemble predictions
             ensem_preds_test = ensemble.aggregate_preds(preds_test_e)
 
@@ -508,3 +500,93 @@ class PrTsfRecalibEngine:
 
         # Return test predictions
         return test_results_df
+    
+    def compute_metrics(self, test_predictions: pd.DataFrame):
+        """
+        Compute average metrics on the test predictions
+
+        Args:
+            test_predictions (pd.DataFrame): DataFrame containing the test predictions
+
+        Returns:
+            None
+        """
+
+        # compute the RMSE
+        rmse = np.sqrt(np.mean((test_predictions["EM_price"] - test_predictions[0.5])**2))
+
+        # compute the MAE
+        mae = np.mean(np.abs(test_predictions["EM_price"] - test_predictions[0.5]))
+
+        # compute the sMAPE
+        smape = np.mean(2 * np.abs(test_predictions["EM_price"] - test_predictions[0.5]) /
+            (np.abs(test_predictions["EM_price"]) + np.abs(test_predictions[0.5])))
+
+        # print the metrics
+        print(f"""
+-------------------------
+Metrics:
+-------------------------
+RMSE: {rmse:.2f}
+MAE: {mae:.2f}
+sMAPE: {smape:.2%}
+-------------------------
+        """)
+
+    def compute_hourly_metrics(self, test_predictions: pd.DataFrame):
+        """
+        Compute hourly metrics on the test predictions
+
+        Args:
+            test_predictions (pd.DataFrame): DataFrame containing the test predictions
+
+        Returns:
+            None
+        """
+
+
+        # compute the same metric grouping by Hour
+        test_predictions["Hour"] = test_predictions.index.hour
+        test_predictions["EM_price"] = test_predictions["EM_price"].astype(float)
+        test_predictions[0.5] = test_predictions[0.5].astype(float)
+
+        # compute the RMSE
+        rmse = test_predictions.groupby("Hour").apply(lambda x: np.sqrt(np.mean((x["EM_price"] - x[0.5])**2)))
+
+        # compute the MAE
+        mae = test_predictions.groupby("Hour").apply(lambda x: np.mean(np.abs(x["EM_price"] - x[0.5])))
+        
+        # compute the sMAPE
+        smape = test_predictions.groupby("Hour").apply(lambda x: np.mean(2 * np.abs(x["EM_price"] - x[0.5]) /
+            (np.abs(x["EM_price"]) + np.abs(x[0.5])))
+        )
+
+        # print the metrics for each hour
+        print(f"""
+-------------------------
+Metrics:
+-------------------------
+RMSE:
+{rmse}
+-------------------------
+MAE:
+{mae}
+-------------------------
+sMAPE:
+{smape}
+-------------------------
+        """)
+
+        # plot the metrics along each other for each hour
+        fig = plt.figure(figsize=(12, 8))
+        ax = fig.add_subplot(111)
+        ax = rmse.plot(ax=ax, label="RMSE")
+        ax = mae.plot(ax=ax, label="MAE")
+        # multiply the sMAPE by 100 to have it in percentage
+        smape = smape * 100
+        ax = smape.plot(ax=ax, label="sMAPE")
+        ax.set_xlabel("Hour")
+        ax.set_ylabel("Metric")
+        ax.set_title("Metrics by Hour")
+        ax.legend()
+        plt.show()

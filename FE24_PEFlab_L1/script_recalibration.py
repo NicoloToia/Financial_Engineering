@@ -19,8 +19,8 @@ run_id = 'recalib_opt_grid_1_1'
 # Load hyperparams from file (select: load_tuned or optuna_tuner)
 hyper_mode = 'load_tuned'
 # Plot train history flag
-plot_train_history=True
-plot_weights=True
+plot_train_history=False
+plot_weights=False
 #---------------------------------------------------------------------------------------------------------------------
 
 # Load experiments configuration from json file
@@ -37,6 +37,12 @@ model_hyperparams = PrTSF_eng.get_model_hyperparams(method=hyper_mode,
 # Exec recalib loop over the test_set samples, using the tuned hyperparams
 test_predictions = PrTSF_eng.run_recalibration(model_hyperparams=model_hyperparams,
     plot_history=plot_train_history, plot_weights=plot_weights)
+
+# compute different metrices
+PrTSF_eng.compute_metrics(test_predictions)
+
+# compute hourly metrics
+PrTSF_eng.compute_hourly_metrics(test_predictions)
 
 # Plot test predictions
 plot_quantiles(test_predictions, target=PF_task_name)
