@@ -544,22 +544,18 @@ sMAPE: {smape:.2%}
             None
         """
 
-
-        # compute the same metric grouping by Hour
-        test_predictions["Hour"] = test_predictions.index.hour
-        test_predictions["EM_price"] = test_predictions["EM_price"].astype(float)
-        test_predictions[0.5] = test_predictions[0.5].astype(float)
-
-        # compute the RMSE
-        rmse = test_predictions.groupby("Hour").apply(lambda x: np.sqrt(np.mean((x["EM_price"] - x[0.5])**2)))
+        # compute the RMSE grouping by hour
+        rmse = test_predictions.groupby(test_predictions.index.hour).apply(
+            lambda x: np.sqrt(np.mean((x["EM_price"] - x[0.5])**2)))
 
         # compute the MAE
-        mae = test_predictions.groupby("Hour").apply(lambda x: np.mean(np.abs(x["EM_price"] - x[0.5])))
+        mae = test_predictions.groupby(test_predictions.index.hour).apply(
+            lambda x: np.mean(np.abs(x["EM_price"] - x[0.5])))
         
         # compute the sMAPE
-        smape = test_predictions.groupby("Hour").apply(lambda x: np.mean(2 * np.abs(x["EM_price"] - x[0.5]) /
-            (np.abs(x["EM_price"]) + np.abs(x[0.5])))
-        )
+        smape = test_predictions.groupby(test_predictions.index.hour).apply(
+            lambda x: np.mean(2 * np.abs(x["EM_price"] - x[0.5]) /
+                (np.abs(x["EM_price"]) + np.abs(x[0.5]))))
 
         # print the metrics for each hour
         print(f"""
