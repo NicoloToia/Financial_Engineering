@@ -13,6 +13,7 @@ from typing import List
 import os
 import shutil
 
+import pandas as pd
 
 class ARXRegressor:
     def __init__(self, settings, loss):
@@ -124,7 +125,8 @@ class ARXRegressor:
 
     def plot_weights(self):
         w_b = self.model.layers[1].get_weights()
-        plt.imshow(w_b[0].T)
+        plt.imshow(w_b[0].T, vmin=-0.32, vmax=0.52)
+        plt.colorbar()
         l1 = str(self.settings['l1'])
         l2 = str(self.settings['l2'])
         # plt.title('ARX Weights - l1:' + l1)
