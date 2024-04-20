@@ -13,6 +13,7 @@ import pandas as pd
 import keras
 import tensorflow as tf
 
+import random
 
 def build_alpha_quantiles_map(target_alpha: List, target_quantiles: List):
     """
@@ -50,3 +51,5 @@ def plot_quantiles(results: pd.DataFrame, target: str):
     ax1.set_ylabel("Predicted quantiles")
     ax1.set_title(title)
     fig1.show()
+    # save the figure with a random name
+    # fig1.savefig('quantiles_plot' + str(random.randint(0, 10000)) + '.png')

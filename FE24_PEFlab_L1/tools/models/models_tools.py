@@ -56,8 +56,7 @@ class TensorflowRegressor():
         if  settings['model_class']=='ARX':
             # get input size for the chosen model architecture
             settings['input_size']=ARXRegressor.build_model_input_from_series(x=sample_x,
-                                                                              col_names=self.x_columns_names,
-                                                                              pred_horiz=self.pred_horiz).shape[1]
+                col_names=self.x_columns_names, pred_horiz=self.pred_horiz).shape[1]
             # Build the model architecture
             self.regressor = ARXRegressor(settings, loss)
         else:
@@ -73,6 +72,8 @@ class TensorflowRegressor():
             plt.plot(history.history['val_loss'], label='vali_loss')
             plt.grid()
             plt.legend()
+            # save the figure with a random name
+            # plt.savefig('train_history' + str(np.random.randint(0, 10000)) + '.png')
             plt.show()
 
     def predict(self, x):
@@ -87,7 +88,6 @@ class TensorflowRegressor():
 
     def plot_weights(self):
         self.regressor.plot_weights()
-
 
 class Ensemble():
     """
