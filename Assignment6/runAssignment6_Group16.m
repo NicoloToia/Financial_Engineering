@@ -34,8 +34,11 @@ swapDates = datenum(swapDates);
 % find the actually quoted swap dates
 datesSet.swaps = [swapDates(1:12); swapDates(15:5:30); swapDates(40:10:50)];
 
-% Interpolation of the mid market rates for swaps
-ratesSet.swaps = interp1(datesSet.swaps, ratesSet.swaps, swapDates, 'spline', 'extrap');
+% Interpolation of the mid market rates for swaps using spline
+ACT_365 = 3;
+delta_swaps_set = yearfrac(datesSet.settlement, datesSet.swaps, ACT_365);
+delta_swaps = yearfrac(datesSet.settlement, swapDates, ACT_365);
+ratesSet.swaps = interp1(delta_swaps_set, ratesSet.swaps, delta_swaps, 'spline');
 datesSet.swaps = swapDates;
 
 %% Bootstrap the discount factors from the market data
