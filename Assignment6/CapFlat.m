@@ -34,7 +34,9 @@ Caplets = zeros(length(paymentDates), 1);
 
 % price the first Caplet
 for i = 1+skipFirst:length(paymentDates)
+
     Caplets(i) = CapletBachelier(fwdLibor(i), (1+Strike/100)*fwdLibor(i), Vol, deltas(i), paymentDates(i), dates(1), DF(i+1));
+    
 end
 
 Price = sum(Caplets);
