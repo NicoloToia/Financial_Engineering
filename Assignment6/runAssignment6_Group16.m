@@ -58,4 +58,8 @@ plotresult(dates, discounts, zeroRates);
 % Cap prices
 capPrices = capPrices(ttms, strikes, Vols, discounts, dates)
 
+%% Compute the Spot Vols
+
+spotVols = spotVols(ttms, strikes, capPrices, Vols, discounts, dates)
+
 toc;
