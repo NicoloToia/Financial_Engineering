@@ -56,6 +56,6 @@ plotresult(dates, discounts, zeroRates);
 %% Obtain the Cap Prices from the market data via Bachelier formula
 
 % Cap prices
-capPrices = capPrices(ttms, strikes, Vols, ratesSet, swapDates);
+capPrices = capPrices(ttms, strikes, Vols, discounts, dates);
 
 toc;
