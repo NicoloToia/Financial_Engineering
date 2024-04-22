@@ -30,9 +30,8 @@ dates.futures=ones(numberFutures,2);
 dates.futures(:,1) = datenum(date_futures_read(:,1), formatData);
 dates.futures(:,2) = datenum(date_futures_read(:,2), formatData);
 
-%Date relative to swaps: expiry dates
-[~, date_swaps] = xlsread(filename, 1, 'D39:D88');
-dates.swaps = datenum(date_swaps, formatData);
+% initialize swaps as empty
+dates.swaps = [];
 
 %% Rates from Excel (Bids & Asks)
 
