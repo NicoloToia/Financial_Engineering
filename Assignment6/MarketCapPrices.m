@@ -17,7 +17,7 @@ for i = 1:length(ttms)
     payment_dates = datetime(dates(1), 'ConvertFrom', 'datenum') + ...
         calmonths(3:3:12*ttms(i))';
     payment_dates(~isbusday(payment_dates, eurCalendar())) = ...
-        busdate(payment_dates(~isbusday(payment_dates, eurCalendar())), 'modifiedfollow', eurCalendar())
+        busdate(payment_dates(~isbusday(payment_dates, eurCalendar())), 'modifiedfollow', eurCalendar());
     payment_dates = datenum(payment_dates);
 
     for j = 1:length(strikes)
