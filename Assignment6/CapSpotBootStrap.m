@@ -22,16 +22,16 @@ ACT_360 = 2;
 deltas = yearfrac(exercise_dates, payments_dates, ACT_360);
 fwd_libor = 1 ./ deltas .* (1 ./ fwd_discounts - 1);
 
-sigmas = sigma_alpha + (sigma_beta - sigma_alpha) / yearfrac(exercise_dates(1), payment_dates(end), ACT_360) * ...
-    yearfrac(exercise_dates(1), payment_dates, ACT_360);
+sigmas = sigma_alpha + (sigma_beta - sigma_alpha) / yearfrac(exercise_dates(1), payments_dates(end), ACT_360) * ...
+    yearfrac(exercise_dates(1), payments_dates, ACT_360);
 
 % compute the caplets prices using the Bachelier formula
 Caplets = zeros(length(payments_dates), 1);
 
 % price the first Caplet
-for i = 1+skipFirst:length(payments_dates)
+for i = 1:length(payments_dates)
 
-    Caplets(i) = CapletBachelier(fwd_libor(i), Strike, Vol, payments_dates(i), exercise_dates(i), ...
+    Caplets(i) = CapletBachelier(fwd_libor(i), Strike, sigmas(i), payments_dates(i), exercise_dates(i), ...
         dates(1), DF_payment(i));
     
 end

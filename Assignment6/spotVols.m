@@ -27,15 +27,17 @@ for i = 2:length(ttms)
     exercise_dates = start_date + calmonths(0:3:12*(ttms(i)-ttms(i-1))-3)';
     exercise_dates(~isbusday(exercise_dates, eurCalendar())) = ...
         busdate(exercise_dates(~isbusday(exercise_dates, eurCalendar())), 'modifiedfollow', eurCalendar());
+    exercise_dates = datenum(exercise_dates);
     % compute the payment dates
     payment_dates = start_date + calmonths(3:3:12*(ttms(i)-ttms(i-1)))';
     payment_dates(~isbusday(payment_dates, eurCalendar())) = ...
         busdate(payment_dates(~isbusday(payment_dates, eurCalendar())), 'modifiedfollow', eurCalendar());
+    payment_dates = datenum(payment_dates);
 
     for j = 1:length(strikes)
 
         % get the function handle
-        fun = @(s) CapSpotBootStrap(strikes(j), spotVols(i-1, j), s, startDates(i-1), paymentDates, discounts, dates) - ...
+        fun = @(s) CapSpotBootStrap(strikes(j), spotVols(i-1, j), s, exercise_dates, payment_dates, discounts, dates) - ...
             diffCap(i-1, j);
 
         % compute the spot vol with fmincon (with positive constraint)
