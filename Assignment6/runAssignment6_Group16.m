@@ -21,7 +21,7 @@ formatData='dd/mm/yyyy'; % Pay attention to your computer settings
 
 % This function works on Windows OS. Pay attention on other OS.
 [datesSet, ratesSet] = readRatesData('MktData_CurveBootstrap_20-2-24', formatData);
-[ttms, strikes, Vols] = readVolData('Caps_vol_20-2-24');
+[ttms, strikes, mkt_vols] = readVolData('Caps_vol_20-2-24');
 
 %% Construct the swap dates
  
@@ -56,6 +56,10 @@ zeroRates = zeroRates(dates, discounts);
 %% Obtain the Cap Prices from the market data via Bachelier formula
 
 % Cap prices
-mkt_cap_prices = MarketCapPrices(ttms, strikes, Vols, discounts, dates);
+mkt_cap_prices = MarketCapPrices(ttms, strikes, mkt_vols, discounts, dates)
+
+%% Compute the spot volatilites
+
+spot_vols = spotVols(mkt_cap_prices, ttms, strikes, mkt_vols, discounts, dates)
 
 toc;
