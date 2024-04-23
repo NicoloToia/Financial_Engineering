@@ -51,15 +51,44 @@ zeroRates = zeroRates(dates, discounts);
 
 %% Plot Results
 
-plotresult(dates, discounts, zeroRates);
+% plotresult(dates, discounts, zeroRates);
 
 %% Obtain the Cap Prices from the market data via Bachelier formula
 
+% % compute the first cap price for the first strike and first year
+
+% payment_dates = datetime(dates(1), 'ConvertFrom', 'datenum') + calmonths(3:3:12)';
+% % move to business days if needed
+% payment_dates(~isbusday(payment_dates, eurCalendar())) = ...
+%     busdate(payment_dates(~isbusday(payment_dates, eurCalendar())), 'modifiedfollow', eurCalendar())
+% payment_dates = datenum(payment_dates);
+
+% datestr(dates(1))
+
+% deltas = yearfrac([dates(1);payment_dates(1:end-1)], payment_dates, 2)
+
+% % compute the discount factors
+% DF = intExtDF(discounts, dates, payment_dates)
+
+% % forward discounts and forward Libor
+% fwdDiscounts = DF ./ [1;intExtDF(discounts, dates, payment_dates(1:end-1))]
+% fwdLibor = 1 ./ deltas .* (1 ./ fwdDiscounts - 1)
+
+% sigma = Vols(1,1)
+% K = strikes(1)
+% ttm = ttms(1)
+
+% % skip the first caplet
+
+% % price the second caplet (6m)
+% delta_ttm = yearfrac(dates(1), payment_dates(1), 2)
+% d_n = (fwdLibor(2) - (1+K/100)*fwdLibor(2)) / (sigma * sqrt(delta_ttm));
+
+% Caplet_6m = DF(2) * deltas(2) * ( (fwdLibor(2) - (1+K/100) * fwdLibor(2)) * normcdf(d_n) + sigma * sqrt(delta_ttm) * normpdf(d_n))
+
+% CapletBachelier(fwdLibor(2), (1+K/100)*fwdLibor(2), sigma, deltas(2), payment_dates(2), dates(1), DF(2))
+
 % Cap prices
-capPrices = capPrices(ttms, strikes, Vols, discounts, dates)
-
-%% Compute the Spot Vols
-
-spotVols = spotVols(ttms, strikes, capPrices, Vols, discounts, dates)
+mkt_cap_prices = MarketCapPrices(ttms, strikes, Vols, discounts, dates);
 
 toc;

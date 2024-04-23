@@ -1,26 +1,26 @@
-function Price = CapFlat(Strike, Vol, startDate, paymentDates, skipFirst, discounts, dates)
+function Price = CapFlat(Strike, Vol, exercise_dates, payments_dates, skipFirst, discounts, dates)
 % CapFlat: Compute the price of a cap using the flat volatility assumption
 %
 % INPUT
-%   Strike : Strike price of the cap
+%   Strike : Strike price of the cap as a percentage change (eg. 0.05 for K = (1+5/100) * L)
 %   Vol : Volatility of the cap
-%   paymentDates : Payment dates of the cap (do not include the settlement date)
-%   skipFirst : Skip the first payment date
-%   discounts : Discount factors
+%   exercise_dates : Dates in which the caplets are exercised
+%   payment_dates : Dates in which the Euribor is paid
+%   skipFirst : Skip the first caplet
+%   discounts : Discount factors curve
 %   dates : Dates of the discount factors
 
-% compute the deltas
-ACT_360 = 2;
-deltas = yearfrac([startDate;paymentDates(1:end-1)], paymentDates, ACT_360);
+% compute the discount factor at the payment dates
+DF_payment = intExtDF(discounts, dates, payments_dates);
 
-% compute the discount factors
-DF = intExtDF(discounts, dates, [startDate;paymentDates]); % this is one more than the deltas
+% compute the Libor
+fwd_discounts = intExtDF(discounts, dates, payments_dates) ./ intExtDF(discounts, dates, exercise_dates);
 
-% compute the forward rates
-fwdDiscounts = DF(2:end) ./ DF(1:end-1);
 % compute the forward Libor
 % the ith represents the forward Libor from i to i+1
-fwdLibor = 1 ./ deltas .* (1 ./ fwdDiscounts - 1);
+ACT_360 = 2;
+deltas = yearfrac(exercise_dates, payments_dates, ACT_360);
+fwd_libor = 1 ./ deltas .* (1 ./ fwd_discounts - 1);
 
 % transform the skipFirst from boolean to integer
 if skipFirst
@@ -30,12 +30,13 @@ else
 end
 
 % compute the caplets prices using the Bachelier formula
-Caplets = zeros(length(paymentDates), 1);
+Caplets = zeros(length(payments_dates), 1);
 
 % price the first Caplet
-for i = 1+skipFirst:length(paymentDates)
+for i = 1+skipFirst:length(payments_dates)
 
-    Caplets(i) = CapletBachelier(fwdLibor(i), (1+Strike/100)*fwdLibor(i), Vol, deltas(i), paymentDates(i), dates(1), DF(i+1));
+    Caplets(i) = CapletBachelier(fwd_libor(i), Strike, Vol, payments_dates(i), exercise_dates(i), ...
+        dates(1), DF_payment(i));
     
 end
 
