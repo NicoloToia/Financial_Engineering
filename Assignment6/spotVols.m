@@ -1,40 +1,47 @@
-function spotVols = spotVols(ttms, strikes, capPrices, Vols, discounts, dates)
+function spotVols = spotVols(mkt_prices, ttms, strikes, mkt_vols, discounts, dates)
+% spotVols: Compute the spot volatilities of the caps
+%
+% INPUT
+%   mkt_prices : Market prices of the caps
+%   ttms : Time to maturities of the caps
+%   strikes : Strikes of the caps
+%   mkt_vols : Market volatilities of the caps
+%   discounts : Discount factors
+%   dates : Dates of the discount factors
 
 % initialize the spotVols
 spotVols = zeros(length(ttms), length(strikes));
 
 % first row is simple the flat vol
-spotVols(1, :) = Vols(1, :);
+spotVols(1, :) = mkt_vols(1, :);
 
 % compute the difference between the cap of following years
-diffCap = capPrices(2:end, :) - capPrices(1:end-1, :);
-
-% compute the starting date for each cap
-startDates = datetime(dates(1), 'ConvertFrom', 'datenum') + calyears(ttms)';
-% move to business days if needed
-startDates(~isbusday(startDates, eurCalendar())) = ...
-    busdate(startDates(~isbusday(startDates, eurCalendar())), 'modifiedfollow', eurCalendar())
-startDates = datenum(startDates);
+diffCap = mkt_prices(2:end, :) - mkt_prices(1:end-1, :);
 
 for i = 2:length(ttms)
 
-    % compute the paymentDates
-    paymentDates = datetime(startDates(i-1), 'ConvertFrom', 'datenum') + ...
-        calmonths(3:3:12*(ttms(i) - ttms(i-1)))';
-    paymentDates(~isbusday(paymentDates, eurCalendar())) = ...
-        busdate(paymentDates(~isbusday(paymentDates, eurCalendar())), 'modifiedfollow', eurCalendar())
-    paymentDates = datenum(paymentDates);
+    % compute the start date
+    start_date = datetime(dates(1), 'ConvertFrom', 'datenum') + ...
+        calyears(1*ttms(i-1))';
+    % compute the exercise dates
+    exercise_dates = start_date + calmonths(0:3:12*(ttms(i)-ttms(i-1))-3)';
+    exercise_dates(~isbusday(exercise_dates, eurCalendar())) = ...
+        busdate(exercise_dates(~isbusday(exercise_dates, eurCalendar())), 'modifiedfollow', eurCalendar());
+    % compute the payment dates
+    payment_dates = start_date + calmonths(3:3:12*(ttms(i)-ttms(i-1)))';
+    payment_dates(~isbusday(payment_dates, eurCalendar())) = ...
+        busdate(payment_dates(~isbusday(payment_dates, eurCalendar())), 'modifiedfollow', eurCalendar());
 
     for j = 1:length(strikes)
 
         % get the function handle
-        fun = @(s) CapSpot(strikes(j), spotVols(i-1, j), s, startDates(i-1), paymentDates, false, discounts, dates) - diffCap(i-1, j);
+        fun = @(s) CapSpotBootStrap(strikes(j), spotVols(i-1, j), s, startDates(i-1), paymentDates, discounts, dates) - ...
+            diffCap(i-1, j);
 
-        % compute the spot vol with fzero
-        spotVols(i, j) = fzero(fun, Vols(i, j));
+        % compute the spot vol with fmincon (with positive constraint)
+        spotVols(i, j) = fzero(fun, spotVols(i-1, j));
         
     end
 end
-
 
 end
