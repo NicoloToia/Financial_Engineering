@@ -21,8 +21,7 @@ delta_ttm = yearfrac(t0, T_exercise, ACT_365);
 delta_libor = yearfrac(T_exercise, T_payment, ACT_360);
 
 % compute the real strike of the caplet
-K = (1 + Strike/100) * fwd_Libor;
-% K = Strike/100;
+K = Strike/100;
 
 % compute the argument of the normal cdf
 d_n = (fwd_Libor - K) / (Vol * sqrt(delta_ttm));
