@@ -3,7 +3,7 @@ function Caplet = CapletBachelier(fwd_Libor, Strike, Vol, T_payment, T_exercise,
 %
 % INPUT
 %   fwd_Libor : Forward Libor rate between T_exercise and T_payment
-%   Strike : Strike price of the caplet as a percentage change (eg. 0.05 for K = (1+5/100) * L)
+%   Strike : Strike price of the caplet as a percentage change (eg. 5 for 5%)
 %   Vol : Volatility of the caplet
 %   T_payment : Date in which the Euribor is paid (payment date)
 %   T_exercise : Exercise date of the caplet. When:

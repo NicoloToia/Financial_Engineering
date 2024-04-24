@@ -2,7 +2,7 @@ function Price = CapFlat(Strike, Vol, exercise_dates, payments_dates, skipFirst,
 % CapFlat: Compute the price of a cap using the flat volatility assumption
 %
 % INPUT
-%   Strike : Strike price of the cap as a percentage change (eg. 0.05 for K = (1+5/100) * L)
+%   Strike : Strike price of the cap as a percentage change (eg. 5 for 5%)
 %   Vol : Volatility of the cap
 %   exercise_dates : Dates in which the caplets are exercised
 %   payment_dates : Dates in which the Euribor is paid

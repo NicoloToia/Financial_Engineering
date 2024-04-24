@@ -2,7 +2,7 @@ function Price = CapSpotBootStrap(Strike, sigma_alpha, sigma_beta, exercise_date
 % CapFlat: Compute the price of a cap using the flat volatility assumption
 %
 % INPUT
-%   Strike : Strike price of the cap as a percentage change (eg. 0.05 for K = (1+5/100) * L)
+%   Strike : Strike price of the cap as a percentage change (eg. 5 for 5%)
 %   sigma_alpha : Volatility of the previous caplet
 %   sigma_beta : Volatility of final caplet
 %   exercise_dates : Dates in which the caplets are exercised
