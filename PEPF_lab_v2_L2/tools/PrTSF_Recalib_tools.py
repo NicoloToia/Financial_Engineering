@@ -426,6 +426,84 @@ class PrTsfRecalibEngine:
             pickle.dump(test_results_df, f)
 
 
+    def run_hyperparams_tuning(self, optuna_m:str='random', n_trials: int=10):
+        """
+        Model hyperparameters tuning routine
+        """
+        def objective(trial):
+            # Clear clutter from previous session graphs.
+            tf.keras.backend.clear_session()
+            # Update model configs with hyperparams trial
+            self.model_configs = self.model_class.get_hyperparams_trial(trial=trial, settings=self.model_configs)
+
+            # Build model using the current configs
+            model = regression_model(settings=self.model_configs,
+                                     sample_x=train_vali_block.x_vali[0:1])
+
+            # Train model
+            model.fit(train_x=train_vali_block.x_train, train_y=train_vali_block.y_train,
+                      val_x=train_vali_block.x_vali, val_y=train_vali_block.y_vali,
+                      pruning_call=TFKerasPruningCallback(trial, "val_loss"),
+                      plot_history=False)
+
+            # Compute val loss
+            results = model.evaluate(x=train_vali_block.x_vali, y=train_vali_block.y_vali)
+            return results
+
+        # start from first train sample
+        init_sample = 0
+        # employ validation set till first test sample
+        test_sample_idx = self.test_set_idxs[0]
+        train_vali_block = self.__build_recalib_dataset_batches__(
+            self.dataset[init_sample:test_sample_idx + self.data_configs.pred_horiz],
+            fit_preproc=True).recalibBlocks[0]
+
+        if optuna_m == 'grid_search':
+            search_space = self.model_class.get_hyperparams_searchspace()
+            sampler = optuna.samplers.GridSampler(search_space)
+            pruner = None
+        elif optuna_m == 'random':
+            sampler = optuna.samplers.RandomSampler()
+            pruner = optuna.pruners.MedianPruner(n_startup_trials=10, n_warmup_steps=5)
+
+        # Add stream handler of stdout to show the messages
+        optuna.logging.get_logger("optuna").addHandler(logging.StreamHandler(sys.stdout))
+        # Unique identifier of the study.
+        study_name = (self.data_configs.task_name
+                      + self.model_configs['model_class'] + '-'
+                      + self.model_configs['PF_method']
+                      + '-' + optuna_m)
+        storage_name="sqlite:///db.sqlite3"
+
+        study = optuna.create_study(direction="minimize",
+                                    sampler=sampler,
+                                    pruner=pruner,
+                                    storage= storage_name,  # Specify the storage URL here.
+                                    study_name=study_name,
+                                    load_if_exists=True
+                                    )
+
+        timeout = 3600 * 24.0 * 7  # 7 days
+        study.optimize(objective, n_trials=n_trials, timeout=timeout)
+        pruned_trials = study.get_trials(deepcopy=False, states=[TrialState.PRUNED])
+        complete_trials = study.get_trials(deepcopy=False, states=[TrialState.COMPLETE])
+        print("Study statistics: ")
+
+        print("Number of finished trials: ", len(study.trials))
+        print("  Number of pruned trials: ", len(pruned_trials))
+        print("  Number of complete trials: ", len(complete_trials))
+
+        print("Best trial:")
+        trial = study.best_trial
+        print("  Value: ", trial.value)
+        print("  Params: ")
+        for key, value in trial.params.items():
+            print("    {}: {}".format(key, value))
+            # store best hyper in the config dict
+            self.model_configs[key] = value
+
+        return self.model_class.get_hyperparams_dict_from_configs(self.model_configs)
+
     def get_model_hyperparams(self, method, optuna_m='random'):
         self.optuna_m = optuna_m
         self.hyper_mode = method
@@ -437,6 +515,15 @@ class PrTsfRecalibEngine:
             with open(path) as f:
                 return json.load(f)
 
+        elif method=='optuna_tuner':
+            print('-----------------------------------------')
+            print('Starting optuna tuner')
+            model_hyperparams= self.run_hyperparams_tuning(optuna_m=optuna_m)
+            print('-----------------------------------------')
+            # save model hyperparams to json
+            with open(path, 'w') as f:
+                json.dump(model_hyperparams, f)
+            return model_hyperparams
         else:
             sys.exit('ERROR: uknown hyperparam method')
 
