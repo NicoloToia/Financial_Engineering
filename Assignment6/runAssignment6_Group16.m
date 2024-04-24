@@ -62,15 +62,8 @@ mkt_cap_prices = MarketCapPrices(ttms, strikes, mkt_vols, discounts, dates)
 
 spot_vols = spotVols(mkt_cap_prices, ttms, strikes, mkt_vols, discounts, dates);
 
-% plot the spot volatilities surface against the flat volatilities
-% spot vols in blue, market vols in red
-surf(strikes, ttms, spot_vols, 'FaceAlpha', 0.5, 'EdgeAlpha', 0.5, 'FaceColor', 'blue');
-hold on
-surf(strikes, ttms, mkt_vols, 'FaceAlpha', 0.5, 'EdgeAlpha', 0.5, 'FaceColor', 'red');
-xlabel('Strikes');
-ylabel('TTMs');
-zlabel('Volatilities');
-title('Spot Volatilities vs Market Volatilities');
-legend('Spot Volatilities', 'Market Volatilities');
+%% Plot the spot volatilities surface against the flat volatilities
+
+plot_vols(spot_vols, mkt_vols, ttms, strikes);
 
 toc;
