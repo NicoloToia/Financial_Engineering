@@ -37,6 +37,7 @@ ACT_360 = 2;
 
 % exercise dates
 exercise_dates = datetime(start_date, 'ConvertFrom', 'datenum') + calmonths(0:3:12*15-3)';
+size(exercise_dates)
 payments_dates = exercise_dates + calmonths(3)';
 
 % move to business days
@@ -45,7 +46,7 @@ exercise_dates(~isbusday(exercise_dates, eurCalendar())) = ...
 payments_dates(~isbusday(payments_dates, eurCalendar())) = ...
     busdate(payments_dates(~isbusday(payments_dates, eurCalendar())), 'modifiedfollow', eurCalendar());
 
-% make into date numbers
+% convert to datenum
 exercise_dates = datenum(exercise_dates);
 payments_dates = datenum(payments_dates);
 
@@ -101,14 +102,37 @@ fixed_rate_payment_B = spol_B / 100 * deltas(2:end)' * DF_payment(2:end);
 % from 0 to 5y
 % compute the strike
 strike_5y = cap_5y - spol_B;
-% find the relevant dates
-exercise_dates_5y = exercise_dates(1:4*5);
-payments_dates_5y = payments_dates(1:4*5);
+% find the relevant dates (from 2nd quarter to 5y)
+exercise_dates_5y = exercise_dates(2:4*5);
+payments_dates_5y = payments_dates(2:4*5);
 
 % compute the cap from 0 to 5y with given strike
 cap_5y = CapSpot(strike_5y, exercise_dates_5y, payments_dates_5y, spot_vols, ttms, strikes, ...
-    discounts, dates);
+    discounts, dates)
 
-X=0;
+% from 5 to 10y
+% compute the strike
+strike_10y = cap_10y - spol_B;
+% find the relevant dates (from 5y to 10y)
+exercise_dates_10y = exercise_dates(4*5+1:4*10);
+payments_dates_10y = payments_dates(4*5+1:4*10);
+
+% compute the cap from 5 to 10y with given strike
+cap_10y = CapSpot(strike_10y, exercise_dates_10y, payments_dates_10y, spot_vols, ttms, strikes, ...
+    discounts, dates)
+
+% from 10 to 15y
+% compute the strike
+strike_15y = cap_15y - spol_B;
+% find the relevant dates (from 10y to 15y)
+exercise_dates_15y = exercise_dates(4*10+1:end);
+payments_dates_15y = payments_dates(4*10+1:end);
+
+% compute the cap from 10 to 15y with given strike
+cap_15y = CapSpot(strike_15y, exercise_dates_15y, payments_dates_15y, spot_vols, ttms, strikes, ...
+    discounts, dates)
+
+% compute the upfront
+X = NPV_A - (first_quarter_B + Libor_payment_B + fixed_rate_payment_B + cap_5y + cap_10y + cap_15y);
 
 end
