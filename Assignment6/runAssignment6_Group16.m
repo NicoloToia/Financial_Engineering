@@ -66,4 +66,16 @@ spot_vols = spotVols(mkt_cap_prices, ttms, strikes, mkt_vols, discounts, dates);
 
 plot_vols(spot_vols, mkt_vols, ttms, strikes);
 
+%% Price the certificate
+
+spol_A = 2;
+fixed_rate_B = 3;
+spol_B = 1.1;
+cap_5y = 4.3;
+cap_10y = 4.6;
+cap_15y = 5.1;
+
+X = computeUpfront(spot_vols, ttms, strikes, dates(1), spol_A, fixed_rate_B, spol_B, ...
+    cap_5y, cap_10y, cap_15y, discounts, dates)
+
 toc;
