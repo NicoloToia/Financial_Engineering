@@ -51,7 +51,7 @@ zeroRates = zeroRates(dates, discounts);
 
 %% Plot Results
 
-% plotresult(dates, discounts, zeroRates);
+% plot_rates_discounts(dates, discounts, zeroRates);
 
 %% Obtain the Cap Prices from the market data via Bachelier formula
 
@@ -60,7 +60,7 @@ mkt_cap_prices = MarketCapPrices(ttms, strikes, mkt_vols, discounts, dates)
 
 %% Compute the spot volatilites
 
-spot_vols = spotVols(mkt_cap_prices, ttms, strikes, mkt_vols, discounts, dates)
+spot_vols = spotVols(mkt_cap_prices, ttms, strikes, mkt_vols, discounts, dates);
 
 % plot the spot volatilities surface against the flat volatilities
 % spot vols in blue, market vols in red

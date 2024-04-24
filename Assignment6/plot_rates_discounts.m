@@ -1,4 +1,4 @@
-function plotresult(dates, discounts, zeroRates)
+function plot_rates_discounts(dates, discounts, zeroRates)
 % plotresult: Plots the discount factors and zero rates curve vs dates
 %
 % INPUT
