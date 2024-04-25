@@ -37,7 +37,6 @@ ACT_360 = 2;
 
 % exercise dates
 exercise_dates = datetime(start_date, 'ConvertFrom', 'datenum') + calmonths(0:3:12*15-3)';
-size(exercise_dates)
 payments_dates = exercise_dates + calmonths(3)';
 
 % move to business days
@@ -60,10 +59,6 @@ DF_exercise = intExtDF(discounts, dates, exercise_dates);
 % substitute the NaN values with 1
 DF_payment(isnan(DF_payment)) = 1;
 DF_exercise(isnan(DF_exercise)) = 1;
-
-% compute the forward Libors to price the floorlets later
-fwd_discounts = DF_payment ./ DF_exercise;
-fwd_libor = 1 ./ deltas .* (1 ./ fwd_discounts - 1);
 
 % party A payments
 Libor_payment_A = 1 - DF_payment(end);
@@ -92,7 +87,7 @@ NPV_A = Libor_payment_A + spol_payment_A;
 first_quarter_B = fixed_rate_B / 100 * deltas(1) * DF_payment(1);
 
 % Libor payments
-Libor_payment_B = 1 - DF_payment(end) - DF_payment(1) * deltas(1) * fwd_libor(1);
+Libor_payment_B = DF_payment(1) - DF_payment(end);
 
 % fixed rate payments
 fixed_rate_payment_B = spol_B / 100 * deltas(2:end)' * DF_payment(2:end);
@@ -108,7 +103,7 @@ payments_dates_5y = payments_dates(2:4*5);
 
 % compute the cap from 0 to 5y with given strike
 cap_5y = CapSpot(strike_5y, exercise_dates_5y, payments_dates_5y, spot_vols, ttms, strikes, ...
-    discounts, dates)
+    discounts, dates);
 
 % from 5 to 10y
 % compute the strike
@@ -119,7 +114,7 @@ payments_dates_10y = payments_dates(4*5+1:4*10);
 
 % compute the cap from 5 to 10y with given strike
 cap_10y = CapSpot(strike_10y, exercise_dates_10y, payments_dates_10y, spot_vols, ttms, strikes, ...
-    discounts, dates)
+    discounts, dates);
 
 % from 10 to 15y
 % compute the strike
@@ -130,9 +125,9 @@ payments_dates_15y = payments_dates(4*10+1:end);
 
 % compute the cap from 10 to 15y with given strike
 cap_15y = CapSpot(strike_15y, exercise_dates_15y, payments_dates_15y, spot_vols, ttms, strikes, ...
-    discounts, dates)
+    discounts, dates);
 
 % compute the upfront
-X = NPV_A - (first_quarter_B + Libor_payment_B + fixed_rate_payment_B + cap_5y + cap_10y + cap_15y);
+X = NPV_A - (first_quarter_B + Libor_payment_B + fixed_rate_payment_B - cap_5y - cap_10y - cap_15y);
 
 end
