@@ -14,9 +14,6 @@ function [weights_buck, weights_upto50] = bucket_weights(buckets, selected_bucke
     end
     %find the position of selected bucket in buckets
     pos = buckets==selected_bucket;
-    weights_buck = zeros(1, length(buckets));
-    %the only weight that is not zero is the selected bucket
-    weights_buck(buckets == selected_bucket) = 1;
     weights_upto50 = zeros(1, buckets(end));
     if pos>1
         preceding_bucket = buckets(pos-1); %find the preceding bucket
