@@ -24,9 +24,6 @@ needed_spot_vols = zeros(length(delta_ttms), length(strikes));
 % interpolate linearly by columns
 for i = 1:length(strikes)
     % interpolate the spot volatilities (extrapolate with flat if needed)
-    % TODO: because of the interpolation, the spot volatilities are not
-    % TODO: the same as the calibrated ones.
-    % ***: We can change how the calibration works to return all the sigmas and their corresponding dates
     needed_spot_vols(:,i) = interp1(ttms, spot_vols(:,i), delta_ttms, 'linear', spot_vols(1,i));
 end
 
@@ -45,8 +42,8 @@ DF_payment = intExtDF(discounts, dates, payment_dates);
 DF_exercise = intExtDF(discounts, dates, exercise_dates);
 DF_exercise(isnan(DF_exercise)) = 1;
 fwd_discounts = DF_payment ./ DF_exercise;
-deltas = yearfrac(exercise_dates, payment_dates, ACT_360);
-fwd_libor = 1 ./ deltas .* (1 ./ fwd_discounts - 1);
+deltas_libor = yearfrac(exercise_dates, payment_dates, ACT_360);
+fwd_libor = 1 ./ deltas_libor .* (1 ./ fwd_discounts - 1);
 
 % compute the caplets using the Bachelier formula
 Caplets = zeros(length(payment_dates), 1);

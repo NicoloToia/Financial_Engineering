@@ -57,7 +57,7 @@ for i = 2:length(ttms)
         [~, sigmas] = CapSpotBootStrap(strikes(j), prevVol, T_alpha, sigma_beta, exercise_dates, payment_dates, discounts, dates);
 
         % insert into the spotVols
-        spotVols(4*ttms(i-1):4*ttms(i)-1, j) = sigmas
+        spotVols(4*ttms(i-1):4*ttms(i)-1, j) = sigmas;
         
     end
 

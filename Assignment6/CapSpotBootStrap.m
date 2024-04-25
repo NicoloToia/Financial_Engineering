@@ -1,4 +1,4 @@
-function Price = CapSpotBootStrap(Strike, sigma_alpha, sigma_beta, exercise_dates, payments_dates, discounts, dates)
+function [Price, sigmas] = CapSpotBootStrap(Strike, sigma_alpha, T_alpha, sigma_beta, exercise_dates, payments_dates, discounts, dates)
 % CapFlat: Compute the price of a cap using the flat volatility assumption
 %
 % INPUT
@@ -22,8 +22,8 @@ ACT_360 = 2;
 deltas = yearfrac(exercise_dates, payments_dates, ACT_360);
 fwd_libor = 1 ./ deltas .* (1 ./ fwd_discounts - 1);
 
-sigmas = sigma_alpha + (sigma_beta - sigma_alpha) / yearfrac(exercise_dates(1), payments_dates(end), ACT_360) * ...
-    yearfrac(exercise_dates(1), payments_dates, ACT_360);
+sigmas = sigma_alpha + (sigma_beta - sigma_alpha) / yearfrac(T_alpha, exercise_dates(end), ACT_360) * ...
+    yearfrac(T_alpha, exercise_dates, ACT_360);
 
 % compute the caplets prices using the Bachelier formula
 Caplets = zeros(length(payments_dates), 1);

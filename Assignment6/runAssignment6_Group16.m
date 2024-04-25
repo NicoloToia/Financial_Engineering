@@ -56,7 +56,7 @@ zeroRates = zeroRates(dates, discounts);
 %% Obtain the Cap Prices from the market data via Bachelier formula
 
 % Cap prices
-mkt_cap_prices = MarketCapPrices(ttms, strikes, mkt_vols, discounts, dates)
+mkt_cap_prices = MarketCapPrices(ttms, strikes, mkt_vols, discounts, dates);
 
 %% Compute the spot volatilites
 
@@ -64,6 +64,10 @@ spot_vols = spotVols(mkt_cap_prices, ttms, strikes, mkt_vols, discounts, dates);
 
 % compute the exercise ttms
 exercise_dates = datetime(dates(1), 'ConvertFrom', 'datenum') + calmonths(3:3:12*ttms(end)-3)';
+% move to business days
+exercise_dates(~isbusday(exercise_dates, eurCalendar())) = ...
+    busdate(exercise_dates(~isbusday(exercise_dates, eurCalendar())), 'modifiedfollow', eurCalendar());
+exercise_dates = datenum(exercise_dates);
 ACT_360 = 2;
 spot_ttms = yearfrac(dates(1), exercise_dates, ACT_360);
 
@@ -81,6 +85,9 @@ cap_10y = 4.6;
 cap_15y = 5.1;
 
 X = computeUpfront(spot_vols, spot_ttms, strikes, dates(1), spol_A, fixed_rate_B, spol_B, ...
-    cap_5y, cap_10y, cap_15y, discounts, dates)
+    cap_5y, cap_10y, cap_15y, discounts, dates);
+
+% print the upfront payment percentage
+disp(['The upfront payment is: ', num2str(X*100), '%']);
 
 toc;

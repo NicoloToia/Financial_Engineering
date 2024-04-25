@@ -50,7 +50,7 @@ exercise_dates = datenum(exercise_dates);
 payments_dates = datenum(payments_dates);
 
 % compute the year fractions between the exercise dates and payment dates
-deltas = yearfrac(exercise_dates, payments_dates, ACT_360);
+deltas_libor = yearfrac(exercise_dates, payments_dates, ACT_360);
 
 % compute the discount factors at the payment dates and exercise dates
 DF_payment = intExtDF(discounts, dates, payments_dates);
@@ -62,7 +62,7 @@ DF_exercise(isnan(DF_exercise)) = 1;
 
 % party A payments
 Libor_payment_A = 1 - DF_payment(end);
-spol_payment_A = spol_A / 100 * deltas' * DF_payment;
+spol_payment_A = spol_A / 100 * deltas_libor' * DF_payment;
 
 NPV_A = Libor_payment_A + spol_payment_A;
 
@@ -84,13 +84,13 @@ NPV_A = Libor_payment_A + spol_payment_A;
 %       this can further be written as the difference of the 0 to 15y cap minus the 0 to 10y cap
 
 % first quarter fixed rate payment
-first_quarter_B = fixed_rate_B / 100 * deltas(1) * DF_payment(1);
+first_quarter_B = fixed_rate_B / 100 * deltas_libor(1) * DF_payment(1);
 
 % Libor payments
 Libor_payment_B = DF_payment(1) - DF_payment(end);
 
 % fixed rate payments
-fixed_rate_payment_B = spol_B / 100 * deltas(2:end)' * DF_payment(2:end);
+fixed_rate_payment_B = spol_B / 100 * deltas_libor(2:end)' * DF_payment(2:end);
 
 % caplet payments
 
