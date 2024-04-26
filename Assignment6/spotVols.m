@@ -1,4 +1,4 @@
-function spotVols = spotVols(mkt_prices, ttms, strikes, mkt_vols, discounts, dates)
+function [spot_ttms, spotVols] = spotVols(mkt_prices, ttms, strikes, mkt_vols, discounts, dates)
 % spotVols: Compute the spot volatilities of the caps
 %
 % INPUT
@@ -17,6 +17,10 @@ spotVols(1:3, :) = repmat(mkt_vols(1, :), 3, 1);
 
 % compute the difference between the cap of following years
 diffCap = mkt_prices(2:end, :) - mkt_prices(1:end-1, :);
+
+% start the waitbar
+wb = waitbar(0, 'Computing the spot volatilities...');
+total = length(ttms) - 1;
 
 for i = 2:length(ttms)
 
@@ -61,6 +65,20 @@ for i = 2:length(ttms)
         
     end
 
+    % update the waitbar with the percentage
+    waitbar(i/total, wb, sprintf('Computing the spot volatilities... %.2f%%', i/total*100));
 end
+
+% close the waitbar
+close(wb);
+
+% compute the new time to maturities
+exercise_dates = datetime(dates(1), 'ConvertFrom', 'datenum') + calmonths(3:3:12*ttms(end)-3)';
+% move to business days
+exercise_dates(~isbusday(exercise_dates, eurCalendar())) = ...
+    busdate(exercise_dates(~isbusday(exercise_dates, eurCalendar())), 'modifiedfollow', eurCalendar());
+exercise_dates = datenum(exercise_dates);
+ACT_360 = 2;
+spot_ttms = yearfrac(dates(1), exercise_dates, ACT_360);
 
 end
