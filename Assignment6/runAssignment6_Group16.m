@@ -42,13 +42,6 @@ swapDates = datenum(swapDates);
 % find the actually quoted swap dates
 datesSet.swaps = [swapDates(1:12); swapDates(15:5:30); swapDates(40:10:50)];
 
-% Interpolation of the mid market rates for swaps using spline
-ACT_365 = 3;
-delta_swaps_set = yearfrac(datesSet.settlement, datesSet.swaps, ACT_365);
-delta_swaps = yearfrac(datesSet.settlement, swapDates, ACT_365);
-ratesSet.swaps = interp1(delta_swaps_set, ratesSet.swaps, delta_swaps, 'spline');
-datesSet.swaps = swapDates;
-
 %% Bootstrap the discount factors from the market data
 
 % Bootstrap the discount factors from the market data
@@ -105,15 +98,17 @@ total_vega = total_Vega(mkt_vols, ttms, strikes, X, spol_A, fixed_rate_B, spol_B
     cap_5y, cap_10y, cap_15y, discounts, dates);
 
 % print the total vega
-disp(['The total vega is: ', num2str(total_vega)]);
-% print the total vega in percentage
-disp(['The total vega in percentage is: ', num2str(total_vega*100), '%']);
+disp(['The total vega is: ', num2str(total_vega), ' bp']);
 
 %% Vega bucket sensitivity
 
 % if vegas files is present, load it, otherwise compute it
 if isfile('Data/vega_buckets.mat')
     load('vega_buckets.mat');
+    % retransform the vegas
+    vega_buckets = vega_buckets / 10^6;
+    % divide by the shift
+    vega_buckets = vega_buckets / 0.0001;
 else
     vega_buckets = vegaBuckets(mkt_vols, ttms, strikes, X, spol_A, fixed_rate_B, spol_B, ...
         cap_5y, cap_10y, cap_15y, discounts, dates);

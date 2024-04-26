@@ -48,7 +48,7 @@ sens_dates = sens_dates(~isnan(sensitivities));
 sensitivities = sensitivities(~isnan(sensitivities));
 
 % remove the zero sensitivities
-sens_dates = sens_dates(sensitivities ~= 0);
-sensitivities = sensitivities(sensitivities ~= 0);
+% sens_dates = sens_dates(sensitivities ~= 0);
+% sensitivities = sensitivities(sensitivities ~= 0);
 
 end
