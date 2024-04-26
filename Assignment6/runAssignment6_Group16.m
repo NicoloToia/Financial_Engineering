@@ -60,16 +60,7 @@ mkt_cap_prices = MarketCapPrices(ttms, strikes, mkt_vols, discounts, dates);
 
 %% Compute the spot volatilites
 
-spot_vols = spotVols(mkt_cap_prices, ttms, strikes, mkt_vols, discounts, dates);
-
-% compute the exercise ttms
-exercise_dates = datetime(dates(1), 'ConvertFrom', 'datenum') + calmonths(3:3:12*ttms(end)-3)';
-% move to business days
-exercise_dates(~isbusday(exercise_dates, eurCalendar())) = ...
-    busdate(exercise_dates(~isbusday(exercise_dates, eurCalendar())), 'modifiedfollow', eurCalendar());
-exercise_dates = datenum(exercise_dates);
-ACT_360 = 2;
-spot_ttms = yearfrac(dates(1), exercise_dates, ACT_360);
+[spot_ttms, spot_vols] = spotVols(mkt_cap_prices, ttms, strikes, mkt_vols, discounts, dates);
 
 %% Plot the spot volatilities surface against the flat volatilities
 
@@ -99,5 +90,15 @@ disp(['The upfront payment is: ', num2str(X*100), '%']);
 %% Plot the delta-bucket sensitivities
 
 plot_delta_buckets(delta_dates, delta_buckets);
+
+%% Total Vega
+
+total_vega = total_Vega(mkt_vols, ttms, strikes, X, spol_A, fixed_rate_B, spol_B, ...
+    cap_5y, cap_10y, cap_15y, discounts, dates);
+
+% print the total vega
+disp(['The total vega is: ', num2str(total_vega)]);
+% print the total vega in percentage
+disp(['The total vega in percentage is: ', num2str(total_vega*100), '%']);
 
 toc;
