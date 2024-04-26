@@ -18,22 +18,8 @@ ACT_360 = 2;
 % compute the year fractions
 delta_ttms = yearfrac(dates(1), exercise_dates, ACT_360);
 
-% initialize the needed spot volatilities
-needed_spot_vols = zeros(length(delta_ttms), length(strikes));
-
-% interpolate linearly by columns
-for i = 1:length(strikes)
-    % interpolate the spot volatilities (extrapolate with flat if needed)
-    needed_spot_vols(:,i) = interp1(ttms, spot_vols(:,i), delta_ttms, 'linear', spot_vols(1,i));
-end
-
-% initialize the vector of sigmas to use in the Bachelier formula
-sigmas = zeros(length(payment_dates), 1);
-
-% interpolate the strike using spline
-for i = 1:length(payment_dates)
-    sigmas(i) = interp1(strikes, needed_spot_vols(i,:), strike, 'spline');
-end 
+% interpolate the spot volatilities to the target strikes and deltas
+sigmas = intSpotVols(strike, delta_ttms, spot_vols, ttms, strikes);
 
 % compute the discount factors at the payment dates
 DF_payment = intExtDF(discounts, dates, payment_dates);
