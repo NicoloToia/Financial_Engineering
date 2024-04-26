@@ -1,5 +1,12 @@
 function CapPrices = MarketCapPrices(ttms, strikes, Vols, discounts, dates)
+% MARKETCAPPRICES computes the cap prices from the market data
 %
+% INPUTS
+%   ttms: time to maturities
+%   strikes: strikes
+%   Vols: market volatilities
+%   discounts: discounts
+%   dates: dates of the market data
 
 % save the caps
 CapPrices = zeros(length(ttms), length(strikes));
