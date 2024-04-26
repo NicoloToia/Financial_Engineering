@@ -54,8 +54,9 @@ for i = 2:length(ttms)
         fun = @(s) CapSpotBootStrap(strikes(j), prevVol, T_alpha, s, exercise_dates, payment_dates, discounts, dates) - ...
             diffCap(i-1, j);
 
-        % compute the spot vol
-        sigma_beta = fzero(fun, prevVol);
+        % compute the spot vol (with tolerance 1e-6 and no display)
+        % sigma_beta = fzero(fun, prevVol);
+        sigma_beta = fzero(fun, prevVol, optimset( 'TolX', 1e-6, 'Display', 'off'));
 
         % compute the spot volatilities
         [~, sigmas] = CapSpotBootStrap(strikes(j), prevVol, T_alpha, sigma_beta, exercise_dates, payment_dates, discounts, dates);
