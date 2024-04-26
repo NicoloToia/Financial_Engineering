@@ -54,11 +54,9 @@ deltas_libor = yearfrac(exercise_dates, payments_dates, ACT_360);
 
 % compute the discount factors at the payment dates and exercise dates
 DF_payment = intExtDF(discounts, dates, payments_dates);
-DF_exercise = intExtDF(discounts, dates, exercise_dates);
 
 % substitute the NaN values with 1
 DF_payment(isnan(DF_payment)) = 1;
-DF_exercise(isnan(DF_exercise)) = 1;
 
 % party A payments
 Libor_payment_A = 1 - DF_payment(end);
