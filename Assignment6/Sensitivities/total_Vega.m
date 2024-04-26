@@ -1,5 +1,5 @@
 function Vega = total_Vega(mkt_vols, ttms, strikes, X_0, spol_A, fixed_rate_B, spol_B, ...
-     cap_5y, cap_10y, cap_15y, discounts, dates)
+    cap_5y, cap_10y, cap_15y, discounts, dates)
 % TOTAL_VEGA computes the total vega of the certificate
 %
 % INPUTS
@@ -28,6 +28,5 @@ function Vega = total_Vega(mkt_vols, ttms, strikes, X_0, spol_A, fixed_rate_B, s
     X_1 = computeUpfront(spot_vols, spot_ttms, strikes, dates(1), spol_A, fixed_rate_B, spol_B, ...
             cap_5y, cap_10y, cap_15y, discounts, dates);
     % compute the total vega
-    % TODO: how should we rescale it? Divide by the shift? Multiply by the shift? Both?
-    Vega = (X_1 - X_0);
+    Vega = (X_1 - X_0) / shift;
 end
