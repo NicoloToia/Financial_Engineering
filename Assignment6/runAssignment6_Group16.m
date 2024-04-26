@@ -141,4 +141,12 @@ disp(vega_buckets_table);
 
 plot_vega_buckets(vega_buckets, ttms, strikes);
 
+%% Coarse grained buckets
+
+% compute the coarse grained buckets for the delta
+coarse_delta_buckets = coarseBuckets(delta_dates, delta_buckets, 5);
+
+figure
+plot([2, 5, 10, 15], coarse_delta_buckets, 'o-', 'LineWidth', 2);
+
 toc;
