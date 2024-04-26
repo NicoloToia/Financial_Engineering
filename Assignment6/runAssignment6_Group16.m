@@ -90,4 +90,14 @@ X = computeUpfront(spot_vols, spot_ttms, strikes, dates(1), spol_A, fixed_rate_B
 % print the upfront payment percentage
 disp(['The upfront payment is: ', num2str(X*100), '%']);
 
+%% Delta-bucket sensitivity
+
+% compute the delta-bucket sensitivity
+[delta_dates, delta_buckets] = deltaBuckets(datesSet, ratesSet, dates, spot_vols, spot_ttms, strikes, X, dates(1), spol_A, ...
+    fixed_rate_B, spol_B, cap_5y, cap_10y, cap_15y);
+
+%% Plot the delta-bucket sensitivities
+
+plot_delta_buckets(delta_dates, delta_buckets);
+
 toc;
