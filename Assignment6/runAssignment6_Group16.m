@@ -63,6 +63,8 @@ mkt_cap_prices = MarketCapPrices(ttms, strikes, mkt_vols, discounts, dates);
 
 [spot_ttms, spot_vols] = spotVols(mkt_cap_prices, ttms, strikes, mkt_vols, discounts, dates);
 
+final_vols = spot_vols(4*ttms-1,:);
+
 %% Plot the spot volatilities surface against the flat volatilities
 
 plot_vols(spot_vols, spot_ttms, mkt_vols, ttms, strikes);
