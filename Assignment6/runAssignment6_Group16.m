@@ -13,6 +13,14 @@ clc;
 % set the clock to find the time of execution
 tic;
 
+%% Add the directories to the path
+
+addpath('Data');
+addpath('Bootstrap');
+addpath('CapPricing');
+addpath('Sensitivities');
+addpath('Plotting');
+
 %% Settings
 
 formatData='dd/mm/yyyy'; % Pay attention to your computer settings 
