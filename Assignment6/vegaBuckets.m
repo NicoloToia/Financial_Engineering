@@ -18,12 +18,8 @@ function sensitivities = vegaBuckets(mkt_vols, ttms, strikes, X_0, spol_A, fixed
 
 % initialize the sensitivities
 sensitivities = zeros(size(mkt_vols));
-change_in_price = zeros(size(mkt_vols));
 % shift is 1 bp
 shift = 0.0001;
-
-% compute the old market prices
-old_mkt_prices = MarketCapPrices(ttms, strikes, mkt_vols, discounts, dates);
 
 % for each volatility, compute the vega bucket sensitivity
 for i = 1:length(mkt_vols)
@@ -33,20 +29,14 @@ for i = 1:length(mkt_vols)
         shifted_vols(i, j) = shifted_vols(i, j) + shift;
         % recompute the cap prices
         mkt_prices = MarketCapPrices(ttms, strikes, shifted_vols, discounts, dates);
-        % save the variation in prices
-        change_in_price(i, j) = mkt_prices(i, j) - old_mkt_prices(i, j);
         % recalibrate the spot vols
         [shifted_ttms, shifted_vols] = spotVols(mkt_prices, ttms, strikes, shifted_vols, discounts, dates);
         % recompute the upfront payment
         X_shift = computeUpfront(shifted_vols, shifted_ttms, strikes, dates(1), spol_A, fixed_rate_B, spol_B, ...
             cap_5y, cap_10y, cap_15y, discounts, dates);
         % compute the vega bucket sensitivity
-        sensitivities(i, j) = 10^6 * (X_shift - X_0);
+        sensitivities(i, j) = (X_shift - X_0) / shift;
     end
 end
-
-% print the change in prices
-disp('The change in prices is: ');
-disp(change_in_price);
 
 end
