@@ -130,6 +130,7 @@ plot([2, 5, 10, 15], coarse_delta_buckets, 'o-', 'LineWidth', 2);
 
 %% Vega
 
+% add the initial date to the vega dates
 vega_dates = datetime(dates(1), 'ConvertFrom', 'datenum') + calyears([0;ttms]);
 vega_dates(~isbusday(vega_dates, eurCalendar())) = ...
     busdate(vega_dates(~isbusday(vega_dates, eurCalendar())), 'modifiedfollow', eurCalendar());
