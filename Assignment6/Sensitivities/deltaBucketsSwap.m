@@ -1,4 +1,4 @@
-function [sensitivities, sens_dates] = deltaBucketsSwap(datesSet, ratesSet, dates, swapRate, swapDates)
+function [sensitivities, sens_dates] = deltaBucketsSwap(datesSet, ratesSet, dates, swapRate, swapTtm)
 % DELTABUCKETSSWAP Compute the delta-bucket sensitivities of a swap
 %
 % INPUTS
@@ -6,7 +6,7 @@ function [sensitivities, sens_dates] = deltaBucketsSwap(datesSet, ratesSet, date
 %   ratesSet: rates of the market data
 %   dates: dates to shock
 %   swapRate: fixed rate of the swap
-%   swapDates: dates of the swap (including the settlement date)
+%   swapTtm: time to maturity of the swap
 
 % initialize the sensitivities (skip the first date) and the dates
 sensitivities = zeros(length(dates), 1);
@@ -29,7 +29,7 @@ for i = 2:length(dates)
     end
     % rerun the bootstrap
     [~, shifted_discounts] = bootstrap(datesSet, shifted_ratesSet);
-    sensitivities(i) = swapNPV(swapRate, swapDates, shifted_discounts, dates) / shift;
+    sensitivities(i) = swapNPV(swapRate, swapTtm, shifted_discounts, dates) / shift;
 end
 
 % remove the NaNs and the corresponding dates

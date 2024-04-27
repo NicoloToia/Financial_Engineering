@@ -1,17 +1,23 @@
-function NPV = swapNPV(swapRate, swapDates, discounts, dates)
+function NPV = swapNPV(swapRate, ttm, discounts, dates)
 % SWAPNPV computes the NPV of a payer swap with the given fixed rate
 %
 % INPUTS
 %   swapRate: fixed rate of the swap
-%   swapDates: dates of the swap (including the settlement date)
+%   ttm: time to maturity of the swap (in years)
 %   discounts: discounts
 %   dates: dates of the discounts
+
+% compute the dates
+swapDates = datetime(dates(1), 'ConvertFrom', 'datenum') + calyears(0:ttm)';
+swapDates(~isbusday(swapDates, eurCalendar())) = ...
+    busdate(swapDates(~isbusday(swapDates, eurCalendar())), 'modifiedfollow', eurCalendar());
+swapDates = datenum(swapDates);
 
 % discounts on the swap dates
 discounts_swap = intExtDF(discounts, dates, swapDates(2:end));
 
 % libor payments
-libor_leg = discounts_swap(1) - discounts_swap(end);
+libor_leg = 1 - discounts_swap(end);
 
 % BPV
 ACT_365 = 3;
