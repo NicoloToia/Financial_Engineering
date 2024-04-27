@@ -32,6 +32,11 @@ begin_date = datenum(begin_date);
 center_date = datenum(center_date);
 end_date = datenum(end_date);
 
+datestr(begin_date)
+datestr(center_date)
+datestr(end_date)
+datestr(sens_dates)
+
 % find the relevant dates
 first_half_dates = sens_dates(sens_dates >= begin_date & sens_dates < center_date);
 first_half_sens = sensitivities(sens_dates >= begin_date & sens_dates < center_date);

@@ -1,4 +1,4 @@
-function bucket_sensitivities = coarseBuckets(sens_dates, sensitivities, bucket_end_dates)
+function bucket_sensitivities = vegaCoarseBuckets(sens_dates, sensitivities)
 
 % initialize the sensitivities
 bucket_sensitivities = zeros(4, 1);
@@ -9,6 +9,6 @@ bucket_sensitivities(2) = bucketWeights(sensitivities, sens_dates, 2, 5, 10, fal
 
 bucket_sensitivities(3) = bucketWeights(sensitivities, sens_dates, 5, 10, 15, false, false);
 
-bucket_sensitivities(4) = bucketWeights(sensitivities, sens_dates, 10, 15, 50, false, true);
+bucket_sensitivities(4) = bucketWeights(sensitivities, sens_dates, 10, 15, 30, false, true);
 
 end
