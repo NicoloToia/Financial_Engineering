@@ -11,7 +11,6 @@ function S = swapPricer(NPV, ttm, discounts, dates)
 swapDates = datetime(dates(1), 'ConvertFrom', 'datenum') + calyears(0:ttm)';
 swapDates(~isbusday(swapDates, eurCalendar())) = ...
     busdate(swapDates(~isbusday(swapDates, eurCalendar())), 'modifiedfollow', eurCalendar());
-swapDates
 swapDates = datenum(swapDates);
 
 % discounts on the swap dates
@@ -22,7 +21,7 @@ libor_leg = 1 - discounts_swap(end);
 
 % BPV
 ACT_365 = 3;
-deltas = yearfrac(swapDates(1:end-1), swapDates(2:end), ACT_365)
+deltas = yearfrac(swapDates(1:end-1), swapDates(2:end), ACT_365);
 
 % BPV
 BPV = deltas' * discounts_swap;
