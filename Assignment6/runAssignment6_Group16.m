@@ -123,11 +123,14 @@ plot_vega_buckets(vega_buckets, ttms);
 
 %% Delta
 
+buckets = [2,5,10,15];
+
 % compute the coarse grained buckets for the delta
 coarse_delta_buckets = deltaCoarseBuckets(delta_dates, delta_buckets);
 
-figure
-plot([2, 5, 10, 15], coarse_delta_buckets, 'o-', 'LineWidth', 2);
+%% Plot the coarse grained delta buckets
+
+plot_coarse_delta_buckets(buckets, coarse_delta_buckets);
 
 %% Vega
 
@@ -140,13 +143,9 @@ vega_dates = datenum(vega_dates);
 % compute the coarse grained buckets for the vega (add zero to have the point of reference)
 coarse_vega_buckets = vegaCoarseBuckets(vega_dates, [0;vega_buckets]);
 
-figure
-plot([2, 5, 10, 15], coarse_vega_buckets, 'o-', 'LineWidth', 2);
-
 %% Compute the sensitivities for the swaps
 
 % compute the at par rates for the 4 swaps (2, 5, 10, 15 years)
-buckets = [2,5,10,15];
 swapRates = zeros(length(buckets), 1);
 coarse_delta_buckets_swaps = zeros(length(buckets));
 for i = 1:length(buckets)
