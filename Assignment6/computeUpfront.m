@@ -123,7 +123,7 @@ payments_dates_15y = payments_dates(4*10+1:end);
 
 % compute the cap from 10 to 15y with given strike
 cap_15y = CapSpot(strike_15y, exercise_dates_15y, payments_dates_15y, spot_vols, ttms, strikes, ...
-    discounts, dates)
+    discounts, dates);
 
 % compute the upfront
 X = NPV_A - (first_quarter_B + Libor_payment_B + fixed_rate_payment_B - cap_5y - cap_10y - cap_15y);
