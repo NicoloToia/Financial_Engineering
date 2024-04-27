@@ -8,7 +8,7 @@ function plot_hedging_weights(buckets, weights, title_str)
 % create the figure
 figure;
 % plot the weights vs buckets
-bar(buckets, weights, 'FaceColor', [0.5, 0.5, 0.5]);
+bar(buckets, weights);
 % set the labels
 xlabel('Buckets');
 ylabel('Weights');

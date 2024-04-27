@@ -20,6 +20,7 @@ addpath('Bootstrap');
 addpath('Pricing')
 addpath('Calibration');
 addpath('Sensitivities');
+addpath('Hedging');
 addpath('Plotting');
 
 %% Settings
