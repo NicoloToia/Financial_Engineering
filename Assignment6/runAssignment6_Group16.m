@@ -104,49 +104,41 @@ disp(['The total vega is: ', num2str(total_vega), ' bp']);
 
 %% Vega bucket sensitivity
 
-% if vegas files is present, load it, otherwise compute it
-if isfile('Data/vega_buckets.mat')
-    load('vega_buckets.mat');
-    % retransform the vegas
-    vega_buckets = vega_buckets / 10^6;
-    % divide by the shift
-    vega_buckets = vega_buckets / 0.0001;
-else
+if ~isfile('Data/vega_buckets_vector.mat')
+    % compute the vega bucket sensitivities
     vega_buckets = vegaBuckets(mkt_vols, ttms, strikes, X, spol_A, fixed_rate_B, spol_B, ...
         cap_5y, cap_10y, cap_15y, discounts, dates);
-    save('vega_buckets.mat', 'vega_buckets');
+    
+    save('vega_buckets_vector.mat', 'vega_buckets');
+else
+    load('vega_buckets_vector.mat');
 end
-
-% print the vega buckets sensitivities as a table
-
-% create the row names from the ttms
-row_names = cell(1, length(ttms));
-for i = 1:length(ttms)
-    row_names{i} = ['T = ', num2str(ttms(i)), 'y'];
-end
-
-% create the column names from the strikes
-column_names = cell(1, length(strikes));
-for i = 1:length(strikes)
-    column_names{i} = ['K = ', num2str(strikes(i))];
-end
-
-% create the table
-vega_buckets_table = array2table(vega_buckets, 'RowNames', row_names, 'VariableNames', column_names);
-
-% print the table
-disp(vega_buckets_table);
 
 %% Plot the vega bucket sensitivities
 
-plot_vega_buckets(vega_buckets, ttms, strikes);
+plot_vega_buckets(vega_buckets, ttms);
 
 %% Coarse grained buckets
 
+%% Delta
+
 % compute the coarse grained buckets for the delta
-coarse_delta_buckets = coarseBuckets(delta_dates, delta_buckets, 5);
+coarse_delta_buckets = deltaCoarseBuckets(delta_dates, delta_buckets);
 
 figure
 plot([2, 5, 10, 15], coarse_delta_buckets, 'o-', 'LineWidth', 2);
+
+%% Vega
+
+vega_dates = datetime(dates(1), 'ConvertFrom', 'datenum') + calyears([0;ttms]);
+vega_dates(~isbusday(vega_dates, eurCalendar())) = ...
+    busdate(vega_dates(~isbusday(vega_dates, eurCalendar())), 'modifiedfollow', eurCalendar());
+vega_dates = datenum(vega_dates);
+
+% compute the coarse grained buckets for the vega (add zero to have the point of reference)
+coarse_vega_buckets = vegaCoarseBuckets(vega_dates, [0;vega_buckets]);
+
+figure
+plot([2, 5, 10, 15], coarse_vega_buckets, 'o-', 'LineWidth', 2);
 
 toc;
