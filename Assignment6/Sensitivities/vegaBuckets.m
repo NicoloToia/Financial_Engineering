@@ -17,26 +17,24 @@ function sensitivities = vegaBuckets(mkt_vols, ttms, strikes, X_0, spol_A, fixed
 %   dates: dates of the market data
 
 % initialize the sensitivities
-sensitivities = zeros(size(mkt_vols));
+sensitivities = zeros(length(mkt_vols), 1);
 % shift is 1 bp
 shift = 0.0001;
 
 % for each volatility, compute the vega bucket sensitivity
 for i = 1:length(mkt_vols)
-    for j = 1:width(mkt_vols)
-        % shift the volatility of 1 bp
-        shifted_vols = mkt_vols;
-        shifted_vols(i, j) = shifted_vols(i, j) + shift;
-        % recompute the cap prices
-        mkt_prices = MarketCapPrices(ttms, strikes, shifted_vols, discounts, dates);
-        % recalibrate the spot vols
-        [shifted_ttms, shifted_vols] = spotVols(mkt_prices, ttms, strikes, shifted_vols, discounts, dates);
-        % recompute the upfront payment
-        X_shift = computeUpfront(shifted_vols, shifted_ttms, strikes, dates(1), spol_A, fixed_rate_B, spol_B, ...
-            cap_5y, cap_10y, cap_15y, discounts, dates);
-        % compute the vega bucket sensitivity
-        sensitivities(i, j) = (X_shift - X_0) / shift;
-    end
+    % shift the row by 1 bp
+    shifted_vols = mkt_vols;
+    shifted_vols(i, :) = shifted_vols(i, :) + shift;
+    % recompute the cap prices
+    mkt_prices = MarketCapPrices(ttms, strikes, shifted_vols, discounts, dates);
+    % recalibrate the spot vols
+    [shifted_ttms, shifted_vols] = spotVols(mkt_prices, ttms, strikes, shifted_vols, discounts, dates);
+    % recompute the upfront payment
+    X_shift = computeUpfront(shifted_vols, shifted_ttms, strikes, dates(1), spol_A, fixed_rate_B, spol_B, ...
+        cap_5y, cap_10y, cap_15y, discounts, dates);
+    % compute the vega bucket sensitivity
+    sensitivities(i) = (X_shift - X_0) / shift;
 end
 
 end
