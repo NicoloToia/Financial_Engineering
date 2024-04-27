@@ -26,7 +26,7 @@ function Vega = total_Vega(mkt_vols, ttms, strikes, X_0, spol_A, fixed_rate_B, s
     [spot_ttms, spot_vols] = spotVols(mkt_prices, ttms, strikes, mkt_vols, discounts, dates);
     % recalculate the upfront
     X_1 = computeUpfront(spot_vols, spot_ttms, strikes, dates(1), spol_A, fixed_rate_B, spol_B, ...
-            cap_5y, cap_10y, cap_15y, discounts, dates);
+        cap_5y, cap_10y, cap_15y, discounts, dates);
     % compute the total vega
     Vega = (X_1 - X_0) / shift;
 end
