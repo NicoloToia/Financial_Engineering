@@ -32,11 +32,6 @@ begin_date = datenum(begin_date);
 center_date = datenum(center_date);
 end_date = datenum(end_date);
 
-datestr(begin_date)
-datestr(center_date)
-datestr(end_date)
-datestr(sens_dates)
-
 % find the relevant dates
 first_half_dates = sens_dates(sens_dates >= begin_date & sens_dates < center_date);
 first_half_sens = sensitivities(sens_dates >= begin_date & sens_dates < center_date);
@@ -62,8 +57,6 @@ if last
     % adjust the weights (all ones after the center date)
     weights(length(first_half_dates)+1:end) = 1;
 end
-
-weights
 
 % compute the bucket sensitivity
 bucket_sens = weights' * [first_half_sens; center_sens; second_half_sens];
