@@ -174,4 +174,8 @@ plot_coarse_delta_buckets_swaps(buckets, coarse_delta_buckets_swaps);
 
 delta_weights = HedgeCertificateDeltaBuckets(buckets, coarse_delta_buckets, coarse_delta_buckets_swaps, true);
 
+%% Plot the weights of the hedging
+
+plot_hedging_weights(buckets, delta_weights, 'Weights of the Delta hedging');
+
 toc;
