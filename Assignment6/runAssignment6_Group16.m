@@ -143,57 +143,35 @@ vega_dates = datenum(vega_dates);
 % compute the coarse grained buckets for the vega (add zero to have the point of reference)
 coarse_vega_buckets = vegaCoarseBuckets(vega_dates, [0;vega_buckets]);
 
+%% Plot the coarse grained vega buckets
+
+plot_coarse_vega_buckets(buckets, coarse_vega_buckets);
+
 %% Compute the sensitivities for the swaps
 
-% compute the at par rates for the 4 swaps (2, 5, 10, 15 years)
+% compute the delta for the 4 swaps (2, 5, 10, 15 years)
 swapRates = zeros(length(buckets), 1);
 coarse_delta_buckets_swaps = zeros(length(buckets));
 for i = 1:length(buckets)
-    % compute the dates
-    swapDates = datetime(dates(1), 'ConvertFrom', 'datenum') + calyears(0:buckets(i))';
-    swapDates(~isbusday(swapDates, eurCalendar())) = ...
-        busdate(swapDates(~isbusday(swapDates, eurCalendar())), 'modifiedfollow', eurCalendar());
-    swapDates = datenum(swapDates);
 
-    swapRates(i) = swapPricer(0, swapDates, discounts, dates);
+    % compute the swap rate
+    swapRates(i) = swapPricer(0, buckets(i), discounts, dates);
 
     % compute the bucket sensitivity
-    [delta_buckets_swap, delta_dates_swap] = deltaBucketsSwap(datesSet, ratesSet, dates, swapRates(i), swapDates);
+    [delta_buckets_swap, delta_dates_swap] = ...
+        deltaBucketsSwap(datesSet, ratesSet, dates, swapRates(i), buckets(i));
 
-    % compute the coarse grained buckets for the delta
-    coarse_delta_buckets_swap = deltaCoarseBuckets(delta_dates_swap, delta_buckets_swap);
-
-    % save them in the matrix
-    coarse_delta_buckets_swaps(:,i) = coarse_delta_buckets_swap;
+    % compute the coarse grained buckets for the delta and store them
+    coarse_delta_buckets_swaps(:,i) = deltaCoarseBuckets(delta_dates_swap, delta_buckets_swap);
     
 end
 
+%% Plot the coarse grained delta buckets for the swaps
+
+plot_coarse_delta_buckets_swaps(buckets, coarse_delta_buckets_swaps);
+
 %% Hedging of the Delta of the certificate
 
-% make into a cycle
-portfolio_delta = coarse_delta_buckets;
-Delta_weights = zeros(size(buckets));
-figure
-for i = length(buckets):-1:1
-    % find the weight
-    Delta_weights(i) = - portfolio_delta(i) / coarse_delta_buckets_swaps(i,i);
-
-    % update the portfolio delta
-    portfolio_delta = portfolio_delta + Delta_weights(i) * coarse_delta_buckets_swaps(:,i);
-
-    % subplot the steps of the portfolio delta
-    subplot(2,2, length(buckets)-i+1);
-    plot(buckets, portfolio_delta, 'o-', 'LineWidth', 2);
-    hold on
-    % zero line
-    plot([0, 15], [0, 0], 'k--', 'LineWidth', 1);
-    title(['Portfolio Delta hedged with ', num2str(buckets(i)), ' years swap']);
-    xlabel('Years');
-    ylabel('Delta');
-    % fix the y-axis scale
-    ylim([-0.4, 0.8]);
-    grid on;
-
-end
+delta_weights = HedgeCertificateDeltaBuckets(buckets, coarse_delta_buckets, coarse_delta_buckets_swaps, true);
 
 toc;
