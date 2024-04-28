@@ -101,13 +101,15 @@ disp(['The upfront payment is: ', num2str(X*Notional), ' EUR']);
 %% Plot the delta-bucket sensitivities
 
 % plot_delta_buckets(delta_dates, delta_buckets);
+% plot_delta_buckets(delta_dates, delta_buckets * Notional * 10^(-4));
+% these values are expressed in bp, to obtain EUR values, multiply by the notional and by 1 bp
 
 %% Total Vega
 
 total_vega = total_Vega(mkt_vols, ttms, strikes, X, spol_A, fixed_rate_B, spol_B, ...
     cap_5y, cap_10y, cap_15y, discounts, dates);
-
-% print the total vega
+% 
+print the total vega
 disp(['The total vega is: ', num2str(total_vega), ' bp']);
 
 %% Vega bucket sensitivity
