@@ -142,6 +142,37 @@ coarse_delta_buckets = deltaCoarseBuckets(dates(1), delta_dates, delta_buckets);
 
 % plot_coarse_delta_buckets(buckets, coarse_delta_buckets);
 
+%% Compute the sensitivities for the swaps for hedging
+
+% compute the delta for the 4 swaps (2, 5, 10, 15 years)
+swapRates = zeros(length(buckets), 1);
+coarse_delta_buckets_swaps = zeros(length(buckets));
+for i = 1:length(buckets)
+
+    % compute the swap rate
+    swapRates(i) = swapPricer(0, buckets(i), discounts, dates);
+
+    % compute the bucket sensitivity
+    [delta_buckets_swap, delta_dates_swap] = ...
+        deltaBucketsSwap(datesSet, ratesSet, quoted_dates, swapRates(i), buckets(i));
+
+    % compute the coarse grained buckets for the delta and store them
+    coarse_delta_buckets_swaps(:,i) = deltaCoarseBuckets(dates(1), delta_dates_swap, delta_buckets_swap);
+    
+end
+
+%% Plot the coarse grained delta buckets for the swaps
+
+% plot_coarse_delta_buckets_swaps(buckets, coarse_delta_buckets_swaps);
+
+%% Hedging of the Delta of the certificate
+
+delta_weights = HedgeCertificateDeltaBuckets(buckets, coarse_delta_buckets, coarse_delta_buckets_swaps, true);
+
+%% Plot the weights of the hedging
+
+% plot_hedging_weights(buckets, delta_weights, 'Weights of the Delta hedging');
+
 %% Vega
 
 % add the initial date to the vega dates
@@ -157,36 +188,6 @@ coarse_vega_buckets = vegaCoarseBuckets(vega_dates, [0;vega_buckets]);
 
 % plot_coarse_vega_buckets(buckets, coarse_vega_buckets);
 
-%% Compute the sensitivities for the swaps
-
-% compute the delta for the 4 swaps (2, 5, 10, 15 years)
-swapRates = zeros(length(buckets), 1);
-coarse_delta_buckets_swaps = zeros(length(buckets));
-for i = 1:length(buckets)
-
-    % compute the swap rate
-    swapRates(i) = swapPricer(0, buckets(i), discounts, dates);
-
-    % compute the bucket sensitivity
-    [delta_buckets_swap, delta_dates_swap] = ...
-        deltaBucketsSwap(datesSet, ratesSet, dates, swapRates(i), buckets(i));
-
-    % compute the coarse grained buckets for the delta and store them
-    coarse_delta_buckets_swaps(:,i) = deltaCoarseBuckets(delta_dates_swap, delta_buckets_swap);
-    
-end
-
-%% Plot the coarse grained delta buckets for the swaps
-
-% plot_coarse_delta_buckets_swaps(buckets, coarse_delta_buckets_swaps);
-
-%% Hedging of the Delta of the certificate
-
-delta_weights = HedgeCertificateDeltaBuckets(buckets, coarse_delta_buckets, coarse_delta_buckets_swaps, true);
-
-%% Plot the weights of the hedging
-
-% plot_hedging_weights(buckets, delta_weights, 'Weights of the Delta hedging');
 
 %% Vega hedging of certificate with ATM 5y Cap
 

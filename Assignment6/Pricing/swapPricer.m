@@ -20,8 +20,8 @@ discounts_swap = intExtDF(discounts, dates, swapDates(2:end));
 libor_leg = 1 - discounts_swap(end);
 
 % BPV
-ACT_365 = 3;
-deltas = yearfrac(swapDates(1:end-1), swapDates(2:end), ACT_365);
+EU_30_360 = 6;
+deltas = yearfrac(swapDates(1:end-1), swapDates(2:end), EU_30_360);
 
 % BPV
 BPV = deltas' * discounts_swap;
