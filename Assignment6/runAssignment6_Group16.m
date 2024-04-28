@@ -69,7 +69,7 @@ final_vols = spot_vols(4*ttms-1,:);
 
 %% Plot the spot volatilities surface against the flat volatilities
 
-plot_vols(spot_vols, spot_ttms, mkt_vols, ttms, strikes);
+% plot_vols(spot_vols, spot_ttms, mkt_vols, ttms, strikes);
 
 %% Price the certificate
 
@@ -94,7 +94,7 @@ disp(['The upfront payment is: ', num2str(X*100), '%']);
 
 %% Plot the delta-bucket sensitivities
 
-plot_delta_buckets(delta_dates, delta_buckets);
+% plot_delta_buckets(delta_dates, delta_buckets);
 
 %% Total Vega
 
@@ -118,7 +118,7 @@ end
 
 %% Plot the vega bucket sensitivities
 
-plot_vega_buckets(vega_buckets, ttms);
+% plot_vega_buckets(vega_buckets, ttms);
 
 %% Coarse grained buckets
 
@@ -131,7 +131,7 @@ coarse_delta_buckets = deltaCoarseBuckets(delta_dates, delta_buckets);
 
 %% Plot the coarse grained delta buckets
 
-plot_coarse_delta_buckets(buckets, coarse_delta_buckets);
+% plot_coarse_delta_buckets(buckets, coarse_delta_buckets);
 
 %% Vega
 
@@ -146,7 +146,7 @@ coarse_vega_buckets = vegaCoarseBuckets(vega_dates, [0;vega_buckets]);
 
 %% Plot the coarse grained vega buckets
 
-plot_coarse_vega_buckets(buckets, coarse_vega_buckets);
+% plot_coarse_vega_buckets(buckets, coarse_vega_buckets);
 
 %% Compute the sensitivities for the swaps
 
@@ -169,7 +169,7 @@ end
 
 %% Plot the coarse grained delta buckets for the swaps
 
-plot_coarse_delta_buckets_swaps(buckets, coarse_delta_buckets_swaps);
+% plot_coarse_delta_buckets_swaps(buckets, coarse_delta_buckets_swaps);
 
 %% Hedging of the Delta of the certificate
 
@@ -177,6 +177,53 @@ delta_weights = HedgeCertificateDeltaBuckets(buckets, coarse_delta_buckets, coar
 
 %% Plot the weights of the hedging
 
-plot_hedging_weights(buckets, delta_weights, 'Weights of the Delta hedging');
+% plot_hedging_weights(buckets, delta_weights, 'Weights of the Delta hedging');
+
+%% Vega hedging of certificate with ATM 5y Cap
+
+% Hedge the Vega with an ATM 5y Cap (strike = ATM 5y Swap rate same conventions), and hedge the total portfolio 
+
+% find the ATM 5y Cap strike
+strike_5y = swapPricer(0, 5, discounts, dates);
+
+% compute the vega for the ATM 5y Cap
+vega_5y_cap = totalVegaCap(strike_5y, 5, spot_vols, spot_ttms, mkt_vols, ttms, strikes, discounts, dates)
+
+% completely hedge the vega of the certificate with the ATM 5y Cap
+vega_weight_5y_cap = -total_vega / vega_5y_cap;
+
+% print the vega weight
+disp(['The vega weight for the 5y ATM Cap is: ', num2str(vega_weight_5y_cap)]);
+
+%% Coarse grained vega buckets for the swaps
+
+% aggregate the vega buckets for into 0-5y, 5y-15y
+
+portfolio_coarse_buckets = [coarse_vega_buckets(1) + coarse_vega_buckets(2); 
+    coarse_vega_buckets(3) + coarse_vega_buckets(4)];
+
+% compute the vega of the 15 year cap 
+
+% find the ATM 15y Cap strike
+strike_15y = swapPricer(0, 15, discounts, dates);
+
+% compute the vega for the ATM 15y Cap
+% TODO: tecnically we should compute the bucket vega for the 15y cap
+vega_15y_cap = vegaCap(strike_15y, 15, spot_vols, spot_ttms, mkt_vols, ttms, strikes, discounts, dates)
+
+% start hedging the vega with the larger bucket
+vega_weights = zeros(length(portfolio_coarse_buckets), 1);
+
+% find the weight to perfectly hedge the bucket using the corresponding cap
+vega_weights(2) = - portfolio_coarse_buckets(2) / vega_15y_cap;
+
+% update the portfolio vega
+portfolio_coarse_buckets = portfolio_coarse_buckets + vega_weights(2) * [0;vega_15y_cap];
+
+% find the weight to perfectly hedge the bucket using the corresponding cap
+vega_weights(1) = - portfolio_coarse_buckets(1) / vega_5y_cap;
+
+% update the portfolio vega
+portfolio_coarse_buckets = portfolio_coarse_buckets + vega_weights(1) * [0;vega_5y_cap];
 
 toc;
