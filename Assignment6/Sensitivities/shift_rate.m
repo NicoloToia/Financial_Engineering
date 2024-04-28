@@ -14,34 +14,57 @@ function shifted_ratesSet = shift_rate(ratesSet, datesSet, target_date, shift)
 % target_date   : date at which the rate should be shifted
 % shift         : amount by which the rate should be shifted
 
-% find the number of fields in the struct
-num_fields = numel(fieldnames(datesSet));
-rates_names = fieldnames(ratesSet);
-dates_names = fieldnames(datesSet);
-
 % search for the target date in the datesSet
 target_idx = NaN;
-target_field = NaN;
 
-for i = 2:num_fields
-    for j = 1:length(datesSet.(dates_names{i}))
-        target_row = datesSet.(dates_names{i})(j, :);
-        if ismember(target_date, target_row)
-            target_idx = j;
-            target_field = i-1; % ratesSet has one less field than datesSet
-            break
-        end
+% search the depo dates
+for i = 1:4
+    if datesSet.depos(i) == target_date
+        target_idx = i;
+        break
     end
+end
+
+% target date found in the depos
+if ~isnan(target_idx)
+    shifted_ratesSet = ratesSet;
+    shifted_ratesSet.depos(target_idx) = ratesSet.depos(target_idx) + shift;
+    return
+end
+
+% search the futures dates
+for i = 1:7
+    if datesSet.futures(i, 2) == target_date
+        target_idx = i;
+        break
+    end
+end
+
+% target date found in the futures
+if ~isnan(target_idx)
+    shifted_ratesSet = ratesSet;
+    shifted_ratesSet.futures(target_idx) = ratesSet.futures(target_idx) + shift;
+    return
+else
+
+% search the swaps dates
+for i = 2:length(datesSet.swaps)
+    if datesSet.swaps(i) == target_date
+        target_idx = i;
+        break
+    end
+end
+
+% target date found in the swaps
+if ~isnan(target_idx)
+    shifted_ratesSet = ratesSet;
+    shifted_ratesSet.swaps(target_idx) = ratesSet.swaps(target_idx) + shift;
+    return
 end
 
 if isnan(target_idx)
     % print error message with the target date
     error(['The target date ', datestr(target_date), ' is not present in the datesSet.']);
 end
-
-% shift the rate at the target date by the given amount
-shifted_ratesSet = ratesSet;
-shifted_ratesSet.(rates_names{target_field})(target_idx) = ...
-    ratesSet.(rates_names{target_field})(target_idx) + shift;
 
 end

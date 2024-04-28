@@ -44,6 +44,9 @@ swapDates = datenum(swapDates);
 % find the actually quoted swap dates
 datesSet.swaps = [swapDates(1:12); swapDates(15:5:30); swapDates(40:10:50)];
 
+% save the quoted dates (those used in the bootstrap)
+quoted_dates = [datesSet.depos(1:4); datesSet.futures(1:7, 2); datesSet.swaps(2:end)];
+
 %% Bootstrap the discount factors from the market data
 
 % Bootstrap the discount factors from the market data
@@ -92,7 +95,7 @@ disp(['The upfront payment is: ', num2str(X*Notional), ' EUR']);
 %% Delta-bucket sensitivity
 
 % compute the delta-bucket sensitivity
-[delta_dates, delta_buckets] = deltaBuckets(datesSet, ratesSet, dates, spot_vols, spot_ttms, strikes, X, dates(1), spol_A, ...
+[delta_dates, delta_buckets] = deltaBuckets(datesSet, ratesSet, quoted_dates, spot_vols, spot_ttms, strikes, X, dates(1), spol_A, ...
     fixed_rate_B, spol_B, cap_5y, cap_10y, cap_15y);
 
 %% Plot the delta-bucket sensitivities
