@@ -1,4 +1,4 @@
-function bucket_sens = computeBucket(sensitivities, sens_dates, start, center, end_, first, last)
+function bucket_sens = bucketWeights(settlement_date, sensitivities, sens_dates, start, center, end_, first, last)
 % compute the buckets for the center date
 %
 % INPUT
@@ -13,9 +13,9 @@ function bucket_sens = computeBucket(sensitivities, sens_dates, start, center, e
 % first bucket 0-2y
 
 % compute the center and last date
-begin_date = datetime(sens_dates(1), 'ConvertFrom', 'datenum') + calyears(start);
-center_date = datetime(sens_dates(1), 'ConvertFrom', 'datenum') + calyears(center);
-end_date = datetime(sens_dates(1), 'ConvertFrom', 'datenum') + calyears(end_);
+begin_date = datetime(settlement_date, 'ConvertFrom', 'datenum') + calyears(start);
+center_date = datetime(settlement_date, 'ConvertFrom', 'datenum') + calyears(center);
+end_date = datetime(settlement_date, 'ConvertFrom', 'datenum') + calyears(end_);
 % move to business days
 if ~isbusday(begin_date, eurCalendar())
     begin_date = busdate(begin_date, 'modifiedfollow', eurCalendar());

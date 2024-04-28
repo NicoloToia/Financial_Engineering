@@ -136,7 +136,7 @@ end
 buckets = [2,5,10,15];
 
 % compute the coarse grained buckets for the delta
-coarse_delta_buckets = deltaCoarseBuckets(delta_dates, delta_buckets);
+coarse_delta_buckets = deltaCoarseBuckets(dates(1), delta_dates, delta_buckets);
 
 %% Plot the coarse grained delta buckets
 
