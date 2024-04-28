@@ -16,14 +16,14 @@ function Vega = total_Vega(mkt_vols, ttms, strikes, X_0, spol_A, fixed_rate_B, s
 %   dates: dates of the market data
 
     % shock the volatility of the caps by 1bp
-    shift = 0.0001;
+    shift = 10^(-4);
     shift_vols = mkt_vols + shift;
 
     % recompute the market prices
     mkt_prices = MarketCapPrices(ttms, strikes, shift_vols, discounts, dates);
 
     % recalibrate the spot volatilities
-    [spot_ttms, spot_vols] = spotVols(mkt_prices, ttms, strikes, mkt_vols, discounts, dates);
+    [spot_ttms, spot_vols] = spotVols(mkt_prices, ttms, strikes, shift_vols, discounts, dates);
     % recalculate the upfront
     X_1 = computeUpfront(spot_vols, spot_ttms, strikes, dates(1), spol_A, fixed_rate_B, spol_B, ...
         cap_5y, cap_10y, cap_15y, discounts, dates);
