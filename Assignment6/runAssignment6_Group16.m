@@ -163,7 +163,7 @@ end
 
 %% Plot the coarse grained delta buckets for the swaps
 
-% plot_coarse_delta_buckets_swaps(buckets, coarse_delta_buckets_swaps);
+plot_coarse_delta_buckets_swaps(buckets, coarse_delta_buckets_swaps);
 
 %% Hedging of the Delta of the certificate
 
@@ -173,37 +173,46 @@ delta_weights = HedgeCertificateDeltaBuckets(buckets, coarse_delta_buckets, coar
 
 % plot_hedging_weights(buckets, delta_weights, 'Weights of the Delta hedging');
 
-%% Vega
-
-% add the initial date to the vega dates
-vega_dates = datetime(dates(1), 'ConvertFrom', 'datenum') + calyears([0;ttms]);
-vega_dates(~isbusday(vega_dates, eurCalendar())) = ...
-    busdate(vega_dates(~isbusday(vega_dates, eurCalendar())), 'modifiedfollow', eurCalendar());
-vega_dates = datenum(vega_dates);
-
-% compute the coarse grained buckets for the vega (add zero to have the point of reference)
-coarse_vega_buckets = vegaCoarseBuckets(vega_dates, [0;vega_buckets]);
-
-%% Plot the coarse grained vega buckets
-
-% plot_coarse_vega_buckets(buckets, coarse_vega_buckets);
-
-
 %% Vega hedging of certificate with ATM 5y Cap
 
 % Hedge the Vega with an ATM 5y Cap (strike = ATM 5y Swap rate same conventions), and hedge the total portfolio 
 
 % find the ATM 5y Cap strike
-strike_5y = swapPricer(0, 5, discounts, dates);
+strike_5y = swapPricer(0, 5, discounts, dates) * 100;
 
 % compute the vega for the ATM 5y Cap
-vega_5y_cap = totalVegaCap(strike_5y, 5, spot_vols, spot_ttms, mkt_vols, ttms, strikes, discounts, dates)
+[vega_5y_cap, cap_price_5y] = totalVegaCap(strike_5y, 5, spot_vols, spot_ttms, mkt_vols, ttms, strikes, discounts, dates);
 
 % completely hedge the vega of the certificate with the ATM 5y Cap
-vega_weight_5y_cap = -total_vega / vega_5y_cap;
+weight_5y_cap = - total_vega / vega_5y_cap;
 
 % print the vega weight
-disp(['The vega weight for the 5y ATM Cap is: ', num2str(vega_weight_5y_cap)]);
+disp(['The weight for the 5y ATM Cap is: ', num2str(weight_5y_cap)]);
+
+%% Compute the coarse grained delta buckets of the 5y Cap
+
+% compute the delta for the 5y Cap
+[delta_dates_5y_cap, delta_buckets_5y_cap] = ...
+    deltaBucketsCap(cap_price_5y, datesSet, ratesSet, quoted_dates, strike_5y, ...
+    5, spot_vols, spot_ttms, strikes);
+
+% compute the coarse grained buckets for the delta
+coarse_delta_buckets_5y_cap = deltaCoarseBuckets(dates(1), delta_dates_5y_cap, delta_buckets_5y_cap);
+
+%% New portfolio delta hedging
+
+% compute the new portfolio delta
+portfolio_delta = coarse_delta_buckets + weight_5y_cap * coarse_delta_buckets_5y_cap;
+
+% compute the new weights for the hedging with the swaps
+delta_weights_with_cap = HedgeCertificateDeltaBuckets(buckets, portfolio_delta, coarse_delta_buckets_swaps, false);
+
+%% Print the results of the delta hedging and vega hedging
+
+% display the weight of the 5y Cap
+disp(['The weight for the 5y ATM Cap is: ', num2str(weight_5y_cap)]);
+% display the weights of the delta hedging
+disp(['The weights for the Delta hedging are: ', num2str(delta_weights_with_cap')]);
 
 %% Coarse grained vega buckets for the swaps
 
@@ -235,5 +244,22 @@ vega_weights(1) = - portfolio_coarse_buckets(1) / vega_5y_cap;
 
 % update the portfolio vega
 portfolio_coarse_buckets = portfolio_coarse_buckets + vega_weights(1) * [0;vega_5y_cap];
+
+%% Vega
+
+% add the initial date to the vega dates
+vega_dates = datetime(dates(1), 'ConvertFrom', 'datenum') + calyears([0;ttms]);
+vega_dates(~isbusday(vega_dates, eurCalendar())) = ...
+    busdate(vega_dates(~isbusday(vega_dates, eurCalendar())), 'modifiedfollow', eurCalendar());
+vega_dates = datenum(vega_dates);
+
+% compute the coarse grained buckets for the vega (add zero to have the point of reference)
+coarse_vega_buckets = vegaCoarseBuckets(vega_dates, [0;vega_buckets]);
+
+%% Plot the coarse grained vega buckets
+
+% plot_coarse_vega_buckets(buckets, coarse_vega_buckets);
+
+
 
 toc;

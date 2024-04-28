@@ -1,4 +1,4 @@
-function vega = totalVegaCap(strike, cap_ttm, spot_vols, spot_ttms, mkt_vols, ttms, strikes, discounts, dates)
+function [vega, cap_price_0] = totalVegaCap(strike, cap_ttm, spot_vols, spot_ttms, mkt_vols, ttms, strikes, discounts, dates)
 % VEGACAP computes the vega of a cap from 0 to cap_ttm with given strike
 %
 % INPUTS
