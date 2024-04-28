@@ -66,6 +66,7 @@ mkt_cap_prices = MarketCapPrices(ttms, strikes, mkt_vols, discounts, dates);
 [spot_ttms, spot_vols] = spotVols(mkt_cap_prices, ttms, strikes, mkt_vols, discounts, dates);
 
 final_vols = spot_vols(4*ttms-1,:);
+final_ttms = spot_ttms(4*ttms-1,:);
 
 %% Plot the spot volatilities surface against the flat volatilities
 
@@ -73,18 +74,20 @@ final_vols = spot_vols(4*ttms-1,:);
 
 %% Price the certificate
 
-spol_A = 2;
-fixed_rate_B = 3;
-spol_B = 1.1;
-cap_5y = 4.3;
-cap_10y = 4.6;
-cap_15y = 5.1;
+spol_A = 2; % 2% spread for party A
+fixed_rate_B = 3; % 3% fixed rate for party B (first quarter only)
+spol_B = 1.1; % 1.1% spread for party B
+cap_rate_5y = 4.3; % 4.3% cap rate for the coupon of party B from 0 to 5 years
+cap_rate_10y = 4.6; % 4.6% cap rate for the coupon of party B from 5 to 10 years
+cap_rate_15y = 5.1; % 5.1% cap rate for the coupon of party B from 10 to 15 years
 
-X = computeUpfront(spot_vols, spot_ttms, strikes, dates(1), spol_A, fixed_rate_B, spol_B, ...
-    cap_5y, cap_10y, cap_15y, discounts, dates);
+X = computeUpfront(final_vols, final_ttms, strikes, dates(1), spol_A, fixed_rate_B, spol_B, ...
+    cap_rate_5y, cap_rate_10y, cap_rate_15y, discounts, dates);
 
 % print the upfront payment percentage
 disp(['The upfront payment is: ', num2str(X*100), '%']);
+Notional = 50 * 10^6;
+disp(['The upfront payment is: ', num2str(X*Notional), ' EUR']);
 
 %% Delta-bucket sensitivity
 

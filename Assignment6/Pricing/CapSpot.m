@@ -13,10 +13,10 @@ function Price = CapSpot(strike, exercise_dates, payment_dates, spot_vols, ttms,
 %   dates : Dates of the discount factors
 
 % set the date convention
-ACT_360 = 2;
+ACT_365 = 3;
 
 % compute the year fractions
-delta_ttms = yearfrac(dates(1), exercise_dates, ACT_360);
+delta_ttms = yearfrac(dates(1), exercise_dates, ACT_365);
 
 % interpolate the spot volatilities to the target strikes and deltas
 sigmas = intSpotVols(strike, delta_ttms, spot_vols, ttms, strikes);
@@ -28,6 +28,7 @@ DF_payment = intExtDF(discounts, dates, payment_dates);
 DF_exercise = intExtDF(discounts, dates, exercise_dates);
 DF_exercise(isnan(DF_exercise)) = 1;
 fwd_discounts = DF_payment ./ DF_exercise;
+ACT_360 = 2;
 deltas_libor = yearfrac(exercise_dates, payment_dates, ACT_360);
 fwd_libor = 1 ./ deltas_libor .* (1 ./ fwd_discounts - 1);
 

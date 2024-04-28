@@ -1,5 +1,5 @@
 function X = computeUpfront(spot_vols, ttms, strikes, start_date, spol_A, fixed_rate_B,...
-    spol_B, cap_5y, cap_10y, cap_15y, discounts, dates)
+    spol_B, cap_rate_5y, cap_rate_10y, cap_rate_15y, discounts, dates)
 % computeUpfront: Compute the upfront of the certificate (see annex for more details)
 %
 % Annex
@@ -24,9 +24,9 @@ function X = computeUpfront(spot_vols, ttms, strikes, start_date, spol_A, fixed_
 %   spol_A : flat rate that party A pays on top of the Euribor 3m
 %   fixed_rate_B : fixed rate that party B pays on the first quarter of each year
 %   spol_B : flat rate that party B pays on top of the Euribor 3m
-%   cap_5y : cap rate for the first 5 years
-%   cap_10y : cap rate for the first 10 years
-%   cap_15y : cap rate for the first 15 years
+%   cap_rate_5y : cap rate for the first 5 years
+%   cap_rate_10y : cap rate for the first 10 years
+%   cap_rate_15y : cap rate for the first 15 years
 %   discounts : Discount factors curve
 %   dates : Dates of the discount factors
 
@@ -55,9 +55,6 @@ deltas_libor = yearfrac(exercise_dates, payments_dates, ACT_360);
 % compute the discount factors at the payment dates and exercise dates
 DF_payment = intExtDF(discounts, dates, payments_dates);
 
-% substitute the NaN values with 1
-DF_payment(isnan(DF_payment)) = 1;
-
 % party A payments
 Libor_payment_A = 1 - DF_payment(end);
 spol_payment_A = spol_A / 100 * deltas_libor' * DF_payment;
@@ -66,12 +63,12 @@ NPV_A = Libor_payment_A + spol_payment_A;
 
 % party B payments
 % the following relation holds: min(x+q, k) = x + q - max(0, x+q-k) = x + q - caplet(x, k-q)
-% our payment factorize
+% our payments factorize
 % - First term:
 %   this is simply the libor for each date from the t0+3m onwards
 %   hence the libor payments simplify to: 1 - B(0,15y) - B(0,3m) * delta(0,3m) * L(0,3m)
 % - Second term:
-%   this is just the spol of B times the bpv from 3m to 15y quarter by quarter
+%   this is just the spol of B times the bpv from 6m to 15y quarter by quarter
 % - Third term:
 %   this is the caplet payments
 %   - From 0 to 5y: The caplets sum and form the cap with strike K = 4.3% - 1.1% from 0 to 5y
@@ -94,7 +91,7 @@ fixed_rate_payment_B = spol_B / 100 * deltas_libor(2:end)' * DF_payment(2:end);
 
 % from 0 to 5y
 % compute the strike
-strike_5y = cap_5y - spol_B;
+strike_5y = cap_rate_5y - spol_B;
 % find the relevant dates (from 2nd quarter to 5y)
 exercise_dates_5y = exercise_dates(2:4*5);
 payments_dates_5y = payments_dates(2:4*5);
@@ -105,7 +102,7 @@ cap_5y = CapSpot(strike_5y, exercise_dates_5y, payments_dates_5y, spot_vols, ttm
 
 % from 5 to 10y
 % compute the strike
-strike_10y = cap_10y - spol_B;
+strike_10y = cap_rate_10y - spol_B;
 % find the relevant dates (from 5y to 10y)
 exercise_dates_10y = exercise_dates(4*5+1:4*10);
 payments_dates_10y = payments_dates(4*5+1:4*10);
@@ -116,7 +113,7 @@ cap_10y = CapSpot(strike_10y, exercise_dates_10y, payments_dates_10y, spot_vols,
 
 % from 10 to 15y
 % compute the strike
-strike_15y = cap_15y - spol_B;
+strike_15y = cap_rate_15y - spol_B;
 % find the relevant dates (from 10y to 15y)
 exercise_dates_15y = exercise_dates(4*10+1:end);
 payments_dates_15y = payments_dates(4*10+1:end);
