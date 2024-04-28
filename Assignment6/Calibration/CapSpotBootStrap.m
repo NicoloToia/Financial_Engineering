@@ -14,7 +14,7 @@ function [Price, sigmas] = CapSpotBootStrap(Strike, sigma_alpha, T_alpha, sigma_
 DF_payment = intExtDF(discounts, dates, payments_dates);
 
 % compute the Libor
-fwd_discounts = intExtDF(discounts, dates, payments_dates) ./ intExtDF(discounts, dates, exercise_dates);
+fwd_discounts = DF_payment ./ intExtDF(discounts, dates, exercise_dates);
 
 % compute the forward Libor
 % the ith represents the forward Libor from i to i+1
@@ -22,8 +22,9 @@ ACT_360 = 2;
 deltas = yearfrac(exercise_dates, payments_dates, ACT_360);
 fwd_libor = 1 ./ deltas .* (1 ./ fwd_discounts - 1);
 
-sigmas = sigma_alpha + (sigma_beta - sigma_alpha) / yearfrac(T_alpha, exercise_dates(end), ACT_360) * ...
-    yearfrac(T_alpha, exercise_dates, ACT_360);
+ACT_365 = 3;
+sigmas = sigma_alpha + (sigma_beta - sigma_alpha) / yearfrac(T_alpha, exercise_dates(end), ACT_365) * ...
+    yearfrac(T_alpha, exercise_dates, ACT_365);
 
 % compute the caplets prices using the Bachelier formula
 Caplets = zeros(length(payments_dates), 1);

@@ -20,7 +20,7 @@ diffCap = mkt_prices(2:end, :) - mkt_prices(1:end-1, :);
 
 % start the waitbar
 wb = waitbar(0, 'Computing the spot volatilities...');
-total = length(ttms) - 1;
+total = length(ttms);
 
 for i = 2:length(ttms)
 
@@ -54,8 +54,9 @@ for i = 2:length(ttms)
         fun = @(s) CapSpotBootStrap(strikes(j), prevVol, T_alpha, s, exercise_dates, payment_dates, discounts, dates) - ...
             diffCap(i-1, j);
 
-        % compute the spot vol (with tolerance 1e-6 and no display)
+        % compute the spot vol
         sigma_beta = fzero(fun, prevVol);
+        % uncomment for faster calibration but less precision
         % sigma_beta = fzero(fun, prevVol, optimset( 'TolX', 1e-6, 'Display', 'off'));
 
         % compute the spot volatilities
@@ -79,7 +80,7 @@ exercise_dates = datetime(dates(1), 'ConvertFrom', 'datenum') + calmonths(3:3:12
 exercise_dates(~isbusday(exercise_dates, eurCalendar())) = ...
     busdate(exercise_dates(~isbusday(exercise_dates, eurCalendar())), 'modifiedfollow', eurCalendar());
 exercise_dates = datenum(exercise_dates);
-ACT_360 = 2;
-spot_ttms = yearfrac(dates(1), exercise_dates, ACT_360);
+ACT_365 = 3;
+spot_ttms = yearfrac(dates(1), exercise_dates, ACT_365);
 
 end
