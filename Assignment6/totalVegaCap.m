@@ -14,15 +14,13 @@ function vega = totalVegaCap(strike, cap_ttm, spot_vols, spot_ttms, mkt_vols, tt
 % compute the dates for the cap
 exercise_dates = datetime(dates(1), 'ConvertFrom', 'datenum') + ...
     calmonths(3:3:cap_ttm*12-3)';
-payment_dates = datetime(dates(1), 'ConvertFrom', 'datenum') + ...
-    calmonths(6:3:cap_ttm*12)';
-
+payment_dates = exercise_dates + calmonths(3);
 % move to business days if needed
 exercise_dates(~isbusday(exercise_dates, eurCalendar())) = ...
     busdate(exercise_dates(~isbusday(exercise_dates, eurCalendar())), 'modifiedfollow', eurCalendar());
 payment_dates(~isbusday(payment_dates, eurCalendar())) = ...
     busdate(payment_dates(~isbusday(payment_dates, eurCalendar())), 'modifiedfollow', eurCalendar());
-
+% conver to datenum
 exercise_dates = datenum(exercise_dates);
 payment_dates = datenum(payment_dates);
 
@@ -31,19 +29,19 @@ cap_price_0 = CapSpot(strike, exercise_dates, payment_dates, spot_vols, spot_ttm
     discounts, dates);
 
 % shift the spot vols by 1 bp in the corresponding row
-shift = 0.0001;
+shift = 10^(-4);
 
 % shift the row by 1 bp
-shifted_vols = mkt_vols + shift;
+shifted_mkt_vols = mkt_vols + shift;
 
 % recompute the mkts prices
-mkt_prices = MarketCapPrices(ttms, strikes, shifted_vols, discounts, dates);
+mkt_prices = MarketCapPrices(ttms, strikes, shifted_mkt_vols, discounts, dates);
 
 % recalibrate the spot vols
-[shifted_ttms, shifted_vols] = spotVols(mkt_prices, ttms, strikes, shifted_vols, discounts, dates);
+[shifted_ttms, shifted_spot_vols] = spotVols(mkt_prices, ttms, strikes, shifted_mkt_vols, discounts, dates);
 
 % compute the cap price with the shifted vols
-cap_price_shift = CapSpot(strike, exercise_dates, payment_dates, shifted_vols, shifted_ttms, strikes, ...
+cap_price_shift = CapSpot(strike, exercise_dates, payment_dates, shifted_spot_vols, shifted_ttms, strikes, ...
     discounts, dates);
 
 % compute the vega
