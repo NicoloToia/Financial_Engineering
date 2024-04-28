@@ -96,7 +96,7 @@ disp(['The upfront payment is: ', num2str(X*Notional), ' EUR']);
 
 % compute the delta-bucket sensitivity
 [delta_dates, delta_buckets] = deltaBuckets(datesSet, ratesSet, quoted_dates, spot_vols, spot_ttms, strikes, X, dates(1), spol_A, ...
-    fixed_rate_B, spol_B, cap_5y, cap_10y, cap_15y);
+    fixed_rate_B, spol_B, cap_rate_5y, cap_rate_10y, cap_rate_15y);
 
 %% Plot the delta-bucket sensitivities
 
@@ -107,17 +107,17 @@ disp(['The upfront payment is: ', num2str(X*Notional), ' EUR']);
 %% Total Vega
 
 total_vega = total_Vega(mkt_vols, ttms, strikes, X, spol_A, fixed_rate_B, spol_B, ...
-    cap_5y, cap_10y, cap_15y, discounts, dates);
-% 
-print the total vega
+    cap_rate_5y, cap_rate_10y, cap_rate_15y, discounts, dates);
+% print the total vega
 disp(['The total vega is: ', num2str(total_vega), ' bp']);
+disp(['The total vega is: ', num2str(total_vega * Notional * 10^(-4)), ' EUR']);
 
 %% Vega bucket sensitivity
 
 if ~isfile('Data/vega_buckets_vector.mat')
     % compute the vega bucket sensitivities
     vega_buckets = vegaBuckets(mkt_vols, ttms, strikes, X, spol_A, fixed_rate_B, spol_B, ...
-        cap_5y, cap_10y, cap_15y, discounts, dates);
+        cap_rate_5y, cap_rate_10y, cap_rate_15y, discounts, dates);
     
     save('vega_buckets_vector.mat', 'vega_buckets');
 else
@@ -127,6 +127,7 @@ end
 %% Plot the vega bucket sensitivities
 
 % plot_vega_buckets(vega_buckets, ttms);
+% plot_vega_buckets(vega_buckets * Notional * 10^(-4), ttms);
 
 %% Coarse grained buckets
 

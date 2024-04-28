@@ -1,5 +1,5 @@
 function sensitivities = vegaBuckets(mkt_vols, ttms, strikes, X_0, spol_A, fixed_rate_B, spol_B, ...
-    cap_5y, cap_10y, cap_15y, discounts, dates);
+    cap_5y, cap_10y, cap_15y, discounts, dates)
 % VEGABUCKETS computes the vega bucket sensitivities for the certificate
 %
 % INPUTS
@@ -19,9 +19,9 @@ function sensitivities = vegaBuckets(mkt_vols, ttms, strikes, X_0, spol_A, fixed
 % initialize the sensitivities
 sensitivities = zeros(length(mkt_vols), 1);
 % shift is 1 bp
-shift = 0.0001;
+shift = 10^(-4);
 
-% for each volatility, compute the vega bucket sensitivity
+% for each maturity, compute the vega bucket sensitivity
 for i = 1:length(mkt_vols)
     % shift the row by 1 bp
     shifted_vols = mkt_vols;
