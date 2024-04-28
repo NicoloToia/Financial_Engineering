@@ -14,7 +14,7 @@ function Price = CapFlat(Strike, Vol, exercise_dates, payments_dates, skipFirst,
 DF_payment = intExtDF(discounts, dates, payments_dates);
 
 % compute the Libor
-fwd_discounts = intExtDF(discounts, dates, payments_dates) ./ intExtDF(discounts, dates, exercise_dates);
+fwd_discounts = DF_payment ./ intExtDF(discounts, dates, exercise_dates);
 
 % compute the forward Libor
 % the ith represents the forward Libor from i to i+1
