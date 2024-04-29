@@ -25,6 +25,7 @@ sens_dates = quoted_dates;
 % shock the mid-market rates by one basis point each and compute the
 % change in NPV
 
+% shift is 1 bp
 shift = 10^(-4); % 1 bp
 
 % skip the first date (t0)

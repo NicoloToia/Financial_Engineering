@@ -9,6 +9,8 @@ function S = swapPricer(NPV, ttm, discounts, dates)
 
 % compute the dates
 swapDates = datetime(dates(1), 'ConvertFrom', 'datenum') + calyears(0:ttm)';
+
+% move to business days if needed
 swapDates(~isbusday(swapDates, eurCalendar())) = ...
     busdate(swapDates(~isbusday(swapDates, eurCalendar())), 'modifiedfollow', eurCalendar());
 swapDates = datenum(swapDates);

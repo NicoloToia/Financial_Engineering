@@ -19,6 +19,7 @@ sens_dates = quoted_dates;
 
 % compute the dates for the cap
 t0 = datesSet.settlement;
+
 exercise_dates = datetime(t0, 'ConvertFrom', 'datenum') + ...
     calmonths(3:3:ttm*12-3)';
 payment_dates = exercise_dates + calmonths(3);

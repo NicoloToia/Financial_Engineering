@@ -1,4 +1,11 @@
 function plotCaps(Caps, ttms, strikes)
+    % PLOTCAPS plots the cap surface
+    %
+    % INPUTS
+    %   Caps: cap prices
+    %   ttms: time to maturities
+    %   strikes: strikes
+    
     figure;
 
     % plot the spot volatilities surface against the flat volatilities

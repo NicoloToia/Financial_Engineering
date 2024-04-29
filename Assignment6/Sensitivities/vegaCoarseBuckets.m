@@ -12,8 +12,10 @@ function bucket_sensitivities = vegaCoarseBuckets(settlement_date, sens_dates, s
 % initialize the sensitivities
 bucket_sensitivities = zeros(2, 1);
 
+% compute the bucket sensitivities
 bucket_sensitivities(1) = bucketWeights(settlement_date, sensitivities, sens_dates, 0, 5, 15, true, false);
 
+% compute the bucket sensitivities
 bucket_sensitivities(2) = bucketWeights(settlement_date, sensitivities, sens_dates, 5, 15, 30, false, true);
 
 end

@@ -31,6 +31,7 @@ formatData='dd/mm/yyyy'; % Pay attention to your computer settings
 
 % This function works on Windows OS. Pay attention on other OS.
 [datesSet, ratesSet] = readRatesData('MktData_CurveBootstrap_20-2-24', formatData);
+
 [ttms, strikes, mkt_vols] = readVolData('Caps_vol_20-2-24');
 
 %% Construct the swap dates
@@ -65,7 +66,7 @@ zeroRates = zeroRates(dates, discounts);
 mkt_cap_prices = MarketCapPrices(ttms, strikes, mkt_vols, discounts, dates);
 
 % plot the cap prices
-plotCaps(mkt_cap_prices, ttms, strikes);
+% plotCaps(mkt_cap_prices, ttms, strikes);
 
 %% Compute the spot volatilites
 
@@ -130,13 +131,15 @@ disp('--- --- ---')
 %% Vega Buckets sensitivity matrix
 
 if ~isfile('Data/vega_matrix.mat')
-
+    % compute the vega buckets matrix
     vega_matrix = vegaBucketsMatrix(mkt_vols, ttms, strikes, X, spol_A, fixed_rate_B, spol_B, ...
         cap_rate_5y, cap_rate_10y, cap_rate_15y, discounts, dates);
     save('Data/vega_matrix.mat', 'vega_matrix')
 else
     load('Data/vega_matrix.mat');
 end
+
+plot_Vega_matrix(vega_matrix, ttms, strikes)
 
 %% Vega bucket sensitivity
 
@@ -168,11 +171,13 @@ disp('--- --- ---')
 
 %% Delta
 
+% define the buckets
 buckets = [2,5,10,15];
 
 % compute the coarse grained buckets for the delta
 coarse_delta_buckets = deltaCoarseBuckets(dates(1), delta_dates, delta_buckets);
 
+% Print the results of the coarse grained delta buckets
 disp('--- Coarse grained delta buckets for the Certificate ---')
 disp('Bucket (years) | DV01 (Notional = 100) | DV01 (EUR) |')
 for i = 1:length(buckets)
@@ -183,12 +188,14 @@ disp('--- --- ---')
 
 %% Plot the coarse grained delta buckets
 
-% plot_coarse_delta_buckets(buckets, coarse_delta_buckets);
+% plot_coarse_delta_buckets(buckets, coarse_delta_buckets*Notional);
 
 %% Compute the sensitivities for the swaps for hedging
 
 % compute the delta for the 4 swaps (2, 5, 10, 15 years)
 swapRates = zeros(length(buckets), 1);
+
+% initialize the matrix for the coarse grained delta buckets of the swaps
 coarse_delta_buckets_swaps = zeros(length(buckets));
 for i = 1:length(buckets)
 
@@ -206,14 +213,15 @@ end
 
 %% Plot the coarse grained delta buckets for the swaps
 
-plot_coarse_delta_buckets_swaps(buckets, coarse_delta_buckets_swaps);
+% plot_coarse_delta_buckets_swaps(buckets, coarse_delta_buckets_swaps*Notional);
 
 %% Hedging of the Delta of the certificate
 
+% compute the weights for the hedging with the swaps
 delta_weights = HedgeCertificateDeltaBuckets(buckets, coarse_delta_buckets, coarse_delta_buckets_swaps, true);
 
-disp('--- Swap weights for Delta Hedging the Certificate by Maturity ---')
-disp('Swap Maturity | Weight (EUR) |')
+disp('--- Swap notionals for Delta Hedging the Certificate by Maturity ---')
+disp('Swap Maturity | Notional (EUR) |')
 for i = 1:length(buckets)
     disp([num2str(buckets(i)), ' | ', num2str(delta_weights(i) * Notional)]);
 end
@@ -221,7 +229,7 @@ disp('--- --- ---')
 
 %% Plot the weights of the hedging
 
-% plot_hedging_weights(buckets, delta_weights, 'Weights of the Delta hedging');
+% plot_hedging_weights(buckets, delta_weights*Notional, 'Notional of the Delta hedging');
 
 %% Vega hedging of certificate with ATM 5y Cap
 
@@ -237,7 +245,7 @@ strike_5y = swapPricer(0, 5, discounts, dates) * 100;
 weight_5y_cap = - total_vega / vega_5y_cap;
 
 disp('--- Vega hedging with 5y ATM Cap ---')
-disp(['Weight: ', num2str(weight_5y_cap * Notional), ' EUR']);
+disp(['Notional: ', num2str(weight_5y_cap * Notional), ' EUR']);
 disp('--- --- ---')
 
 %% Compute the coarse grained delta buckets of the 5y Cap
@@ -256,12 +264,12 @@ coarse_delta_buckets_5y_cap = deltaCoarseBuckets(dates(1), delta_dates_5y_cap, d
 portfolio_delta = coarse_delta_buckets + weight_5y_cap * coarse_delta_buckets_5y_cap;
 
 % compute the new weights for the hedging with the swaps
-delta_weights_with_cap = HedgeCertificateDeltaBuckets(buckets, portfolio_delta, coarse_delta_buckets_swaps, false);
+delta_weights_with_cap = HedgeCertificateDeltaBuckets(buckets, portfolio_delta, coarse_delta_buckets_swaps, true);
 
 %% Print the results of the delta hedging and vega hedging
 
-disp('--- Swap weights for Delta Hedging the Certificate and 5y Cap by Maturity ---')
-disp('Swap Maturity | Weight (EUR) |')
+disp('--- Swap notionals for Delta Hedging the Certificate and 5y Cap by Maturity ---')
+disp('Swap Maturity | Notional (EUR) |')
 for i = 1:length(buckets)
     disp([num2str(buckets(i)), ' | ', num2str(delta_weights_with_cap(i) * Notional)]);
 end
@@ -269,6 +277,7 @@ disp('--- --- ---')
 
 %% Coarse grained vega buckets
 
+% define the buckets
 buckets_years = [5, 15];
 
 % compute the coarse grained buckets for the vega of the certificate
@@ -277,7 +286,7 @@ coarse_vega_buckets = vegaCoarseBuckets(dates(1), vega_dates, vega_buckets);
 %% Print the results of the vega buckets
 
 disp('--- Coarse grained vega buckets for the Certificate ---')
-disp('Bucket (years) | Weight (EUR) |')
+disp('Bucket (years) | Notional (EUR) |')
 for i = 1:length(buckets_years)
     disp([num2str(buckets_years(i)), ' | ', num2str(coarse_vega_buckets(i) * Notional)]);
 end
@@ -324,8 +333,8 @@ vega_weights(1) = - portfolio_vega(1) / coarse_vega_buckets_5y_cap(1);
 % update the portfolio vega
 portfolio_vega = portfolio_vega + vega_weights(1) * coarse_vega_buckets_5y_cap;
 
-disp('--- Weights for Coarse Buckets Vega hedging with 5y and 15y ATM Cap ---')
-disp(['Weight 5y Cap: ', num2str(vega_weights(1) * Notional)]);
-disp(['Weight 15y Cap: ', num2str(vega_weights(2) * Notional)]);
+disp('--- Notionals for Coarse Buckets Vega hedging with 5y and 15y ATM Cap ---')
+disp(['Notional 5y Cap: ', num2str(vega_weights(1) * Notional)]);
+disp(['Notional 15y Cap: ', num2str(vega_weights(2) * Notional)]);
 
 toc;

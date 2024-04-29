@@ -20,9 +20,11 @@ payment_dates = datetime(dates(1), 'ConvertFrom', 'datenum') + ...
 % move to business days if needed
 exercise_dates(~isbusday(exercise_dates, eurCalendar())) = ...
     busdate(exercise_dates(~isbusday(exercise_dates, eurCalendar())), 'modifiedfollow', eurCalendar());
+% move to business days if needed
 payment_dates(~isbusday(payment_dates, eurCalendar())) = ...
     busdate(payment_dates(~isbusday(payment_dates, eurCalendar())), 'modifiedfollow', eurCalendar());
 
+% conver to datenum
 exercise_dates = datenum(exercise_dates);
 payment_dates = datenum(payment_dates);
 

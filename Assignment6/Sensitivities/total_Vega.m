@@ -17,6 +17,7 @@ function Vega = total_Vega(mkt_vols, ttms, strikes, X_0, spol_A, fixed_rate_B, s
 
     % shock the volatility of the caps by 1bp
     shift = 10^(-4);
+    % shift the market vols by 1bp
     shift_vols = mkt_vols + shift;
 
     % recompute the market prices
