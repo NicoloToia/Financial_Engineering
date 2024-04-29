@@ -139,7 +139,7 @@ else
     load('Data/vega_matrix.mat');
 end
 
-plot_Vega_matrix(vega_matrix, ttms, strikes)
+% plot_Vega_matrix(vega_matrix, ttms, strikes)
 
 %% Vega bucket sensitivity
 
@@ -218,7 +218,7 @@ end
 %% Hedging of the Delta of the certificate
 
 % compute the weights for the hedging with the swaps
-delta_weights = HedgeCertificateDeltaBuckets(buckets, coarse_delta_buckets, coarse_delta_buckets_swaps, true);
+delta_weights = HedgeCertificateDeltaBuckets(buckets, coarse_delta_buckets, coarse_delta_buckets_swaps, false);
 
 disp('--- Swap notionals for Delta Hedging the Certificate by Maturity ---')
 disp('Swap Maturity | Notional (EUR) |')
@@ -264,7 +264,7 @@ coarse_delta_buckets_5y_cap = deltaCoarseBuckets(dates(1), delta_dates_5y_cap, d
 portfolio_delta = coarse_delta_buckets + weight_5y_cap * coarse_delta_buckets_5y_cap;
 
 % compute the new weights for the hedging with the swaps
-delta_weights_with_cap = HedgeCertificateDeltaBuckets(buckets, portfolio_delta, coarse_delta_buckets_swaps, true);
+delta_weights_with_cap = HedgeCertificateDeltaBuckets(buckets, portfolio_delta, coarse_delta_buckets_swaps, false);
 
 %% Print the results of the delta hedging and vega hedging
 
