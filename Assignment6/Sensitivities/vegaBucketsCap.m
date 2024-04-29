@@ -31,12 +31,7 @@ payment_dates = datenum(payment_dates);
 % for each maturity, compute the vega bucket sensitivity
 for i = 1:length(mkt_vols)
     % shift the row by 1 bp
-    shifted_vols = mkt_vols;
-    shifted_vols(i, :) = shifted_vols(i, :) + shift;
-    % recompute the cap prices
-    mkt_prices = MarketCapPrices(ttms, strikes, shifted_vols, discounts, dates);
-    % recalibrate the spot vols
-    [shifted_ttms, shifted_vols] = spotVols(mkt_prices, ttms, strikes, shifted_vols, discounts, dates);
+    [shifted_ttms, shifted_vols] = shiftVolsRow(mkt_vols, i, shift, ttms, strikes, discounts, dates);
     % recompute the cap price
     Cap_shift = CapSpot(strike, exercise_dates, payment_dates, shifted_vols, shifted_ttms, strikes, discounts, dates)
     % compute the vega bucket sensitivity

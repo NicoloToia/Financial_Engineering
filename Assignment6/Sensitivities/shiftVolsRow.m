@@ -12,10 +12,8 @@ function [shift_ttms, shift_vols] = shiftVolsRow(mkt_vols, target_row, shift, tt
 
 % check if the shift has already been calibrated for in the file
 if isfile('Data/calibrated_vols.mat')
-    disp('Calibrated vols file found, loading it')
     load('Data/calibrated_vols.mat', 'calibrated_vols')
 else
-    disp('No calibrated vols file found, creating a new one')
     % create the shifted vols cell array
     calibrated_vols = cell(length(mkt_vols), 1)
     save('Data/calibrated_vols.mat', 'calibrated_vols')
@@ -23,7 +21,6 @@ end
 
 % check that the row has not been calibrated for yet and fill the cell array
 if isempty(calibrated_vols{target_row})
-    disp(['Calibrating the row ', num2str(target_row)])
     % shift the row by 1 bp
     shift_mkt_vols = mkt_vols;
     shift_mkt_vols(target_row, :) = shift_mkt_vols(target_row, :) + shift;
@@ -36,7 +33,6 @@ if isempty(calibrated_vols{target_row})
     calibrated_vols{target_row} = {shift_ttms, shift_vols};
 
     % save the calibrated vols
-    disp('Saving the calibrated vols')
     save('Data/calibrated_vols.mat', 'calibrated_vols');
 end
 
