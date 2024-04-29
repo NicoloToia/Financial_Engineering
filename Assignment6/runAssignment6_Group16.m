@@ -64,6 +64,9 @@ zeroRates = zeroRates(dates, discounts);
 % Cap prices
 mkt_cap_prices = MarketCapPrices(ttms, strikes, mkt_vols, discounts, dates);
 
+% plot the cap prices
+plotCaps(mkt_cap_prices, ttms, strikes);
+
 %% Compute the spot volatilites
 
 [spot_ttms, spot_vols] = spotVols(mkt_cap_prices, ttms, strikes, mkt_vols, discounts, dates);
