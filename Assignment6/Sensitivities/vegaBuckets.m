@@ -23,15 +23,11 @@ shift = 10^(-4);
 
 % for each maturity, compute the vega bucket sensitivity
 for i = 1:length(mkt_vols)
-    % shift the row by 1 bp
-    shifted_vols = mkt_vols;
-    shifted_vols(i, :) = shifted_vols(i, :) + shift;
-    % recompute the cap prices
-    mkt_prices = MarketCapPrices(ttms, strikes, shifted_vols, discounts, dates);
-    % recalibrate the spot vols
-    [shifted_ttms, shifted_vols] = spotVols(mkt_prices, ttms, strikes, shifted_vols, discounts, dates);
+    
+    [shift_ttms, shift_vols] = shiftVolsRow(mkt_vols, i, shift, ttms, strikes, discounts, dates);
+
     % recompute the upfront payment
-    X_shift = computeUpfront(shifted_vols, shifted_ttms, strikes, dates(1), spol_A, fixed_rate_B, spol_B, ...
+    X_shift = computeUpfront(shift_vols, shift_ttms, strikes, dates(1), spol_A, fixed_rate_B, spol_B, ...
         cap_5y, cap_10y, cap_15y, discounts, dates);
     % compute the vega bucket sensitivity
     sensitivities(i) = (X_shift - X_0) / shift;

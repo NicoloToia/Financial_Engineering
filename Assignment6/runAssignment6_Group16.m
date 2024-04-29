@@ -114,16 +114,10 @@ disp(['The total vega is: ', num2str(total_vega * Notional * 10^(-4)), ' EUR']);
 
 %% Vega bucket sensitivity
 
-if ~isfile('Data/vega_buckets_vector.mat')
-    % compute the vega bucket sensitivities
-    vega_buckets = vegaBuckets(mkt_vols, ttms, strikes, X, spol_A, fixed_rate_B, spol_B, ...
-        cap_rate_5y, cap_rate_10y, cap_rate_15y, discounts, dates);
-    
-    save('vega_buckets_vector.mat', 'vega_buckets');
-else
-    load('vega_buckets_vector.mat');
-end
-
+% compute the vega bucket sensitivities
+vega_buckets = vegaBuckets(mkt_vols, ttms, strikes, X, spol_A, fixed_rate_B, spol_B, ...
+    cap_rate_5y, cap_rate_10y, cap_rate_15y, discounts, dates);
+ 
 %% Plot the vega bucket sensitivities
 
 % plot_vega_buckets(vega_buckets, ttms);
