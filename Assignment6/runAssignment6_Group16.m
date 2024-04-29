@@ -217,7 +217,7 @@ delta_weights_with_cap = HedgeCertificateDeltaBuckets(buckets, portfolio_delta, 
 % display the weight of the 5y Cap
 disp(['The weight for the 5y ATM Cap is: ', num2str(weight_5y_cap)]);
 % display the weights of the delta hedging
-disp(['The weights for the Delta hedging are: ', num2str(delta_weights_with_cap')]);
+disp(['The weights for the Delta hedging are: ', num2str(delta_weights_with_cap)]);
 
 %% Coarse grained vega buckets
 
