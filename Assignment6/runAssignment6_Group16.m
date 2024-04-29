@@ -114,10 +114,14 @@ disp(['The total vega is: ', num2str(total_vega * Notional * 10^(-4)), ' EUR']);
 
 %% Vega Buckets sensitivity matrix
 
-vega_matrix = vegaBucketsMatrix(mkt_vols, ttms, strikes, X, spol_A, fixed_rate_B, spol_B, ...
-    cap_rate_5y, cap_rate_10y, cap_rate_15y, discounts, dates);
+if ~isfile('Data/vega_matrix.mat')
 
-save('Data/vega_matrix.mat', 'vega_matrix')
+    vega_matrix = vegaBucketsMatrix(mkt_vols, ttms, strikes, X, spol_A, fixed_rate_B, spol_B, ...
+        cap_rate_5y, cap_rate_10y, cap_rate_15y, discounts, dates);
+    save('Data/vega_matrix.mat', 'vega_matrix')
+else
+    load('Data/vega_matrix.mat');
+end
 
 %% Vega bucket sensitivity
 

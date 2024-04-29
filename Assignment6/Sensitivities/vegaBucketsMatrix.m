@@ -1,5 +1,5 @@
 function sensitivities = vegaBucketsMatrix(mkt_vols, ttms, strikes, X_0, spol_A, fixed_rate_B, spol_B, ...
-    cap_5y, cap_10y, cap_15y, discounts, dates);
+    cap_5y, cap_10y, cap_15y, discounts, dates)
 % VEGABUCKETS computes the vega bucket sensitivities for the certificate
 %
 % INPUTS
