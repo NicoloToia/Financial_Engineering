@@ -33,9 +33,9 @@ for i = 1:length(mkt_vols)
     % shift the row by 1 bp
     [shifted_ttms, shifted_vols] = shiftVolsRow(mkt_vols, i, shift, ttms, strikes, discounts, dates);
     % recompute the cap price
-    Cap_shift = CapSpot(strike, exercise_dates, payment_dates, shifted_vols, shifted_ttms, strikes, discounts, dates)
+    Cap_shift = CapSpot(strike, exercise_dates, payment_dates, shifted_vols, shifted_ttms, strikes, discounts, dates);
     % compute the vega bucket sensitivity
-    sensitivities(i) = (Cap_shift - cap_price_0) / shift;
+    sensitivities(i) = (Cap_shift - cap_price_0);
 end
 
 end

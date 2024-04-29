@@ -24,7 +24,7 @@ for i = 1:length(quoted_dates)
     % rerun the bootstrap
     [shifted_dates, shifted_discounts] = bootstrap(datesSet, shifted_ratesSet);
     % compute the sensitivity
-    sensitivities(i) = swapNPV(swapRate, swapTtm, shifted_discounts, shifted_dates) / shift;
+    sensitivities(i) = swapNPV(swapRate, swapTtm, shifted_discounts, shifted_dates);
 end
 
 end

@@ -46,7 +46,7 @@ for i = 1:length(quoted_dates)
     cap_shift = CapSpot(strike, exercise_dates, payment_dates, spot_vols, spot_ttms, strikes, ...
         shifted_discounts, shifted_dates);
     % compute the delta-bucket sensitivity
-    sensitivities(i) = (cap_shift - cap_0) / shift;
+    sensitivities(i) = (cap_shift - cap_0);
 end
 
 end

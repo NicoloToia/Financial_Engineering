@@ -36,7 +36,7 @@ for i = 1:length(quoted_dates)
     X_shift = computeUpfront(spot_vols, ttms, strikes, start_date, spol_A, fixed_rate_B, spol_B, ...
         cap_5y, cap_10y, cap_15y, shifted_discounts, shifted_dates);
     % compute the delta-bucket sensitivity
-    sensitivities(i) = (X_shift - X_0) / shift;
+    sensitivities(i) = (X_shift - X_0);
 end
 
 end

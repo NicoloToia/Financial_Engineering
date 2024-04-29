@@ -51,6 +51,6 @@ cap_price_shift = CapSpot(strike, exercise_dates, payment_dates, shifted_vols, s
     discounts, dates);
 
 % compute the vega
-vega = (cap_price_shift - cap_price_0) / shift;
+vega = (cap_price_shift - cap_price_0);
 
 end

@@ -35,7 +35,7 @@ for i = 1:length(mkt_vols)
         X_shift = computeUpfront(shifted_vols, shifted_ttms, strikes, dates(1), spol_A, fixed_rate_B, spol_B, ...
             cap_5y, cap_10y, cap_15y, discounts, dates);
         % compute the vega bucket sensitivity
-        sensitivities(i, j) = (X_shift - X_0) / shift;
+        sensitivities(i, j) = (X_shift - X_0);
     end
 end
 
