@@ -40,6 +40,7 @@ for i = 1:length(payment_dates)
         dates(1), DF_payment(i));
 end
 
+% sum the caplets to get the cap price
 Price = sum(Caplets);
 
 end

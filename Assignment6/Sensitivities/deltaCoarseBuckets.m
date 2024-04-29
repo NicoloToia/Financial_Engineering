@@ -12,12 +12,16 @@ function bucket_sensitivities = deltaCoarseBuckets(settlement_date, sens_dates, 
 % initialize the sensitivities
 bucket_sensitivities = zeros(4, 1);
 
+% compute the bucket sensitivities for the first bucket
 bucket_sensitivities(1) = bucketWeights(settlement_date, sensitivities, sens_dates, 0, 2, 5, true, false);
 
+% compute the bucket sensitivities for the second bucket
 bucket_sensitivities(2) = bucketWeights(settlement_date, sensitivities, sens_dates, 2, 5, 10, false, false);
 
+% compute the bucket sensitivities  for the third bucket
 bucket_sensitivities(3) = bucketWeights(settlement_date, sensitivities, sens_dates, 5, 10, 15, false, false);
 
+% compute the bucket sensitivities  for the fourth bucket
 bucket_sensitivities(4) = bucketWeights(settlement_date, sensitivities, sens_dates, 10, 15, 50, false, true);
 
 end

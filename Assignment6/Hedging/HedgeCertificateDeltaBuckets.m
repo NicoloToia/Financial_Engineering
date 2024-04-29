@@ -28,7 +28,7 @@ for i = length(buckets):-1:1
     % subplot the steps of the portfolio delta
     if doplot
         subplot(2,2, length(buckets)-i+1);
-        plot(buckets, portfolio_delta, 'o-', 'LineWidth', 2);
+        plot(buckets, portfolio_delta*50*10^6, 'o-', 'LineWidth', 2);
         hold on
         % zero line
         plot([0, 15], [0, 0], 'k--', 'LineWidth', 1);
@@ -36,7 +36,7 @@ for i = length(buckets):-1:1
         xlabel('Years');
         ylabel('Delta');
         % fix the y-axis scale
-        ylim([-0.4, 0.8]);
+        ylim([-50000, 15000]);
         grid on;
     end
 

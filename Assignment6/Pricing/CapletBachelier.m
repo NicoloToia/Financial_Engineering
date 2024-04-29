@@ -26,9 +26,11 @@ K = Strike/100;
 % compute the argument of the normal cdf
 d_n = (fwd_Libor - K) / (Vol * sqrt(delta_ttm));
 
+% compute the two terms of the caplet
 term_1 = (fwd_Libor - K) * normcdf(d_n);
 term_2 = Vol * sqrt(delta_ttm) * normpdf(d_n);
 
+% compute the price of the caplet
 Caplet = DF_payment * delta_libor * (term_1 + term_2);
 
 end

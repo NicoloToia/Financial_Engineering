@@ -35,11 +35,13 @@ Caplets = zeros(length(payments_dates), 1);
 % price the first Caplet
 for i = 1+skipFirst:length(payments_dates)
 
+    % compute the price of the caplet
     Caplets(i) = CapletBachelier(fwd_libor(i), Strike, Vol, payments_dates(i), exercise_dates(i), ...
         dates(1), DF_payment(i));
     
 end
 
+% sum the caplets to get the cap price
 Price = sum(Caplets);
 
 end
