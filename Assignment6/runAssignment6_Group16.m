@@ -112,6 +112,13 @@ total_vega = total_Vega(mkt_vols, ttms, strikes, X, spol_A, fixed_rate_B, spol_B
 disp(['The total vega is: ', num2str(total_vega), ' bp']);
 disp(['The total vega is: ', num2str(total_vega * Notional * 10^(-4)), ' EUR']);
 
+%% Vega Buckets sensitivity matrix
+
+vega_matrix = vegaBucketsMatrix(mkt_vols, ttms, strikes, X, spol_A, fixed_rate_B, spol_B, ...
+    cap_rate_5y, cap_rate_10y, cap_rate_15y, discounts, dates);
+
+save('Data/vega_matrix.mat', 'vega_matrix')
+
 %% Vega bucket sensitivity
 
 % compute the vega bucket sensitivities
