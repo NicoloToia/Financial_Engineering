@@ -430,7 +430,7 @@ class PrTsfRecalibEngine:
             pickle.dump(test_results_df, f)
 
 
-    def run_hyperparams_tuning(self, optuna_m:str='random', n_trials: int=10):
+    def run_hyperparams_tuning(self, optuna_m:str='random', n_trials: int=50):
         """
         Model hyperparameters tuning routine
         """
