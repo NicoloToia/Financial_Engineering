@@ -26,7 +26,7 @@
     "model_config": {
         "PF_method": "Normal",
         "model_class": "DNN",
-        "optuna_m": "grid_search",
+        "optuna_m": "random",
         "target_alpha": [            
             0.01,
             0.02,
