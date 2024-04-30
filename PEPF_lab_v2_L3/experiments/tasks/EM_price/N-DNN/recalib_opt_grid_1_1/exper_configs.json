@@ -8,13 +8,13 @@
         },
         "idx_start_oos_preds": {
             "y": 2017,
-            "m": 1,
+            "m": 5,
             "d": 1
         },
         "idx_end_oos_preds": {
             "y": 2017,
-            "m": 1,
-            "d": 3
+            "m": 5,
+            "d": 1
         },
         "keep_past_train_samples": false,
         "steps_lag_win": 7,
