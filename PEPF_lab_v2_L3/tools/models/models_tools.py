@@ -141,9 +141,12 @@ class TensorflowRegressor():
         return tf.expand_dims(tf.concat([loc,scale], axis=-1), axis=2)
 
     def __pred_JSU_params__(self, pred_dists: tfp.distributions):
-        print('To be implemented')
-        return 0
-
+        loc = tf.expand_dims(pred_dists.loc, axis=-1)
+        scale = tf.expand_dims(pred_dists.scale, axis=-1)
+        tailweight = tf.expand_dims(pred_dists.tailweight, axis=-1)
+        skewness = tf.expand_dims(pred_dists.skewness, axis=-1)
+        # Expand dimension to enable concat in ensemble
+        return tf.expand_dims(tf.concat([loc, scale, tailweight, skewness], axis=-1), axis=2)
 
 
 class Ensemble():
@@ -207,5 +210,13 @@ class Ensemble():
     @staticmethod
     def __build_JSU_PIs__(preds_test, settings):
         # for each de component, sample, aggregate samples and compute quantiles
-        print('build_JSU_PIs to be implemented!')
-        return 0
+        pred_samples = []
+        for k in range(preds_test.shape[2]):
+            pred_samples.append(tfd.JohnsonSU(
+                loc=preds_test[:,:,k,0],
+                scale=preds_test[:,:,k,1],
+                tailweight=preds_test[:,:,k,2],
+                skewness=preds_test[:,:,k,3]).sample(10000).numpy())
+        return np.transpose(np.quantile(np.concatenate(pred_samples, axis=0),
+                                        q=settings['target_quantiles'], axis=0),
+                            axes=(1, 2, 0)).reshape(-1, len(settings['target_quantiles']))

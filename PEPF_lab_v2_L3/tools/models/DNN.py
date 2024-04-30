@@ -59,7 +59,23 @@ class DNNRegressor:
                     loc=t[..., :self.settings['pred_horiz']],
                     scale=1e-3 + 3 + tf.math.softplus(t[..., self.settings['pred_horiz']:])
             ))(logit)
-       
+
+        # implement the Johnson SU distribution
+        elif self.settings['PF_method'] == 'JSU':
+            out_size = 4
+            logit = tf.keras.layers.Dense(self.settings['pred_horiz'] * out_size,
+                                            activation='linear',
+                                            )(x)
+            
+            output = tfp.layers.DistributionLambda(
+                lambda t: tfd.JohnsonSU(
+                    loc = t[..., :self.settings['pred_horiz']],
+                    scale = 1e-3 + 3 * tf.math.softplus(t[..., self.settings['pred_horiz']:2*self.settings['pred_horiz']]),
+                    tailweight = 1 + 3 * tf.math.softplus(t[..., 2*self.settings['pred_horiz']:3*self.settings['pred_horiz']]),
+                    skewness = t[..., 3*self.settings['pred_horiz']:]
+                )
+            )(logit)
+            
         else:
             sys.exit('ERROR: unknown PF_method config!')
 
