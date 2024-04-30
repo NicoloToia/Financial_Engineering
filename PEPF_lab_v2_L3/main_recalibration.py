@@ -45,6 +45,8 @@ plot_weights=False
 configs=load_data_model_configs(task_name=PF_task_name, exper_setup=exper_setup, run_id=run_id)
 
 # Load dataset
+# ***: This lets us change the dataset before passing it directly to the recalibration engine
+# ***: e.g. preprocessing, feature selection, etc.
 dir_path = os.getcwd()
 ds = pd.read_csv(os.path.join(dir_path, 'data', 'datasets', configs['data_config'].dataset_name))
 ds.set_index(ds.columns[0], inplace=True)
@@ -76,6 +78,9 @@ pinball_scores = compute_pinball_scores(y_true=test_predictions[PF_task_name].to
 #--------------------------------------------------------------------------------------------------------------------
 # Plot test predictions
 plot_quantiles(test_predictions, target=PF_task_name)
+
+# stop the execution until enter is pressed
+input("Press Enter to continue...")
 
 #--------------------------------------------------------------------------------------------------------------------
 print('Done!')

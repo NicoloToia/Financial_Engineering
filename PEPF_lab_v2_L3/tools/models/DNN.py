@@ -39,6 +39,26 @@ class DNNRegressor:
                                           )(x)
             output = tf.keras.layers.Reshape((self.settings['pred_horiz'], 1))(logit)
 
+        elif self.settings['PF_method'] == 'qr':
+            out_size = len(self.settings['target_quantiles'])
+            logit = tf.keras.layers.Dense(self.settings['pred_horiz'] * out_size,
+                                            activation='linear',
+                                            )(x)
+            # we make the output flat
+            output = tf.keras.layers.Reshape((self.settings['pred_horiz'], out_size))(logit)
+            # Fix quantile crossing (by simply sortin)
+            output= tf.keras.layers.Lambda(lambda x: tf.sort(x, axis=-1))(output)
+
+        elif self.settings['PF_method'] == 'Normal':
+            out_size = 2 # mean and std
+            logit = tf.keras.layers.Dense(self.settings['pred_horiz'] * out_size,
+                                          activation='linear',
+                                          )(x)
+            output = tf.keras.layers.DistributionLambda(
+                lambda t: tfd.Normal(
+                    loc=t[..., :self.settings['pred_horiz']],
+                    scale=1e-3 + 3 + tf.math.softplus(t[..., self.settings['pred_horiz']:])
+            ))(logit)
        
         else:
             sys.exit('ERROR: unknown PF_method config!')

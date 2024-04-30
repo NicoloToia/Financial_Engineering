@@ -79,6 +79,7 @@ class TensorflowRegressor():
         elif settings['PF_method']=='point':
             loss = 'mae'
         elif (settings['PF_method'] == 'Normal'
+            or settings['PF_method'] == 'JSU'
         ):
             loss = lambda y, rv_y: -rv_y.log_prob(y)
         else:
