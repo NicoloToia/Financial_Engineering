@@ -54,7 +54,7 @@ class DNNRegressor:
             logit = tf.keras.layers.Dense(self.settings['pred_horiz'] * out_size,
                                           activation='linear',
                                           )(x)
-            output = tf.keras.layers.DistributionLambda(
+            output = tfp.layers.DistributionLambda(
                 lambda t: tfd.Normal(
                     loc=t[..., :self.settings['pred_horiz']],
                     scale=1e-3 + 3 + tf.math.softplus(t[..., self.settings['pred_horiz']:])
