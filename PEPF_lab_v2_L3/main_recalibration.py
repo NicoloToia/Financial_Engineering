@@ -33,7 +33,8 @@ exper_setup = 'JSU-DNN'
 
 #---------------------------------------------------------------------------------------------------------------------
 # Set run configs
-run_id = 'recalib_opt_grid_1_1'
+# run_id = 'recalib_opt_grid_1_1'
+run_id = 'recalib_opt_random_1_1'
 # Load hyperparams from file (select: load_tuned or optuna_tuner)
 hyper_mode = 'load_tuned'
 # Plot train history flag
@@ -74,6 +75,11 @@ pinball_scores = compute_pinball_scores(y_true=test_predictions[PF_task_name].to
                                         pred_quantiles=test_predictions.loc[:,test_predictions.columns != PF_task_name].
                                         to_numpy().reshape(-1, pred_steps, len(quantiles_levels)),
                                         quantiles_levels=quantiles_levels)
+
+# print the Pinball score
+print('--- Pinball Scores ---')
+for i, q in enumerate(quantiles_levels):
+    print(f'Quantile {q}: {pinball_scores[i]}')
 
 #--------------------------------------------------------------------------------------------------------------------
 # Plot test predictions
