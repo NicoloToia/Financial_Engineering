@@ -1,0 +1,37 @@
+{
+    "data_config": {
+        "dataset_name": "EM_market__2015-01-03__2017-12-31.csv",
+        "idx_start_train": {
+            "y": 2015,
+            "m": 1,
+            "d": 3
+        },
+        "idx_start_oos_preds": {
+            "y": 2017,
+            "m": 1,
+            "d": 1
+        },
+        "idx_end_oos_preds": {
+            "y": 2017,
+            "m": 1,
+            "d": 2
+        },
+        "keep_past_train_samples": false,
+        "steps_lag_win": 7,
+        "pred_horiz": 24,
+        "preprocess": "StandardScaler",
+        "shuffle_mode": "none",
+        "num_vali_samples": 100
+    },
+    "model_config": {
+        "PF_method": "point",
+        "model_class": "DNN",
+        "optuna_m": "grid_search",
+        "target_alpha": [            
+        ],
+        "max_epochs": 800,
+        "batch_size": 64,
+        "patience": 20,
+        "num_ense": 1
+    }
+}
