@@ -74,7 +74,7 @@ class TensorflowRegressor():
 
         tf.keras.backend.clear_session()
         # Map the loss to be used
-        if settings['PF_method'] == 'qr':
+        if settings['PF_method'] == 'qr' or settings['PF_method'] == 'qr-arcsinh':
             loss = PinballLoss(quantiles=settings['target_quantiles'])
         elif settings['PF_method']=='point':
             loss = 'mae'
@@ -161,6 +161,9 @@ class Ensemble():
             self.ensemble_aggregator = self.__aggregate_de_quantiles__
             self._build_test_PIs = self.__get_qr_PIs__
         elif (self.settings['PF_method'] == 'qr'):
+            self.ensemble_aggregator = self.__aggregate_de_quantiles__
+            self._build_test_PIs = self.__get_qr_PIs__
+        elif (self.settings['PF_method'] == 'qr-arcsinh'):
             self.ensemble_aggregator = self.__aggregate_de_quantiles__
             self._build_test_PIs = self.__get_qr_PIs__
         elif (self.settings['PF_method'] == 'Normal'):

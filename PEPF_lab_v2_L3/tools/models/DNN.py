@@ -39,7 +39,7 @@ class DNNRegressor:
                                           )(x)
             output = tf.keras.layers.Reshape((self.settings['pred_horiz'], 1))(logit)
 
-        elif self.settings['PF_method'] == 'qr':
+        elif self.settings['PF_method'] == 'qr' or self.settings['PF_method'] == 'qr-arcsinh':
             out_size = len(self.settings['target_quantiles'])
             logit = tf.keras.layers.Dense(self.settings['pred_horiz'] * out_size,
                                             activation='linear',

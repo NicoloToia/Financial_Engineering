@@ -35,14 +35,17 @@ def compute_winkler_scores(y_true, pred_quantiles, quantiles_levels):
     """
     score = []
     for i, tau in enumerate(quantiles_levels):
-        # get the quantiles for tau and 1-tau
-        q_tau = pred_quantiles[:, :, i]
-        q_tau_1 = pred_quantiles[:, :, -i-1]
+        # get the upper and lower quantiles
+        L_tau = pred_quantiles[:, :, i]
+        U_tau = pred_quantiles[:, :, -i-1]
+        # compute the quantile width
+        delta_tau = U_tau - L_tau
+        print(delta_tau)
         # compute the errors
-        error_tau = np.subtract(y_true, q_tau)
-        error_tau_1 = np.subtract(q_tau_1, y_true)
+        error_L = np.subtract(L_tau, y_true)
+        error_U = np.subtract(y_true, U_tau)
         # compute the winkler score
-        loss_q = (q_tau - q_tau_1) + 2 /(1 - tau) * (np.maximum(error_tau, 0) + np.maximum(error_tau_1, 0))
+        loss_q = delta_tau + 2 / (1 - tau) * (np.max(error_L, 0) + np.max(error_U, 0))
         score.append(np.expand_dims(loss_q,-1))
     score = np.mean(np.concatenate(score, axis=-1), axis=0)
     return score
@@ -51,7 +54,7 @@ def compute_winkler_scores(y_true, pred_quantiles, quantiles_levels):
 # Set PEPF task to execute
 PF_task_name = 'EM_price'
 # Set Model setup to execute
-exper_setup = 'QR-DNN'
+exper_setup = 'QR-DNN-ARCSINH'
 
 #---------------------------------------------------------------------------------------------------------------------
 # Set run configs
