@@ -26,13 +26,36 @@ def compute_pinball_scores(y_true, pred_quantiles, quantiles_levels):
     return score
 
 #--------------------------------------------------------------------------------------------------------------------
+
+# compute the winkler score
+def compute_winkler_scores(y_true, pred_quantiles, quantiles_levels):
+    """
+    Utility function to compute the winkler score on the test results
+    return: winkler scores computed for each quantile level and each step in the pred horizon
+    """
+    score = []
+    for i, tau in enumerate(quantiles_levels):
+        # compute the winkler score
+        q_tau = pred_quantiles[:, :, i]
+        q_tau_1 = pred_quantiles[:, :, -i-1]
+
+        # compute the winkler score
+        loss_q = (q_tau_1 - q_tau) + 2 / (1 - tau) * np.maximum()
+
+    return score
+
+#--------------------------------------------------------------------------------------------------------------------
 # Set PEPF task to execute
 PF_task_name = 'EM_price'
 # Set Model setup to execute
-exper_setup = 'N-DNN'
+exper_setup = 'QR-DNN'
 
 #---------------------------------------------------------------------------------------------------------------------
 # Set run configs
+
+# fix the seed for reproducibility
+np.random.seed(42)
+
 # run_id = 'recalib_opt_grid_1_1'
 run_id = 'recalib_opt_random_1_1'
 # Load hyperparams from file (select: load_tuned or optuna_tuner)
@@ -76,10 +99,9 @@ pinball_scores = compute_pinball_scores(y_true=test_predictions[PF_task_name].to
                                         to_numpy().reshape(-1, pred_steps, len(quantiles_levels)),
                                         quantiles_levels=quantiles_levels)
 
-# print the Pinball score
+# print the Pinball score as a table
 print('--- Pinball Scores ---')
-for i, q in enumerate(quantiles_levels):
-    print(f'Quantile {q}: {pinball_scores[i]}')
+print(pd.DataFrame(pinball_scores, columns=[f'q_{q}' for q in quantiles_levels]))
 
 #--------------------------------------------------------------------------------------------------------------------
 # Plot test predictions
