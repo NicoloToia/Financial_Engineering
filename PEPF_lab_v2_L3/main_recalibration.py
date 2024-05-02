@@ -35,14 +35,14 @@ def compute_winkler_scores(y_true, pred_quantiles, quantiles_levels):
     """
     score = []
     for i, tau in enumerate(quantiles_levels):
-        # compute the winkler score
+        # get the quantiles for tau and 1-tau
         q_tau = pred_quantiles[:, :, i]
         q_tau_1 = pred_quantiles[:, :, -i-1]
         # compute the errors
-        error_q = np.subtract(q_tau, y_true)
-        error_q_1 = np.subtract(y_true, q_tau_1)
+        error_tau = np.subtract(y_true, q_tau)
+        error_tau_1 = np.subtract(q_tau_1, y_true)
         # compute the winkler score
-        loss_q = (q_tau_1 - q_tau) + 2 / tau * (np.maximum(error_q, 0) + np.maximum(error_q_1, 0))
+        loss_q = (q_tau - q_tau_1) + 2 /(1 - tau) * (np.maximum(error_tau, 0) + np.maximum(error_tau_1, 0))
         score.append(np.expand_dims(loss_q,-1))
     score = np.mean(np.concatenate(score, axis=-1), axis=0)
     return score
@@ -104,7 +104,7 @@ pinball_scores = compute_pinball_scores(y_true=test_predictions[PF_task_name].to
 
 # print the Pinball score as a table
 print('--- Pinball Scores ---')
-print(pd.DataFrame(pinball_scores, columns=[f'q_{q}' for q in quantiles_levels]))
+print(pd.DataFrame(pinball_scores, columns=[f'q_{q}' for q in quantiles_levels], index=[f'Hour {i+1}' for i in range(pred_steps)]))
 
 # Compute winkler score
 winkler_scores = compute_winkler_scores(y_true=test_predictions[PF_task_name].to_numpy().reshape(-1,pred_steps),
@@ -114,7 +114,7 @@ winkler_scores = compute_winkler_scores(y_true=test_predictions[PF_task_name].to
 
 # print the Winkler score as a table
 print('--- Winkler Scores ---')
-print(pd.DataFrame(winkler_scores, columns=[f'q_{q}' for q in quantiles_levels]))
+print(pd.DataFrame(winkler_scores, columns=[f'q_{q}' for q in quantiles_levels], index=[f'Hour {i+1}' for i in range(pred_steps)]))
 
 #--------------------------------------------------------------------------------------------------------------------
 # Plot test predictions
