@@ -66,6 +66,8 @@ hyper_mode = 'load_tuned'
 # Plot train history flag
 plot_train_history=False
 plot_weights=False
+# Apply sinh transformation to the target variable
+apply_arcsinh_transf = True
 
 #---------------------------------------------------------------------------------------------------------------------
 # Load experiments configuration from json file
@@ -77,6 +79,9 @@ configs=load_data_model_configs(task_name=PF_task_name, exper_setup=exper_setup,
 dir_path = os.getcwd()
 ds = pd.read_csv(os.path.join(dir_path, 'data', 'datasets', configs['data_config'].dataset_name))
 ds.set_index(ds.columns[0], inplace=True)
+
+if apply_arcsinh_transf:
+    ds['TARG__'+PF_task_name] = np.arcsinh(ds['TARG__'+PF_task_name])
 
 #---------------------------------------------------------------------------------------------------------------------
 # Instantiate recalibratione engine
@@ -91,6 +96,10 @@ model_hyperparams = PrTSF_eng.get_model_hyperparams(method=hyper_mode, optuna_m=
 test_predictions = PrTSF_eng.run_recalibration(model_hyperparams=model_hyperparams,
                                                plot_history=plot_train_history,
                                                plot_weights=plot_weights)
+
+# apply inverse sinh transformation to all the predictions
+if apply_arcsinh_transf:
+    test_predictions = np.sinh(test_predictions)
 
 #--------------------------------------------------------------------------------------------------------------------
 # Compute pinball score
