@@ -59,7 +59,7 @@ np.random.seed(42)
 # run_id = 'recalib_opt_grid_1_1'
 run_id = 'recalib_opt_random_1_1'
 # Load hyperparams from file (select: load_tuned or optuna_tuner)
-hyper_mode = 'optuna_tuner'
+hyper_mode = 'load_tuned'
 # Plot train history flag
 plot_train_history=False
 plot_weights=False
