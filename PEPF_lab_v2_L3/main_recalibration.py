@@ -35,16 +35,9 @@ def compute_winkler_scores(y_true, pred_quantiles, quantiles_levels):
     """
     score = []
     for i, tau in enumerate(quantiles_levels):
-        print(f'Computing Winkler score for quantile level: {tau}')
         # compute the winkler score
         q_tau = pred_quantiles[:, :, i]
         q_tau_1 = pred_quantiles[:, :, -i-1]
-        print(f'q_tau shape: {q_tau.shape}')
-        print(f'q_tau value: {q_tau}')
-        print(f'q_tau_1 shape: {q_tau_1.shape}')
-        print(f'q_tau_1 value: {q_tau_1}')
-        print(f'y_true shape: {y_true.shape}')
-        print(f'y_true value: {y_true}')
         # compute the errors
         error_q = np.subtract(q_tau, y_true)
         error_q_1 = np.subtract(y_true, q_tau_1)
