@@ -33,8 +33,8 @@ function X = computeUpfront(spot_vols, ttms, strikes, spol_A, fixed_rate_B,...
 %   Libor : forward Libor rates
 
 % party A payments
-Libor_payment_A = 1 - caplet_DF(end)
-spol_payment_A = spol_A / 100 * caplet_yf' * caplet_DF
+Libor_payment_A = 1 - caplet_DF(end);
+spol_payment_A = spol_A / 100 * caplet_yf' * caplet_DF;
 
 NPV_A = Libor_payment_A + spol_payment_A;
 
@@ -56,13 +56,13 @@ NPV_A = Libor_payment_A + spol_payment_A;
 %       this can further be written as the difference of the 0 to 15y cap minus the 0 to 10y cap
 
 % first quarter fixed rate payment
-first_quarter_B = fixed_rate_B / 100 * caplet_yf(1) * caplet_DF(1)
+first_quarter_B = fixed_rate_B / 100 * caplet_yf(1) * caplet_DF(1);
 
 % Libor payments
-Libor_payment_B = caplet_DF(1) - caplet_DF(end)
+Libor_payment_B = caplet_DF(1) - caplet_DF(end);
 
 % fixed rate payments
-fixed_rate_payment_B = spol_B / 100 * caplet_yf(2:end)' * caplet_DF(2:end)
+fixed_rate_payment_B = spol_B / 100 * caplet_yf(2:end)' * caplet_DF(2:end);
 
 % caplet payments
 
@@ -77,7 +77,7 @@ relevant_Libor_5y = Libor(2:4*5);
 
 % compute the cap from 0 to 5y with given strike
 cap_5y = CapSpot(strike_5y, relevant_ttms_5y, relevant_yf_5y, relevant_DF_5y, relevant_Libor_5y, ...
-    spot_vols, ttms, strikes)
+    spot_vols, ttms, strikes);
 
 % from 5 to 10y
 % compute the strike
@@ -90,7 +90,7 @@ relevant_Libor_10y = Libor(4*5+1:4*10);
 
 % compute the cap from 5 to 10y with given strike
 cap_10y = CapSpot(strike_10y, relevant_ttms_10y, relevant_yf_10y, relevant_DF_10y, relevant_Libor_10y, ...
-    spot_vols, ttms, strikes)
+    spot_vols, ttms, strikes);
 
 % from 10 to 15y
 % compute the strike
@@ -103,7 +103,7 @@ relevant_Libor_15y = Libor(4*10+1:4*15);
 
 % compute the cap from 10 to 15y with given strike
 cap_15y = CapSpot(strike_15y, relevant_ttms_15y, relevant_yf_15y, relevant_DF_15y, relevant_Libor_15y, ...
-    spot_vols, ttms, strikes)
+    spot_vols, ttms, strikes);
 
 % compute the upfront
 X = NPV_A - (first_quarter_B + Libor_payment_B + fixed_rate_payment_B - cap_5y - cap_10y - cap_15y);
