@@ -135,8 +135,8 @@ disp('--- --- ---')
 %% Delta-bucket sensitivity
 
 % compute the delta-bucket sensitivity
-[delta_dates, delta_buckets] = deltaBuckets(datesSet, ratesSet, quoted_dates, spot_vols, spot_ttms, strikes, X, dates(1), spol_A, ...
-    fixed_rate_B, spol_B, cap_rate_5y, cap_rate_10y, cap_rate_15y);
+[delta_dates, delta_buckets] = deltaBuckets(datesSet, ratesSet, quoted_dates, final_vols, final_ttms, strikes, X, spol_A, ...
+    fixed_rate_B, spol_B, cap_rate_5y, cap_rate_10y, cap_rate_15y, caplet_ttms, caplet_yf, caplet_dates_exercise, caplet_dates_payment);
 
 disp('--- Delta-bucket sensitivity of the Certificate ---')
 disp('Date | DV01 (Notional = 100) | DV01 (EUR) |')
