@@ -1,35 +1,36 @@
-function CapPrices = MarketCapPrices(ttms, strikes, Vols, discounts, dates)
+function CapPrices = MarketCapPrices(ttms, strikes, Vols, caplet_ttms, caplet_yf, caplet_DF, Libor)
 % MARKETCAPPRICES computes the cap prices from the market data
 %
 % INPUTS
 %   ttms: time to maturities
 %   strikes: strikes
 %   Vols: market volatilities
-%   discounts: discounts
-%   dates: dates of the market data
+%   caplet_ttms: caplet maturities
+%   caplet_yf: caplet year fractions
+%   caplet_DF: caplet discount factors
+%  Libor: forward Libor rates
 
 % save the caps
 CapPrices = zeros(size(Vols));
 
 for i = 1:length(ttms)
 
-    % compute the exercise and payment dates
-    exercise_dates = datetime(dates(1), 'ConvertFrom', 'datenum') + ...
-        calmonths(0:3:12*ttms(i)-3)';
-    payment_dates = exercise_dates + calmonths(3);
-    % move to business days if needed
-    exercise_dates(~isbusday(exercise_dates, eurCalendar())) = ...
-        busdate(exercise_dates(~isbusday(exercise_dates, eurCalendar())), 'modifiedfollow', eurCalendar());
-    payment_dates(~isbusday(payment_dates, eurCalendar())) = ...
-        busdate(payment_dates(~isbusday(payment_dates, eurCalendar())), 'modifiedfollow', eurCalendar());
-    % convert to datenum
-    exercise_dates = datenum(exercise_dates);
-    payment_dates = datenum(payment_dates);
+    % find the corresponding caplet data (remember to skip the first)
+    relevant_ttms = caplet_ttms(1:4*ttms(i)-1);
+    relevant_yf = caplet_yf(1:4*ttms(i)-1);
+    relevant_DF = caplet_DF(1:4*ttms(i)-1);
+    relevant_Libor = Libor(1:4*ttms(i)-1);
 
     % for each strike
     for j = 1:length(strikes)
-        % compute the cap price for given maturity and strike
-        CapPrices(i, j) = CapFlat(strikes(j), Vols(i, j), exercise_dates, payment_dates, true, discounts, dates);
+        % apply the bachelier formula in the vector form
+        Strike = strikes(j) / 100 * ones(size(relevant_ttms));
+        dn = (relevant_Libor - Strike) ./ (Vols(i, j) * sqrt(relevant_ttms));
+
+        term_1 = (relevant_Libor - Strike) .* normcdf(dn);
+        term_2 = Vols(i, j) * sqrt(relevant_ttms) .* normpdf(dn);
+
+        CapPrices(i, j) = sum(relevant_DF .* relevant_yf .* (term_1 + term_2));
 
     end
     

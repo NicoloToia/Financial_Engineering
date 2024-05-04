@@ -60,10 +60,38 @@ zeroRates = zeroRates(dates, discounts);
 
 % plot_rates_discounts(dates, discounts, zeroRates);
 
+%% Compute all caplet dates and deltas
+
+% skip the first exercise date
+caplet_dates_exercise = datetime(dates(1), 'ConvertFrom', 'datenum') + calmonths(3:3:12*ttms(end)-3)';
+caplet_dates_payment = caplet_dates_exercise + calmonths(3);
+
+% move to business days if needed
+caplet_dates_exercise(~isbusday(caplet_dates_exercise, eurCalendar())) = ...
+    busdate(caplet_dates_exercise(~isbusday(caplet_dates_exercise, eurCalendar())), 'modifiedfollow', eurCalendar());
+caplet_dates_payment(~isbusday(caplet_dates_payment, eurCalendar())) = ...
+    busdate(caplet_dates_payment(~isbusday(caplet_dates_payment, eurCalendar())), 'modifiedfollow', eurCalendar());
+
+caplet_dates_exercise = datenum(caplet_dates_exercise);
+caplet_dates_payment = datenum(caplet_dates_payment);
+
+% compute the caplet year fractions
+ACT_360 = 2;
+ACT_365 = 3;
+caplet_ttms = yearfrac(dates(1), caplet_dates_exercise, ACT_365);
+caplet_yf = yearfrac(caplet_dates_exercise, caplet_dates_payment, ACT_360);
+
+% compute the discounts at the payment dates
+caplet_DF = intExtDF(discounts, dates, caplet_dates_payment);
+% compute the fwd discount factors from each exercise date to the payment date
+fwd_DF = caplet_DF ./ intExtDF(discounts, dates, caplet_dates_exercise);
+fwd_Libor = (1 ./ fwd_DF - 1) ./ caplet_yf;
+
+
 %% Obtain the Cap Prices from the market data via Bachelier formula
 
 % Cap prices
-mkt_cap_prices = MarketCapPrices(ttms, strikes, mkt_vols, discounts, dates);
+mkt_cap_prices = MarketCapPrices(ttms, strikes, mkt_vols, caplet_ttms, caplet_yf, caplet_DF, fwd_Libor);
 
 % plot the cap prices
 % plotCaps(mkt_cap_prices, ttms, strikes);
