@@ -19,10 +19,6 @@ spotVols(1:3, :) = repmat(mkt_vols(1, :), 3, 1);
 % compute the difference between the cap of following years
 Delta_C = mkt_prices(2:end, :) - mkt_prices(1:end-1, :);
 
-% start the waitbar
-wb = waitbar(0, 'Computing the spot volatilities...');
-total = length(ttms);
-
 for i = 2:length(ttms)
 
     % find the relevant caplet dates (remember to skip the first)
@@ -54,11 +50,6 @@ for i = 2:length(ttms)
         
     end
 
-    % update the waitbar with the percentage
-    waitbar(i/total, wb, sprintf('Computing the spot volatilities... %.2f%%', i/total*100));
 end
-
-% close the waitbar
-close(wb);
 
 end
