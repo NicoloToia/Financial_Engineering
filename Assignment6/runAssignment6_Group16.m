@@ -98,10 +98,10 @@ mkt_cap_prices = MarketCapPrices(ttms, strikes, mkt_vols, caplet_ttms, caplet_yf
 
 %% Compute the spot volatilites
 
-[spot_ttms, spot_vols] = spotVols(mkt_cap_prices, ttms, strikes, mkt_vols, discounts, dates);
+spot_vols = spotVols(mkt_cap_prices, ttms, strikes, mkt_vols, caplet_ttms, caplet_yf, caplet_DF, fwd_Libor);
 
 final_vols = spot_vols(4*ttms-1,:);
-final_ttms = spot_ttms(4*ttms-1,:);
+final_ttms = caplet_ttms(4*ttms-1);
 
 %% Plot the spot volatilities surface against the flat volatilities
 

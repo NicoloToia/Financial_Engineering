@@ -1,4 +1,4 @@
-function [spot_ttms, spotVols] = spotVols(mkt_prices, ttms, strikes, mkt_vols, discounts, dates)
+function spotVols = spotVols(mkt_prices, ttms, strikes, mkt_vols, caplet_ttms, caplet_yf, caplet_DF, Libor)
 % spotVols: Compute the spot volatilities of the caps
 %
 % INPUT
@@ -6,17 +6,18 @@ function [spot_ttms, spotVols] = spotVols(mkt_prices, ttms, strikes, mkt_vols, d
 %   ttms : Time to maturities of the caps
 %   strikes : Strikes of the caps
 %   mkt_vols : Market volatilities of the caps
-%   discounts : Discount factors
-%   dates : Dates of the discount factors
+%   caplet_ttms : Caplet maturities
+%   caplet_yf : Caplet year fractions
+%   caplet_DF : Caplet discount factors
 
 % initialize the spotVols
-spotVols = zeros(4*ttms(end)-1, length(strikes));
+spotVols = zeros(length(caplet_ttms), length(strikes));
 
 % first 3 rows is simply the flat vol
 spotVols(1:3, :) = repmat(mkt_vols(1, :), 3, 1);
 
 % compute the difference between the cap of following years
-diffCap = mkt_prices(2:end, :) - mkt_prices(1:end-1, :);
+Delta_C = mkt_prices(2:end, :) - mkt_prices(1:end-1, :);
 
 % start the waitbar
 wb = waitbar(0, 'Computing the spot volatilities...');
@@ -24,26 +25,12 @@ total = length(ttms);
 
 for i = 2:length(ttms)
 
-    % compute the start date
-    start_date = datetime(dates(1), 'ConvertFrom', 'datenum') + ...
-        calyears(ttms(i-1))';
-    % compute the T alpha (the last exercise date of the previous cap)
-    T_alpha = start_date - calmonths(3)';
-    % compute the exercise dates and payment dates
-    exercise_dates = start_date + calmonths(0:3:12*(ttms(i)-ttms(i-1))-3)';
-    payment_dates = exercise_dates + calmonths(3)';
-    % move to business days
-    if ~isbusday(T_alpha, eurCalendar())
-        T_alpha = busdate(T_alpha, 'modifiedfollow', eurCalendar());
-    end
-    exercise_dates(~isbusday(exercise_dates, eurCalendar())) = ...
-        busdate(exercise_dates(~isbusday(exercise_dates, eurCalendar())), 'modifiedfollow', eurCalendar());
-    payment_dates(~isbusday(payment_dates, eurCalendar())) = ...
-        busdate(payment_dates(~isbusday(payment_dates, eurCalendar())), 'modifiedfollow', eurCalendar());
-    % convert to datenum
-    T_alpha = datenum(T_alpha);
-    exercise_dates = datenum(exercise_dates);
-    payment_dates = datenum(payment_dates);
+    % find the relevant caplet dates (remember to skip the first)
+    relevant_ttms = caplet_ttms(4*ttms(i-1):4*ttms(i)-1);
+    relevant_yf = caplet_yf(4*ttms(i-1):4*ttms(i)-1);
+    relevant_DF = caplet_DF(4*ttms(i-1):4*ttms(i)-1);
+    relevant_Libor = Libor(4*ttms(i-1):4*ttms(i)-1);
+    T_alpha = caplet_ttms(4*ttms(i-1)-1);
 
     for j = 1:length(strikes)
 
@@ -51,8 +38,8 @@ for i = 2:length(ttms)
         prevVol = spotVols(4*ttms(i-1)-1, j);
 
         % get the function handle
-        fun = @(s) CapSpotBootStrap(strikes(j), prevVol, T_alpha, s, exercise_dates, payment_dates, discounts, dates) - ...
-            diffCap(i-1, j);
+        fun = @(s) CapSpotBootStrap(strikes(j), prevVol, T_alpha, s, relevant_ttms, relevant_yf, relevant_DF, relevant_Libor) ...
+            - Delta_C(i-1, j);
 
         % compute the spot vol
         sigma_beta = fzero(fun, prevVol);
@@ -60,7 +47,7 @@ for i = 2:length(ttms)
         % sigma_beta = fzero(fun, prevVol, optimset( 'TolX', 1e-6, 'Display', 'off'));
 
         % compute the spot volatilities
-        [~, sigmas] = CapSpotBootStrap(strikes(j), prevVol, T_alpha, sigma_beta, exercise_dates, payment_dates, discounts, dates);
+        [~, sigmas] = CapSpotBootStrap(strikes(j), prevVol, T_alpha, sigma_beta, relevant_ttms, relevant_yf, relevant_DF, relevant_Libor);
 
         % insert into the spotVols
         spotVols(4*ttms(i-1):4*ttms(i)-1, j) = sigmas;
@@ -73,14 +60,5 @@ end
 
 % close the waitbar
 close(wb);
-
-% compute the new time to maturities
-exercise_dates = datetime(dates(1), 'ConvertFrom', 'datenum') + calmonths(3:3:12*ttms(end)-3)';
-% move to business days
-exercise_dates(~isbusday(exercise_dates, eurCalendar())) = ...
-    busdate(exercise_dates(~isbusday(exercise_dates, eurCalendar())), 'modifiedfollow', eurCalendar());
-exercise_dates = datenum(exercise_dates);
-ACT_365 = 3;
-spot_ttms = yearfrac(dates(1), exercise_dates, ACT_365);
 
 end
