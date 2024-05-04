@@ -1,5 +1,5 @@
-function X = computeUpfront(spot_vols, ttms, strikes, start_date, spol_A, fixed_rate_B,...
-    spol_B, cap_rate_5y, cap_rate_10y, cap_rate_15y, discounts, dates)
+function X = computeUpfront(spot_vols, ttms, strikes, spol_A, fixed_rate_B,...
+    spol_B, cap_rate_5y, cap_rate_10y, cap_rate_15y, caplet_ttms, caplet_yf, caplet_DF, Libor)
 % computeUpfront: Compute the upfront of the certificate (see annex for more details)
 %
 % Annex
@@ -30,34 +30,9 @@ function X = computeUpfront(spot_vols, ttms, strikes, start_date, spol_A, fixed_
 %   discounts : Discount factors curve
 %   dates : Dates of the discount factors
 
-% set the day count convention
-ACT_360 = 2;
-
-% compute the payment dates and exercise dates
-
-% exercise dates
-exercise_dates = datetime(start_date, 'ConvertFrom', 'datenum') + calmonths(0:3:12*15-3)';
-payments_dates = exercise_dates + calmonths(3)';
-
-% move to business days
-exercise_dates(~isbusday(exercise_dates, eurCalendar())) = ...
-    busdate(exercise_dates(~isbusday(exercise_dates, eurCalendar())), 'modifiedfollow', eurCalendar());
-payments_dates(~isbusday(payments_dates, eurCalendar())) = ...
-    busdate(payments_dates(~isbusday(payments_dates, eurCalendar())), 'modifiedfollow', eurCalendar());
-
-% convert to datenum
-exercise_dates = datenum(exercise_dates);
-payments_dates = datenum(payments_dates);
-
-% compute the year fractions between the exercise dates and payment dates
-deltas_libor = yearfrac(exercise_dates, payments_dates, ACT_360);
-
-% compute the discount factors at the payment dates and exercise dates
-DF_payment = intExtDF(discounts, dates, payments_dates);
-
 % party A payments
-Libor_payment_A = 1 - DF_payment(end);
-spol_payment_A = spol_A / 100 * deltas_libor' * DF_payment;
+Libor_payment_A = 1 - caplet_DF(end)
+spol_payment_A = spol_A / 100 * caplet_yf' * caplet_DF
 
 NPV_A = Libor_payment_A + spol_payment_A;
 
@@ -79,48 +54,54 @@ NPV_A = Libor_payment_A + spol_payment_A;
 %       this can further be written as the difference of the 0 to 15y cap minus the 0 to 10y cap
 
 % first quarter fixed rate payment
-first_quarter_B = fixed_rate_B / 100 * deltas_libor(1) * DF_payment(1);
+first_quarter_B = fixed_rate_B / 100 * caplet_yf(1) * caplet_DF(1)
 
 % Libor payments
-Libor_payment_B = DF_payment(1) - DF_payment(end);
+Libor_payment_B = caplet_DF(1) - caplet_DF(end)
 
 % fixed rate payments
-fixed_rate_payment_B = spol_B / 100 * deltas_libor(2:end)' * DF_payment(2:end);
+fixed_rate_payment_B = spol_B / 100 * caplet_yf(2:end)' * caplet_DF(2:end)
 
 % caplet payments
 
 % from 0 to 5y
 % compute the strike
 strike_5y = cap_rate_5y - spol_B;
-% find the relevant dates (from 2nd quarter to 5y)
-exercise_dates_5y = exercise_dates(2:4*5);
-payments_dates_5y = payments_dates(2:4*5);
+% find the relevant data (from 2nd quarter to 5y)
+relevant_ttms_5y = caplet_ttms(2:4*5);
+relevant_yf_5y = caplet_yf(2:4*5);
+relevant_DF_5y = caplet_DF(2:4*5);
+relevant_Libor_5y = Libor(2:4*5);
 
 % compute the cap from 0 to 5y with given strike
-cap_5y = CapSpot(strike_5y, exercise_dates_5y, payments_dates_5y, spot_vols, ttms, strikes, ...
-    discounts, dates);
+cap_5y = CapSpot(strike_5y, relevant_ttms_5y, relevant_yf_5y, relevant_DF_5y, relevant_Libor_5y, ...
+    spot_vols, ttms, strikes)
 
 % from 5 to 10y
 % compute the strike
 strike_10y = cap_rate_10y - spol_B;
-% find the relevant dates (from 5y to 10y)
-exercise_dates_10y = exercise_dates(4*5+1:4*10);
-payments_dates_10y = payments_dates(4*5+1:4*10);
+% find the relevant data (from 5y to 10y)
+relevant_ttms_10y = caplet_ttms(4*5+1:4*10);
+relevant_yf_10y = caplet_yf(4*5+1:4*10);
+relevant_DF_10y = caplet_DF(4*5+1:4*10);
+relevant_Libor_10y = Libor(4*5+1:4*10);
 
 % compute the cap from 5 to 10y with given strike
-cap_10y = CapSpot(strike_10y, exercise_dates_10y, payments_dates_10y, spot_vols, ttms, strikes, ...
-    discounts, dates);
+cap_10y = CapSpot(strike_10y, relevant_ttms_10y, relevant_yf_10y, relevant_DF_10y, relevant_Libor_10y, ...
+    spot_vols, ttms, strikes)
 
 % from 10 to 15y
 % compute the strike
 strike_15y = cap_rate_15y - spol_B;
-% find the relevant dates (from 10y to 15y)
-exercise_dates_15y = exercise_dates(4*10+1:end);
-payments_dates_15y = payments_dates(4*10+1:end);
+% find the relevant data (from 10y to 15y)
+relevant_ttms_15y = caplet_ttms(4*10+1:4*15);
+relevant_yf_15y = caplet_yf(4*10+1:4*15);
+relevant_DF_15y = caplet_DF(4*10+1:4*15);
+relevant_Libor_15y = Libor(4*10+1:4*15);
 
 % compute the cap from 10 to 15y with given strike
-cap_15y = CapSpot(strike_15y, exercise_dates_15y, payments_dates_15y, spot_vols, ttms, strikes, ...
-    discounts, dates);
+cap_15y = CapSpot(strike_15y, relevant_ttms_15y, relevant_yf_15y, relevant_DF_15y, relevant_Libor_15y, ...
+    spot_vols, ttms, strikes)
 
 % compute the upfront
 X = NPV_A - (first_quarter_B + Libor_payment_B + fixed_rate_payment_B - cap_5y - cap_10y - cap_15y);

@@ -63,7 +63,7 @@ zeroRates = zeroRates(dates, discounts);
 %% Compute all caplet dates and deltas
 
 % skip the first exercise date
-caplet_dates_exercise = datetime(dates(1), 'ConvertFrom', 'datenum') + calmonths(3:3:12*ttms(end)-3)';
+caplet_dates_exercise = datetime(dates(1), 'ConvertFrom', 'datenum') + calmonths(0:3:12*ttms(end)-3)';
 caplet_dates_payment = caplet_dates_exercise + calmonths(3);
 
 % move to business days if needed
@@ -100,8 +100,8 @@ mkt_cap_prices = MarketCapPrices(ttms, strikes, mkt_vols, caplet_ttms, caplet_yf
 
 spot_vols = spotVols(mkt_cap_prices, ttms, strikes, mkt_vols, caplet_ttms, caplet_yf, caplet_DF, fwd_Libor);
 
-final_vols = spot_vols(4*ttms-1,:);
-final_ttms = caplet_ttms(4*ttms-1);
+final_vols = spot_vols(4*ttms,:);
+final_ttms = caplet_ttms(4*ttms);
 
 %% Plot the spot volatilities surface against the flat volatilities
 
@@ -116,8 +116,14 @@ cap_rate_5y = 4.3; % 4.3% cap rate for the coupon of party B from 0 to 5 years
 cap_rate_10y = 4.6; % 4.6% cap rate for the coupon of party B from 5 to 10 years
 cap_rate_15y = 5.1; % 5.1% cap rate for the coupon of party B from 10 to 15 years
 
-X = computeUpfront(final_vols, final_ttms, strikes, dates(1), spol_A, fixed_rate_B, spol_B, ...
-    cap_rate_5y, cap_rate_10y, cap_rate_15y, discounts, dates);
+% find the caplet ttms, year fractions and discount factors for the certificate
+cf_caplet_ttms = caplet_ttms(1:4*15);
+cf_caplet_yf = caplet_yf(1:4*15);
+cf_caplet_DF = caplet_DF(1:4*15);
+cf_libor = fwd_Libor(1:4*15);
+
+X = computeUpfront(final_vols, final_ttms, strikes, spol_A, fixed_rate_B, spol_B, cap_rate_5y, ...
+    cap_rate_10y, cap_rate_15y, cf_caplet_ttms, cf_caplet_yf, cf_caplet_DF, cf_libor);
 
 % print the upfront payment percentage
 disp('--- Upfront payment of the Certificate ---')

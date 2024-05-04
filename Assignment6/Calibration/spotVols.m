@@ -14,7 +14,7 @@ function spotVols = spotVols(mkt_prices, ttms, strikes, mkt_vols, caplet_ttms, c
 spotVols = zeros(length(caplet_ttms), length(strikes));
 
 % first 3 rows is simply the flat vol
-spotVols(1:3, :) = repmat(mkt_vols(1, :), 3, 1);
+spotVols(1:4, :) = repmat(mkt_vols(1, :), 4, 1);
 
 % compute the difference between the cap of following years
 Delta_C = mkt_prices(2:end, :) - mkt_prices(1:end-1, :);
@@ -22,16 +22,16 @@ Delta_C = mkt_prices(2:end, :) - mkt_prices(1:end-1, :);
 for i = 2:length(ttms)
 
     % find the relevant caplet dates (remember to skip the first)
-    relevant_ttms = caplet_ttms(4*ttms(i-1):4*ttms(i)-1);
-    relevant_yf = caplet_yf(4*ttms(i-1):4*ttms(i)-1);
-    relevant_DF = caplet_DF(4*ttms(i-1):4*ttms(i)-1);
-    relevant_Libor = Libor(4*ttms(i-1):4*ttms(i)-1);
-    T_alpha = caplet_ttms(4*ttms(i-1)-1);
+    relevant_ttms = caplet_ttms(4*ttms(i-1)+1:4*ttms(i));
+    relevant_yf = caplet_yf(4*ttms(i-1)+1:4*ttms(i));
+    relevant_DF = caplet_DF(4*ttms(i-1)+1:4*ttms(i));
+    relevant_Libor = Libor(4*ttms(i-1)+1:4*ttms(i));
+    T_alpha = caplet_ttms(4*ttms(i-1));
 
     for j = 1:length(strikes)
 
         % find the previous spot vol
-        prevVol = spotVols(4*ttms(i-1)-1, j);
+        prevVol = spotVols(4*ttms(i-1), j);
 
         % get the function handle
         fun = @(s) CapSpotBootStrap(strikes(j), prevVol, T_alpha, s, relevant_ttms, relevant_yf, relevant_DF, relevant_Libor) ...
@@ -46,7 +46,7 @@ for i = 2:length(ttms)
         [~, sigmas] = CapSpotBootStrap(strikes(j), prevVol, T_alpha, sigma_beta, relevant_ttms, relevant_yf, relevant_DF, relevant_Libor);
 
         % insert into the spotVols
-        spotVols(4*ttms(i-1):4*ttms(i)-1, j) = sigmas;
+        spotVols(4*ttms(i-1)+1:4*ttms(i), j) = sigmas;
         
     end
 
