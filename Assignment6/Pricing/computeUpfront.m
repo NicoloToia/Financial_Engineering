@@ -27,8 +27,10 @@ function X = computeUpfront(spot_vols, ttms, strikes, spol_A, fixed_rate_B,...
 %   cap_rate_5y : cap rate for the first 5 years
 %   cap_rate_10y : cap rate for the first 10 years
 %   cap_rate_15y : cap rate for the first 15 years
-%   discounts : Discount factors curve
-%   dates : Dates of the discount factors
+%   caplet_ttms : Caplet maturities
+%   caplet_yf : Caplet year fractions
+%   caplet_DF : Caplet discount factors
+%   Libor : forward Libor rates
 
 % party A payments
 Libor_payment_A = 1 - caplet_DF(end)
