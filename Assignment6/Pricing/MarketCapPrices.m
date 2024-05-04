@@ -16,10 +16,10 @@ CapPrices = zeros(size(Vols));
 for i = 1:length(ttms)
 
     % find the corresponding caplet data (remember to skip the first)
-    relevant_ttms = caplet_ttms(1:4*ttms(i)-1);
-    relevant_yf = caplet_yf(1:4*ttms(i)-1);
-    relevant_DF = caplet_DF(1:4*ttms(i)-1);
-    relevant_Libor = Libor(1:4*ttms(i)-1);
+    relevant_ttms = caplet_ttms(2:4*ttms(i));
+    relevant_yf = caplet_yf(2:4*ttms(i));
+    relevant_DF = caplet_DF(2:4*ttms(i));
+    relevant_Libor = Libor(2:4*ttms(i));
 
     % for each strike
     for j = 1:length(strikes)
