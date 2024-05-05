@@ -76,7 +76,7 @@ hyper_mode = 'load_tuned'
 plot_train_history=False
 plot_weights=False
 # Apply sinh transformation to the target variable
-apply_arcsinh_transf = True
+apply_arcsinh_transf = False
 
 #---------------------------------------------------------------------------------------------------------------------
 # Load experiments configuration from json file
