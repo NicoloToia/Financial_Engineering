@@ -124,10 +124,6 @@ pinball_scores = compute_pinball_scores(y_true=test_predictions[PF_task_name].to
 print('--- Pinball Scores ---')
 print(pd.DataFrame(pinball_scores, columns=[f'q_{q}' for q in quantiles_levels], index=[f'Hour {i+1}' for i in range(pred_steps)]))
 
-# print the pinbal score of the median
-print('--- Pinball Score of the Median ---')
-print(pinball_scores[:, int(len(quantiles_levels)/2)])
-
 # Compute winkler score
 winkler_scores = compute_winkler_scores(y_true=test_predictions[PF_task_name].to_numpy().reshape(-1,pred_steps),
                                         pred_quantiles=test_predictions.loc[:,test_predictions.columns != PF_task_name].
