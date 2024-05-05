@@ -1,5 +1,5 @@
 function sensitivities = vegaBucketsMatrix(mkt_vols, ttms, strikes, X_0, spol_A, fixed_rate_B, spol_B, ...
-    cap_5y, cap_10y, cap_15y, discounts, dates)
+    cap_5y, cap_10y, cap_15y, caplet_ttms, caplet_yf, caplet_DF, Libor)
 % VEGABUCKETS computes the vega bucket sensitivities for the certificate
 %
 % INPUTS
@@ -13,13 +13,20 @@ function sensitivities = vegaBucketsMatrix(mkt_vols, ttms, strikes, X_0, spol_A,
 %   cap_5y: strike of the cap from 0 to 5y
 %   cap_10y: strike of the cap from 5 to 10y
 %   cap_15y: strike of the cap from 10 to 15y
-%   discounts: discounts
-%   dates: dates of the market data
+%   caplet_ttms: caplet maturities
+%   caplet_yf: caplet year fractions
+%   caplet_DF: caplet discount factors
+%   Libor: forward Libor rates
 
 % initialize the sensitivities
 sensitivities = zeros(size(mkt_vols));
 % shift is 1 bp
-shift = 0.0001;
+shift = 10^(-4);
+% select only the needed data for the certificate
+cf_caplet_ttms = caplet_ttms(1:15*4);
+cf_caplet_yf = caplet_yf(1:15*4);
+cf_caplet_DF = caplet_DF(1:15*4);
+cf_libor = Libor(1:15*4);
 
 % for each volatility, compute the vega bucket sensitivity
 for i = 1:length(mkt_vols)
@@ -28,12 +35,12 @@ for i = 1:length(mkt_vols)
         shifted_vols = mkt_vols;
         shifted_vols(i, j) = shifted_vols(i, j) + shift;
         % recompute the cap prices
-        mkt_prices = MarketCapPrices(ttms, strikes, shifted_vols, discounts, dates);
-        % recalibrate the spot vols
-        [shifted_ttms, shifted_vols] = spotVols(mkt_prices, ttms, strikes, shifted_vols, discounts, dates);
+        mkt_prices = MarketCapPrices(ttms, strikes, shifted_vols, caplet_ttms, caplet_yf, caplet_DF, Libor);
+        % recalibrate the spot volatilities
+        shifted_vols = spotVols(mkt_prices, ttms, strikes, shifted_vols, caplet_ttms, caplet_yf, caplet_DF, Libor);
         % recompute the upfront payment
-        X_shift = computeUpfront(shifted_vols, shifted_ttms, strikes, dates(1), spol_A, fixed_rate_B, spol_B, ...
-            cap_5y, cap_10y, cap_15y, discounts, dates);
+        X_shift = computeUpfront(shifted_vols, caplet_ttms, strikes, spol_A, fixed_rate_B, spol_B, ...
+            cap_5y, cap_10y, cap_15y, cf_caplet_ttms, cf_caplet_yf, cf_caplet_DF, cf_libor);
         % compute the vega bucket sensitivity
         sensitivities(i, j) = (X_shift - X_0);
     end
