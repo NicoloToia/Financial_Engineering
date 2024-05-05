@@ -155,7 +155,7 @@ disp('--- --- ---')
 %% Total Vega
 
 total_vega = total_Vega(mkt_vols, ttms, strikes, X, spol_A, fixed_rate_B, spol_B, ...
-    cap_rate_5y, cap_rate_10y, cap_rate_15y, discounts, dates);
+    cap_rate_5y, cap_rate_10y, cap_rate_15y, caplet_ttms, caplet_yf, caplet_DF, fwd_Libor);
 % print the total vega
 disp('--- Total vega of the Certificate ---')
 disp(['The total vega is: ', num2str(total_vega * 100), ' (Notional = 100) EUR']);
@@ -186,7 +186,7 @@ vega_dates = datenum(vega_dates);
 
 % compute the vega bucket sensitivities
 vega_buckets = vegaBuckets(mkt_vols, ttms, strikes, X, spol_A, fixed_rate_B, spol_B, ...
-    cap_rate_5y, cap_rate_10y, cap_rate_15y, discounts, dates);
+    cap_rate_5y, cap_rate_10y, cap_rate_15y, 
 
 disp('--- Vega-bucket sensitivity of the Certificate ---')
 disp('Date | Vega (Notional = 100) | Vega (EUR) |')
