@@ -1,4 +1,5 @@
-function [vega, cap_price_0] = totalVegaCap(strike, cap_ttm, spot_vols, spot_ttms, mkt_vols, ttms, strikes, discounts, dates)
+function vega = totalVegaCap(cap_0_5y, cap_ttms, cap_yf, cap_DF, cap_libor, mkt_vols, ttms, strikes, ...
+    caplet_ttms, caplet_yf, caplet_DF, Libor)
 % VEGACAP computes the vega of a cap from 0 to cap_ttm with given strike
 %
 % INPUTS
@@ -11,23 +12,6 @@ function [vega, cap_price_0] = totalVegaCap(strike, cap_ttm, spot_vols, spot_ttm
 %   strikes: strikes
 %   mkt_vols: market volatilities (to be shifted)
 
-% compute the dates for the cap
-exercise_dates = datetime(dates(1), 'ConvertFrom', 'datenum') + ...
-    calmonths(3:3:cap_ttm*12-3)';
-payment_dates = exercise_dates + calmonths(3);
-% move to business days if needed
-exercise_dates(~isbusday(exercise_dates, eurCalendar())) = ...
-    busdate(exercise_dates(~isbusday(exercise_dates, eurCalendar())), 'modifiedfollow', eurCalendar());
-payment_dates(~isbusday(payment_dates, eurCalendar())) = ...
-    busdate(payment_dates(~isbusday(payment_dates, eurCalendar())), 'modifiedfollow', eurCalendar());
-% conver to datenum
-exercise_dates = datenum(exercise_dates);
-payment_dates = datenum(payment_dates);
-
-% compute the cap price
-cap_price_0 = CapSpot(strike, exercise_dates, payment_dates, spot_vols, spot_ttms, strikes, ...
-    discounts, dates);
-
 % shift the spot vols by 1 bp in the corresponding row
 shift = 10^(-4);
 
@@ -35,14 +19,13 @@ shift = 10^(-4);
 shifted_mkt_vols = mkt_vols + shift;
 
 % recompute the mkts prices
-mkt_prices = MarketCapPrices(ttms, strikes, shifted_mkt_vols, discounts, dates);
+mkt_prices = MarketCapPrices(ttms, strikes, shifted_mkt_vols, caplet_ttms, caplet_yf, caplet_DF, Libor);
 
 % recalibrate the spot vols
-[shifted_ttms, shifted_spot_vols] = spotVols(mkt_prices, ttms, strikes, shifted_mkt_vols, discounts, dates);
+shifted_spot_vols = spotVols(mkt_prices, ttms, strikes, shifted_mkt_vols, caplet_ttms, caplet_yf, caplet_DF, Libor);
 
 % compute the cap price with the shifted vols
-cap_price_shift = CapSpot(strike, exercise_dates, payment_dates, shifted_spot_vols, shifted_ttms, strikes, ...
-    discounts, dates);
+cap_price_shift = CapSpot(strike, cap_ttms, cap_yf, cap_DF, cap_libor, shifted_spot_vols, caplet_ttms, strikes);
 
 % compute the vega
 vega = (cap_price_shift - cap_price_0);

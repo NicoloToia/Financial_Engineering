@@ -267,8 +267,18 @@ disp('--- --- ---')
 % find the ATM 5y Cap strike
 strike_5y = swapPricer(0, 5, discounts, dates) * 100;
 
+% find the relevant ttms, yf, DF and Libor for the 5y Cap
+cap_5y_ttms = caplet_ttms(2:5*4);
+cap_5y_yf = caplet_yf(2:5*4);
+cap_5y_DF = caplet_DF(2:5*4);
+cap_5y_Libor = fwd_Libor(2:5*4);
+
+% compute the price of the 5y Cap
+
+cap_price_5y = CapSpot(strike_5y, cap_5y_ttms, cap_5y_yf, cap_5y_DF, cap_5y_Libor, spot_vols, caplet_ttms, strikes);
+
 % compute the vega for the ATM 5y Cap
-[vega_5y_cap, cap_price_5y] = totalVegaCap(strike_5y, 5, spot_vols, spot_ttms, mkt_vols, ttms, strikes, discounts, dates);
+vega_5y_cap = totalVegaCap(cap_price_5y, cap_5y_ttms, cap_5y_yf, 
 
 % completely hedge the vega of the certificate with the ATM 5y Cap
 weight_5y_cap = - total_vega / vega_5y_cap;
