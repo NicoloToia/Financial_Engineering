@@ -121,8 +121,12 @@ pinball_scores = compute_pinball_scores(y_true=test_predictions[PF_task_name].to
                                         quantiles_levels=quantiles_levels)
 
 # print the Pinball score as a table
+pinbal_df = pd.DataFrame(pinball_scores, columns=[f'q_{q}' for q in quantiles_levels], index=[f'Hour {i+1}' for i in range(pred_steps)])
 print('--- Pinball Scores ---')
-print(pd.DataFrame(pinball_scores, columns=[f'q_{q}' for q in quantiles_levels], index=[f'Hour {i+1}' for i in range(pred_steps)]))
+print(pinbal_df)
+
+# save pinball scores to file
+pinbal_df.to_csv(os.path.join(dir_path, 'experiments', 'tasks', PF_task_name, exper_setup, run_id, 'pinball_scores.csv'))
 
 # Compute winkler score
 winkler_scores = compute_winkler_scores(y_true=test_predictions[PF_task_name].to_numpy().reshape(-1,pred_steps),
@@ -131,9 +135,13 @@ winkler_scores = compute_winkler_scores(y_true=test_predictions[PF_task_name].to
                                         quantiles_levels=quantiles_levels)
 
 # print the Winkler score as a table
+winkler_df = pd.DataFrame(winkler_scores, columns=[f'q_{q}' for q in quantiles_levels[:len(quantiles_levels)//2]],
+    index=[f'Hour {i+1}' for i in range(pred_steps)])
 print('--- Winkler Scores ---')
-print(pd.DataFrame(winkler_scores, columns=[f'q_{q}' for q in quantiles_levels[:len(quantiles_levels)//2]],
-    index=[f'Hour {i+1}' for i in range(pred_steps)]))
+print(winkler_df)
+
+# save winkler scores to file
+winkler_df.to_csv(os.path.join(dir_path, 'experiments', 'tasks', PF_task_name, exper_setup, run_id, 'winkler_scores.csv'))
 
 #--------------------------------------------------------------------------------------------------------------------
 # Plot test predictions
