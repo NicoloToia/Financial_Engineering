@@ -44,7 +44,7 @@ for i = 1:length(quoted_dates)
     % recompute the discount factors and the libor rates
     shifted_caplet_DF = intExtDF(shifted_discounts, shifted_dates, payment_dates);
     shifted_fwd_DF = shifted_caplet_DF ./ intExtDF(shifted_discounts, shifted_dates, exercise_dates);
-    shifted_Libor = (1 ./ shifted_fwd_DF - 1) ./ caplet_yf
+    shifted_Libor = (1 ./ shifted_fwd_DF - 1) ./ caplet_yf;
     % use only the relevant caplet data
     shifted_Libor = shifted_Libor(1:15*4);
     shifted_caplet_DF = shifted_caplet_DF(1:15*4);
