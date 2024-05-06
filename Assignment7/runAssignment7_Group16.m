@@ -4,3 +4,11 @@
 %
 % to run:
 % > runAssignment7_Group16
+
+clc
+clear all
+close all
+
+% fix random seed
+rng(42) 
+
