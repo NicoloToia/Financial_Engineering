@@ -27,5 +27,8 @@ couponDates = datetime(settlement_date, 'ConvertFrom', 'datenum') + calyears(1:2
 couponDates(~isbusday(couponDates, eurCalendar())) = busdate(couponDates(~isbusday(couponDates, eurCalendar())), 'modifiedfollow', eurCalendar());
 couponDates = datenum(couponDates);
 
+%discount factors
+load('discounts.mat');
+
 
 
