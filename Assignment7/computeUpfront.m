@@ -59,7 +59,7 @@ call_1 = callIntegral(fixing_DF, F_0, 1/2, sigma, kappa, eta, t, x_2, M_FFT, dz,
 price_digital = (call_0 - call_1) / epsilon;
 
 % compute the probability that the underlying is above the strike
-prob_up = price_digital / fixing_DF
+prob_up = price_digital / fixing_DF;
 
 % compute the party B leg
 NPV_B = principal * delta_1y * coupon_1y * coupon_DF(1) * (1 - prob_up) + ...
@@ -74,7 +74,7 @@ quarter_dates(~isbusday(quarter_dates, eurCalendar())) = ...
 quarter_dates = datenum(quarter_dates);
 
 % compute the discount factors at the payment dates
-quarter_DF = intExtDF(discounts, dates, quarter_dates)
+quarter_DF = intExtDF(discounts, dates, quarter_dates);
 % compute the deltas for the BPV
 deltas = yearfrac([dates(1); quarter_dates(1:end-1)], quarter_dates, ACT_360);
 
