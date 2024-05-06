@@ -30,5 +30,11 @@ couponDates = datenum(couponDates);
 %discount factors
 load('discounts.mat');
 
+% calibrated parameters for alpha = 1/2
+Sigma = 0.10493;
+Kappa = 1.3089;
+Eta = 12.7545;
+
+
 
 
