@@ -13,7 +13,7 @@ close all
 rng(42) 
 
 %% Load data for exercise 1
-principal = 100*1e9; % 100 billion
+principal = 1e8; % 100 million
 settlement_date = datenum(datetime(2008, 2, 19)); % 19-Feb-2008
 maturity = 2; % 2 years
 ACT_30_360 = 2; % 30/360 day count convention   
