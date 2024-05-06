@@ -275,10 +275,10 @@ cap_5y_Libor = fwd_Libor(2:5*4);
 
 % compute the price of the 5y Cap
 
-cap_price_5y = CapSpot(strike_5y, cap_5y_ttms, cap_5y_yf, cap_5y_DF, cap_5y_Libor, spot_vols, caplet_ttms, strikes);
+cap_price_5y = CapSpot(cap_5y_ttms, strike_5y, cap_5y_yf, cap_5y_DF, cap_5y_Libor, spot_vols, caplet_ttms, strikes);
 
 % compute the vega for the ATM 5y Cap
-vega_5y_cap = totalVegaCap(cap_price_5y, cap_5y_ttms, cap_5y_yf, 
+vega_5y_cap = totalVegaCap(strike_5y, 5, spot_vols, spot_ttms, mkt_vols, ttms, strikes, discounts, dates);
 
 % completely hedge the vega of the certificate with the ATM 5y Cap
 weight_5y_cap = - total_vega / vega_5y_cap;
