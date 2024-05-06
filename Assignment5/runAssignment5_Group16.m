@@ -108,11 +108,11 @@ strikes = cSelect.strikes;
 surface = cSelect.surface;
 % sigma digital
 sigma_digital = interp1(strikes, surface, k, 'spline');
-% plot the volatility smile
-plot(strikes, surface);
-hold on;
-plot(k, sigma_digital,'x', 'MarkerSize', 5, 'LineWidth', 5);
-legend('Volatility smile', 'Volatility at the money');
+% % plot the volatility smile
+% plot(strikes, surface);
+% hold on;
+% plot(k, sigma_digital,'x', 'MarkerSize', 5, 'LineWidth', 5);
+% legend('Volatility smile', 'Volatility at the money');
 
 % compute the price via DigitalPrice function
 % flag = 1: Black formula
@@ -139,7 +139,7 @@ fprintf(fileID, '%12.8f\n', price_digital_implied);
 fprintf(fileID, '%12.8f\n', price_digital_monte_carlo);
 fclose(fileID);
 
-plot_payoff = plotpayoff(strikes, k);
+% plot_payoff = plotpayoff(strikes, k);
 
 %% Point 3: Pricing
 
@@ -256,22 +256,22 @@ end
 
 %% Plot results with alpha = 1/2
 
-figure;
+% figure;
 
-% plot quadrature
-plot(x, callPrices_quad,'--x');
-hold on
-% plot FFT
-plot(x, callPrices_FFT);
-% plot the Monte Carlo
-plot(x, callPrices_MC);
-% plot the Black prices
-hold on
-plot(log(F_0 ./ realStrikes), realPrices, 'x');
+% % plot quadrature
+% plot(x, callPrices_quad,'--x');
+% hold on
+% % plot FFT
+% plot(x, callPrices_FFT);
+% % plot the Monte Carlo
+% plot(x, callPrices_MC);
+% % plot the Black prices
+% hold on
+% plot(log(F_0 ./ realStrikes), realPrices, 'x');
 
-title('Call prices with different methods and alpha = 1/2');
-xlabel('Moneyness');
-legend('Quadrature', 'FFT', 'Monte Carlo','Black prices');
+% title('Call prices with different methods and alpha = 1/2');
+% xlabel('Moneyness');
+% legend('Quadrature', 'FFT', 'Monte Carlo','Black prices');
 
 %% Point 3.d: Use alpha = 2/3
 
@@ -303,18 +303,18 @@ fclose(fileID);
 
 %% Point 3.d: Plot the results
 
-% plot the call prices
-figure;
-% plot FFT
-plot(x, callPrices_FFT_2_3);
-hold on
-% plot quadrature
-plot(x, callPrices_quad_2_3);
-% plot old results
-plot(x, callPrices_FFT);
-title('Call prices with different methods and alpha = 2/3');
-xlabel('Moneyness');
-legend('FFT', 'Quadrature', 'FFT alpha = 1/2');
+% % plot the call prices
+% figure;
+% % plot FFT
+% plot(x, callPrices_FFT_2_3);
+% hold on
+% % plot quadrature
+% plot(x, callPrices_quad_2_3);
+% % plot old results
+% plot(x, callPrices_FFT);
+% title('Call prices with different methods and alpha = 2/3');
+% xlabel('Moneyness');
+% legend('FFT', 'Quadrature', 'FFT alpha = 1/2');
 
 %% Point 4: Volatility Surface Calibration
 
@@ -324,22 +324,31 @@ alpha = 1/2;
 log_moneyness = log(F_0 ./ realStrikes);
 
 % create a function that the prices of the call options given the strikes
-prices = @(sigma, kappa, eta) callIntegral(discount_1y, F_0, alpha, sigma, kappa, eta, t, log_moneyness, M_FFT, dz, 'FFT');
+prices = @(p) callIntegral(discount_1y, F_0, alpha, p(1), p(2), p(3), t, log_moneyness, M_FFT, dz, 'FFT');
 
 % compute the lower bound for eta
 omega_down = (1 - alpha) / (kappa * sigma^2);
+
+% create the distance function to minimize
+dist = @(x) sum((callIntegral(discount_1y, F_0, alpha, x(1), x(2), x(3), t, log_moneyness, M_FFT, dz, 'FFT') - realPrices).^2);
 
 % calibrate the model using fmincon
 % initial guess
 x0 = [0.2, 1, 3];
 
-% lower bounds
-lb = [0, 0, -omega_down];
+A = [
+    -1, 0, 0;
+    0, -1, 0;
+];
+b = [
+    0;
+    0;
+];
 
 % calibration
-options = optimoptions('fmincon', 'MaxFunctionEvaluations', 1e4, 'MaxIterations', 1e4, 'Display', 'off');
+options = optimoptions('fmincon', 'Display', 'off');
 
-[x, fval] = fmincon(@(x) norm(prices(x(1), x(2), x(3)) - realPrices), x0, [], [], [], [], lb, [], [], options);
+[x, fval] = fmincon(dist, x0, A, b, [], [], [], [], @constraint, options);
 
 % display the results
 disp(['Calibrated parameters']);
@@ -348,19 +357,24 @@ disp(['Kappa: ', num2str(x(2))]);
 disp(['Eta: ', num2str(x(3))]);
 
 % compute the prices with the calibrated parameters
-prices_calibrated = prices(x(1), x(2), x(3));
+prices_calibrated = callIntegral(discount_1y, F_0, alpha, x(1), x(2), x(3), t, log_moneyness, M_FFT, dz, 'FFT');
+
+% compute and show the MSE
+mse = 1 / length(realStrikes) * sum((prices_calibrated - realPrices).^2);
+disp(['The MSE between the calibrated prices and the real prices is: ', num2str(mse)]);
 
 % plot the results
-figure;
-plot(realStrikes, prices_calibrated);
-hold on
-plot(realStrikes, realPrices, 'x');
-title('Calibrated prices');
-xlabel('Strikes');
-legend('Calibrated prices', 'Real prices');
+% figure;
+% plot(realStrikes, prices_calibrated);
+% hold on
+% plot(realStrikes, realPrices, 'x');
+% title('Calibrated prices');
+% xlabel('Strikes');
+% legend('Calibrated prices', 'Real prices');
 
 %% Save the calibrated parameters to a .mat file
-save('calibrated_parameters.mat', 'x');
+calibrated_parameters = x;
+save('calibrated_parameters.mat', 'calibrated_parameters');
 
 %% Point 4: plot the model implied volatilities
 

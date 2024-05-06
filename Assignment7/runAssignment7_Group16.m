@@ -80,4 +80,11 @@ call_1 = callIntegral(fixing_DF, F_0, alpha, sigma, kappa, eta, t, x_1, M_FFT, d
 call_2 = callIntegral(fixing_DF, F_0, alpha, sigma, kappa, eta, t, x_2, M_FFT, dz, flag);
 
 % take the difference to compute the digital
-digital_FFT = (call_2 - call_1) / epsilon;
+% short the higher strike and go long on the lower strike
+digital_FFT = (call_1 - call_2) / epsilon;
+
+% show the results
+fprintf('Digital price with FFT method: %.2f\n', digital_FFT);
+
+% compute the price of the digital put
+ ff

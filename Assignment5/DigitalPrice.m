@@ -45,11 +45,11 @@ elseif flag==2 % Implied Volatility Approach
     end
 
     % plot the skew vs the strikes
-    figure;
-    plot(strikes, skew);
-    xlabel('Strikes'); 
-    ylabel('Skew');
-    title('Skew vs Strikes');
+    % figure;
+    % plot(strikes, skew);
+    % xlabel('Strikes'); 
+    % ylabel('Skew');
+    % title('Skew vs Strikes');
     
     % find the skew in the given strike
     m = interp1(strikes, skew, k, 'spline');
@@ -59,11 +59,11 @@ elseif flag==2 % Implied Volatility Approach
     vega = F_0 .* discount_1y .* normpdf(d_1) * sqrt(T);
 
     % plot the vega vs the strikes
-    figure;
-    plot(strikes, vega);
-    xlabel('Strikes');
-    ylabel('Vega');
-    title('Vega vs Strikes');
+    % figure;
+    % plot(strikes, vega);
+    % xlabel('Strikes');
+    % ylabel('Vega');
+    % title('Vega vs Strikes');
 
     % find the vega in the given strike
     vega_k = interp1(strikes, vega, F_0, 'spline');
