@@ -318,8 +318,8 @@ legend('FFT', 'Quadrature', 'FFT alpha = 1/2');
 
 %% Point 4: Volatility Surface Calibration
 
-% alpha = 1/3
-alpha = 1/3;
+% alpha = 1/2 (NIG model)
+alpha = 1/2;
 % compute the log moneyess from the strikes
 log_moneyness = log(F_0 ./ realStrikes);
 
@@ -358,6 +358,9 @@ plot(realStrikes, realPrices, 'x');
 title('Calibrated prices');
 xlabel('Strikes');
 legend('Calibrated prices', 'Real prices');
+
+%% Save the calibrated parameters to a .mat file
+save('calibrated_parameters.mat', 'x');
 
 %% Point 4: plot the model implied volatilities
 
