@@ -16,7 +16,7 @@ rng(42)
 principal = 1e8; % 100 million
 settlement_date = datenum(datetime(2008, 2, 19)); % 19-Feb-2008
 maturity = 2; % 2 years
-ACT_30_360 = 2; % 30/360 day count convention   
+EU_30_360 = 6; % 30/360 day count convention   
 coupon_1y = 0.06; 
 coupon_2y = 0.02; 
 strike = 3200; 
