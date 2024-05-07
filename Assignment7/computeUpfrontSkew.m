@@ -1,5 +1,5 @@
 function X = computeUpfrontSkew(S0, d, strike, ttm, principal, coupon_1y, coupon_2y, s_A, ...
-    discounts, dates, strikes, surface)
+    discounts, dates, strikes, surface, flag)
 % computeUpfrontSkew: computes the upfront payment for a certificate with a skew
 %
 % INPUTS
@@ -43,7 +43,7 @@ t = yearfrac(dates(1), fixing_date, ACT_365);
 F_0 = S0 / fixing_DF * exp(-d * t);
 
 % compute the digital call price
-price_digital = DigitalPrice(1, t, F_0, d, fixing_DF, strike, strikes, surface, 2);
+price_digital = DigitalPrice(1, t, F_0, d, fixing_DF, strike, strikes, surface, flag);
 
 % compute the probability that the underlying is above the strike
 prob_up = price_digital / fixing_DF;
