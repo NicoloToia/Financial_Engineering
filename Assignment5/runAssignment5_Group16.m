@@ -319,7 +319,8 @@ fclose(fileID);
 %% Point 4: Volatility Surface Calibration
 
 % alpha = 1/2 (NIG model)
-alpha = 1/2;
+% alpha = 1/2;
+alpha = 0;
 % compute the log moneyess from the strikes
 log_moneyness = log(F_0 ./ realStrikes);
 
@@ -327,14 +328,17 @@ log_moneyness = log(F_0 ./ realStrikes);
 prices = @(p) callIntegral(discount_1y, F_0, alpha, p(1), p(2), p(3), t, log_moneyness, M_FFT, dz, 'FFT');
 
 % compute the lower bound for eta
-omega_down = (1 - alpha) / (kappa * sigma^2);
+omega_down = (1 - alpha) / (kappa * sigma^2)
 
 % create the distance function to minimize
 dist = @(x) sum((callIntegral(discount_1y, F_0, alpha, x(1), x(2), x(3), t, log_moneyness, M_FFT, dz, 'FFT') - realPrices).^2);
 
+% create the constraint
+const = @(x) constraint(x, alpha);
+
 % calibrate the model using fmincon
 % initial guess
-x0 = [0.2, 1, 3];
+x0 = [0.1, 1, 3];
 
 A = [
     -1, 0, 0;
@@ -348,7 +352,7 @@ b = [
 % calibration
 options = optimoptions('fmincon', 'Display', 'off');
 
-[x, fval] = fmincon(dist, x0, A, b, [], [], [], [], @constraint, options);
+[x, fval] = fmincon(dist, x0, A, b, [], [], [], [], const, options);
 
 % display the results
 disp(['Calibrated parameters']);
