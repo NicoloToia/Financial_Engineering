@@ -40,16 +40,34 @@ trigger = 6 / 100;
 % initial price and parameters for the NIG
 S_0 = cSelect.reference;
 d = cSelect.dividend;
+alpha = 1/2;
 sigma = calibrated_parameters(1);
 kappa = calibrated_parameters(2);
 eta = calibrated_parameters(3);
 
 %% Compute the upfront payment
 
-X = computeUpfrontFFT(S_0, d, strike, ttm, principal, coupon_1y, coupon_2y, s_A, sigma, kappa, eta, discounts, dates);
+X = computeUpfrontFFT(S_0, d, strike, ttm, principal, coupon_1y, coupon_2y, s_A, sigma, kappa, eta, discounts, dates, alpha);
 
 % print the upfront payment percentage
 disp('--- Upfront payment of the Certificate ---')
+disp(['The upfront payment is: ', num2str(X/principal*100), '%']);
+disp(['The upfront payment is: ', num2str(X), ' EUR']);
+disp('--- --- ---')
+
+%% Compute the upfront payment via Variance Gamma
+
+load('calibrated_parameters_gamma.mat')
+
+alpha = 0;
+sigma = calibrated_parameters_gamma(1);
+kappa = calibrated_parameters_gamma(2);
+eta = calibrated_parameters_gamma(3);
+
+X = computeUpfrontFFT(S_0, d, strike, ttm, principal, coupon_1y, coupon_2y, s_A, sigma, kappa, eta, discounts, dates, alpha);
+
+% print the upfront payment percentage
+disp('--- Upfront payment of the Certificate VG---')
 disp(['The upfront payment is: ', num2str(X/principal*100), '%']);
 disp(['The upfront payment is: ', num2str(X), ' EUR']);
 disp('--- --- ---')
@@ -64,7 +82,7 @@ X = computeUpfrontSkew(S_0, d, strike, ttm, principal, coupon_1y, coupon_2y, s_A
     quoted_strikes, quoted_vols);
 
 % print the upfront payment percentage
-disp('--- Upfront payment of the Certificate ---')
+disp('--- Upfront payment of the Certificate via Black---')
 disp(['The upfront payment is: ', num2str(X/principal*100), '%']);
 disp(['The upfront payment is: ', num2str(X), ' EUR']);
 disp('--- --- ---')
