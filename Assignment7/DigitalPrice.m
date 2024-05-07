@@ -23,7 +23,7 @@ function [price_digital] = DigitalPrice(Notional , T , F_0 , dividend, discount_
 sigma_digital = interp1(strikes, surface, k, 'spline');
 
 % value of the digital option at maturity if s > k
-payment = 0.05 * Notional;
+payment = Notional;
 
 % compute d_1 and d_2 Black's formula
 d_1 = (log(F_0 / k) + (0.5 * sigma_digital^2) * T) / (sigma_digital * sqrt(T));

@@ -16,20 +16,17 @@ for i = length(Tree)-1:-1:l_max+1
     nodes = Tree{i};
     continuation_values = zeros(size(nodes));
 
-    % check if we are at a reset date
-    if mod(i, 1/dt) == 0
-        % compute the forward discount from i-th date to the end date of the swaption
-        fwd_DF = reset_DF(end) / reset_DF(i);
-    end
-
     for j = 1:nodes
 
-        % we compute the discount factors from t_i to t_{i+1}
+        % compute the forward discount factor
+        B_dt = 
 
         % apply the scheme and compute the intrinsic values
         if j == 1 % scheme C
             % compute the probabilities of the trinomial tree
             [p_u, p_m, p_d] = schemeC(l_max, mu);
+            % compute the stochastic discount factors
+            [D_u, D_m, D_d]
             % compute the mean of the first three elements of the past nodes
             continuation_values(j) = p_u * values(j) + p_m * values(j+1) + p_d * values(j+2);
         elseif j == length(nodes) % scheme B

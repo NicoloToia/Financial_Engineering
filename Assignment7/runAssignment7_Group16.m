@@ -57,11 +57,17 @@ disp('--- --- ---')
 %% Black con Skew
 
 % save the data to use
-quoted_strikes = cSelect.strikes
-quoted_vols = cSelect.surface
+quoted_strikes = cSelect.strikes;
+quoted_vols = cSelect.surface;
 
-X = computeUpfrontSkew(S_0, d, strike, ttm, principal, coupon_1y, coupon_2y, s_A, )
+X = computeUpfrontSkew(S_0, d, strike, ttm, principal, coupon_1y, coupon_2y, s_A, discounts, dates, ...
+    quoted_strikes, quoted_vols);
 
+% print the upfront payment percentage
+disp('--- Upfront payment of the Certificate ---')
+disp(['The upfront payment is: ', num2str(X/principal*100), '%']);
+disp(['The upfront payment is: ', num2str(X), ' EUR']);
+disp('--- --- ---')
 
 %% Tree
 
@@ -82,10 +88,10 @@ ttm = 10;
 [l_max, mu, trinomial_tree] = buildTrinomialTree(a, sigma, dt, ttm);
 
 % print the trinomial tree
-disp('--- Trinomial Tree ---')
-disp('The trinomial tree is:')
-for i = 1:ttm/dt
-    disp(['At time ', num2str(i), ' the tree is: ', num2str(trinomial_tree{i}')]);
-end
+% disp('--- Trinomial Tree ---')
+% disp('The trinomial tree is:')
+% for i = 1:ttm/dt
+%     disp(['At time ', num2str(i), ' the tree is: ', num2str(trinomial_tree{i}')]);
+% end
 
 % find wh
