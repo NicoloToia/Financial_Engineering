@@ -17,8 +17,12 @@ function callPrices = callIntegral(B0, F0, alpha, sigma, kappa, eta, t, log_mone
 %   callPrices: price of the call option (same size as log_moneyness)
 
 % Compute the Laplace exponent as a function of omega and alpha
-ln_L = @(omega) t/kappa * (1 - alpha)/alpha * ...
-    (1 - (1 + (omega .* kappa * sigma^2)/(1-alpha)).^alpha );
+if alpha ~= 0 % consider Normal Inverse Gaussian (or others alpha different from zero)
+    ln_L = @(omega) t/kappa * (1 - alpha)/alpha * ...
+        (1 - (1 + (omega .* kappa * sigma^2)/(1-alpha)).^alpha );
+else % consider Variance Gamma
+    ln_L = @(omega) -t/kappa * log(1 + kappa * omega * sigma^2);
+end
 
 % compute the laPlace exponent at eta
 ln_L_eta = ln_L(eta);
