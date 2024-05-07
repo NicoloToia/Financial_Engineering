@@ -24,13 +24,13 @@ function Tree = buildTrinomialTree(a, sigma, dt, ttm)
         % iterate over the elements of the cell
         nodes = Tree{i};
         % create the new nodes
-        if length(nodes) < 2 * lmax + 1
+        if length(nodes) < 2 * l_max + 1
             new_nodes = zeros(length(nodes)+2, 1);
             % write the new nodes
             for j = 1:length(nodes)
-                new_nodes(2*j-1) = nodes(j) + d_r;
-                new_nodes(2*j) = nodes(j);
-                new_nodes(2*j+1) = nodes(j) - d_r;
+                new_nodes(j) = nodes(j) + d_r;
+                new_nodes(j+1) = nodes(j);
+                new_nodes(j+2) = nodes(j) - d_r;
             end
         else
             new_nodes = nodes;
