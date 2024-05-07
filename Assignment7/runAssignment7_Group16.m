@@ -67,15 +67,16 @@ tree_dates = datenum(tree_dates);
 
 a = 0.11;
 sigma = 0.008;
-dt = 1;
+dt = 1/200;
 ttm = 10;
 
-% build the trinomial tree
-trinomial_tree = buildTrinomialTree(a, sigma, dt, ttm);
+[l_max, mu, trinomial_tree] = buildTrinomialTree(a, sigma, dt, ttm);
 
 % print the trinomial tree
 disp('--- Trinomial Tree ---')
 disp('The trinomial tree is:')
-for i = 1:10
+for i = 1:ttm/dt
     disp(['At time ', num2str(i), ' the tree is: ', num2str(trinomial_tree{i}')]);
 end
+
+% find wh
