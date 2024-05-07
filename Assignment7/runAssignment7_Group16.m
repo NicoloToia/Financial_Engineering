@@ -47,12 +47,12 @@ eta = calibrated_parameters(3);
 
 %% Compute the upfront payment
 
-X = computeUpfrontFFT(S_0, d, strike, ttm, principal, coupon_1y, coupon_2y, s_A, sigma, kappa, eta, discounts, dates, alpha);
+X_NIG = computeUpfrontFFT(S_0, d, strike, ttm, principal, coupon_1y, coupon_2y, s_A, sigma, kappa, eta, discounts, dates, alpha);
 
 % print the upfront payment percentage
 disp('--- Upfront payment of the Certificate ---')
-disp(['The upfront payment is: ', num2str(X/principal*100), '%']);
-disp(['The upfront payment is: ', num2str(X), ' EUR']);
+disp(['The upfront payment is: ', num2str(X_NIG/principal*100), '%']);
+disp(['The upfront payment is: ', num2str(X_NIG), ' EUR']);
 disp('--- --- ---')
 
 %% Compute the upfront payment via Variance Gamma
@@ -64,12 +64,12 @@ sigma = calibrated_parameters_gamma(1);
 kappa = calibrated_parameters_gamma(2);
 eta = calibrated_parameters_gamma(3);
 
-X = computeUpfrontFFT(S_0, d, strike, ttm, principal, coupon_1y, coupon_2y, s_A, sigma, kappa, eta, discounts, dates, alpha);
+X_VG = computeUpfrontFFT(S_0, d, strike, ttm, principal, coupon_1y, coupon_2y, s_A, sigma, kappa, eta, discounts, dates, alpha);
 
 % print the upfront payment percentage
 disp('--- Upfront payment of the Certificate VG---')
-disp(['The upfront payment is: ', num2str(X/principal*100), '%']);
-disp(['The upfront payment is: ', num2str(X), ' EUR']);
+disp(['The upfront payment is: ', num2str(X_VG/principal*100), '%']);
+disp(['The upfront payment is: ', num2str(X_VG), ' EUR']);
 disp('--- --- ---')
 
 %% Black con Skew
@@ -78,13 +78,40 @@ disp('--- --- ---')
 quoted_strikes = cSelect.strikes;
 quoted_vols = cSelect.surface;
 
-X = computeUpfrontSkew(S_0, d, strike, ttm, principal, coupon_1y, coupon_2y, s_A, discounts, dates, ...
-    quoted_strikes, quoted_vols);
+flag = 2; % Black with skew
+
+X_black_skew = computeUpfrontSkew(S_0, d, strike, ttm, principal, coupon_1y, coupon_2y, s_A, discounts, dates, ...
+    quoted_strikes, quoted_vols, flag);
+
+% print the upfront payment percentage
+disp('--- Upfront payment of the Certificate via Black adj skew---')
+disp(['The upfront payment is: ', num2str(X_black_skew/principal*100), '%']);
+disp(['The upfront payment is: ', num2str(X_black_skew), ' EUR']);
+disp('--- --- ---')
+
+
+%% Black price without skew (no digital risk)
+
+flag = 1; % Black without skew
+
+X_black = computeUpfrontSkew(S_0, d, strike, ttm, principal, coupon_1y, coupon_2y, s_A, discounts, dates, ...
+    quoted_strikes, quoted_vols, flag);
+
+% find the error in the price wrt the one with skew and the one with NIG
+black_vs_blackSkew = abs(X_black - X_black_skew) / X_black_skew * 100;
+black_vs_NIG = abs(X_black - X_NIG) / X_NIG * 100;
+blackSkew_vs_NIG = abs(X_black_skew - X_NIG) / X_NIG * 100;
 
 % print the upfront payment percentage
 disp('--- Upfront payment of the Certificate via Black---')
-disp(['The upfront payment is: ', num2str(X/principal*100), '%']);
-disp(['The upfront payment is: ', num2str(X), ' EUR']);
+disp(['The upfront payment is: ', num2str(X_black/principal*100), '%']);
+disp(['The upfront payment is: ', num2str(X_black), ' EUR']);
+disp('--- --- ---')
+
+disp('--- The Error using Black model (%) ---')
+disp(['The error between Black without skew and adj Black   : ', num2str(black_vs_blackSkew)]);
+disp(['The error between Black without skew and NIG         : ', num2str(black_vs_NIG)]);
+disp(['The error between Black with skew and NIG            : ', num2str(blackSkew_vs_NIG)]);
 disp('--- --- ---')
 
 %% Tree
