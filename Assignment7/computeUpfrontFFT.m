@@ -1,5 +1,5 @@
 function X = computeUpfrontFFT(S0, d, K, ttm, principal, coupon_1y, coupon_2y, s_A, sigma, kappa, eta, ...
-    discounts, dates)
+    discounts, dates, alpha)
 %
 %
 % INPUTS
@@ -52,8 +52,8 @@ x_2 = log(F_0/(K + epsilon));
 M_FFT = 15;
 dz = 0.0025;
 
-call_0 = callIntegral(fixing_DF, F_0, 1/2, sigma, kappa, eta, t, x_1, M_FFT, dz, 'FFT');
-call_1 = callIntegral(fixing_DF, F_0, 1/2, sigma, kappa, eta, t, x_2, M_FFT, dz, 'FFT');
+call_0 = callIntegral(fixing_DF, F_0, alpha, sigma, kappa, eta, t, x_1, M_FFT, dz, 'FFT');
+call_1 = callIntegral(fixing_DF, F_0, alpha, sigma, kappa, eta, t, x_2, M_FFT, dz, 'FFT');
 
 % compute the price of a digital call with same parameters
 price_digital = (call_0 - call_1) / epsilon;
