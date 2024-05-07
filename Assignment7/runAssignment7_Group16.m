@@ -46,13 +46,22 @@ eta = calibrated_parameters(3);
 
 %% Compute the upfront payment
 
-X = computeUpfront(S_0, d, strike, ttm, principal, coupon_1y, coupon_2y, s_A, sigma, kappa, eta, discounts, dates);
+X = computeUpfrontFFT(S_0, d, strike, ttm, principal, coupon_1y, coupon_2y, s_A, sigma, kappa, eta, discounts, dates);
 
 % print the upfront payment percentage
 disp('--- Upfront payment of the Certificate ---')
 disp(['The upfront payment is: ', num2str(X/principal*100), '%']);
 disp(['The upfront payment is: ', num2str(X), ' EUR']);
 disp('--- --- ---')
+
+%% Black con Skew
+
+% save the data to use
+quoted_strikes = cSelect.strikes
+quoted_vols = cSelect.surface
+
+X = computeUpfrontSkew(S_0, d, strike, ttm, principal, coupon_1y, coupon_2y, s_A, )
+
 
 %% Tree
 
