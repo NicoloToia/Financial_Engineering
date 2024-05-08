@@ -45,6 +45,17 @@ sigma = calibrated_parameters(1);
 kappa = calibrated_parameters(2);
 eta = calibrated_parameters(3);
 
+%%
+X = Compute_Upfront_Closed(S_0, d, strike, 2, principal, coupon_1y, coupon_2y, s_A, sigma, kappa, eta, ...
+    discounts, dates, alpha);
+
+% print the upfront
+disp('--- Upfront payment of the Certificate computed via close integral formula ---')
+disp(['The upfront payment is: ', num2str(X/principal*100), '%']);
+disp(['The upfront payment is: ', num2str(X), ' EUR']);
+disp('--- --- ---')
+
+
 %% Compute the upfront payment
 
 X_NIG = computeUpfrontFFT(S_0, d, strike, ttm, principal, coupon_1y, coupon_2y, s_A, sigma, kappa, eta, discounts, dates, alpha);
