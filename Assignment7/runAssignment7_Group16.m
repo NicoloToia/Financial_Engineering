@@ -19,6 +19,10 @@ rng(42)
 addpath('Data');
 addpath('Discounts');
 addpath('FFT');
+addpath('pricing')
+addpath('Tree')
+addpath('schemes')
+
 
 %% Load data for bootstrap and NIG model
 
