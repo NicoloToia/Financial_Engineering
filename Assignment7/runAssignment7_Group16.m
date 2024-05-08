@@ -45,6 +45,19 @@ sigma = calibrated_parameters(1);
 kappa = calibrated_parameters(2);
 eta = calibrated_parameters(3);
 
+%% Compute upfront mc
+
+N = 1e6;
+
+X = computeUpfrontMCV(S_0, d, strike, ttm, principal, coupon_1y, coupon_2y, s_A, sigma, kappa, eta, ...
+    discounts, dates, alpha, N);
+
+% print the upfront payment
+disp('--- Upfront payment of the Certificate ---')
+disp(['The upfront payment is: ', num2str(X/principal*100), '%']);
+disp(['The upfront payment is: ', num2str(X), ' EUR']);
+disp('--- --- ---')
+
 %%
 X = Compute_Upfront_Closed(S_0, d, strike, 2, principal, coupon_1y, coupon_2y, s_A, sigma, kappa, eta, ...
     discounts, dates, alpha);
@@ -54,6 +67,7 @@ disp('--- Upfront payment of the Certificate computed via close integral formula
 disp(['The upfront payment is: ', num2str(X/principal*100), '%']);
 disp(['The upfront payment is: ', num2str(X), ' EUR']);
 disp('--- --- ---')
+
 
 
 %% Compute the upfront payment
@@ -68,20 +82,21 @@ disp('--- --- ---')
 
 %% Compute the upfront payment via Variance Gamma
 
-load('calibrated_parameters_gamma.mat')
+% % % load('calibrated_parameters_gamma.mat')
+% % % 
+% % % alpha = 0;
+% % % sigma = calibrated_parameters_gamma(1);
+% % % kappa = calibrated_parameters_gamma(2);
+% % % eta = calibrated_parameters_gamma(3);
+% % % 
+% % % X_VG = computeUpfrontFFT(S_0, d, strike, ttm, principal, coupon_1y, coupon_2y, s_A, sigma, kappa, eta, discounts, dates, alpha);
+% % % 
+% % % % print the upfront payment percentage
+% % % disp('--- Upfront payment of the Certificate VG---')
+% % % disp(['The upfront payment is: ', num2str(X_VG/principal*100), '%']);
+% % % disp(['The upfront payment is: ', num2str(X_VG), ' EUR']);
+% % % disp('--- --- ---')
 
-alpha = 0;
-sigma = calibrated_parameters_gamma(1);
-kappa = calibrated_parameters_gamma(2);
-eta = calibrated_parameters_gamma(3);
-
-X_VG = computeUpfrontFFT(S_0, d, strike, ttm, principal, coupon_1y, coupon_2y, s_A, sigma, kappa, eta, discounts, dates, alpha);
-
-% print the upfront payment percentage
-disp('--- Upfront payment of the Certificate VG---')
-disp(['The upfront payment is: ', num2str(X_VG/principal*100), '%']);
-disp(['The upfront payment is: ', num2str(X_VG), ' EUR']);
-disp('--- --- ---')
 
 %% Black con Skew
 
@@ -99,6 +114,7 @@ disp('--- Upfront payment of the Certificate via Black adj skew---')
 disp(['The upfront payment is: ', num2str(X_black_skew/principal*100), '%']);
 disp(['The upfront payment is: ', num2str(X_black_skew), ' EUR']);
 disp('--- --- ---')
+
 
 
 %% Black price without skew (no digital risk)
@@ -124,6 +140,10 @@ disp(['The error between Black without skew and adj Black   : ', num2str(black_v
 disp(['The error between Black without skew and NIG         : ', num2str(black_vs_NIG)]);
 disp(['The error between Black with skew and NIG            : ', num2str(blackSkew_vs_NIG)]);
 disp('--- --- ---')
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Tree
 
