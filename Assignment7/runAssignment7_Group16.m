@@ -19,6 +19,10 @@ rng(42)
 addpath('Data');
 addpath('Discounts');
 addpath('FFT');
+addpath('pricing')
+addpath('Tree')
+addpath('schemes')
+
 
 %% Load data for bootstrap and NIG model
 
@@ -155,11 +159,16 @@ tree_dates(~isbusday(tree_dates,eurCalendar())) = ...
 tree_dates = datenum(tree_dates);
 
 % data for the tree
-
 a = 0.11;
 sigma = 0.008;
-dt = 1/200;
-ttm = 10;
+ttm = 5;
+
+int_in_1y = 3;
+dt_1y = 1/int_in_1y;
+dt = dt_1y;
+N_step = int_in_1y * ttm;
+
+
 
 [l_max, mu, trinomial_tree] = buildTrinomialTree(a, sigma, dt, ttm);
 
@@ -170,4 +179,31 @@ ttm = 10;
 %     disp(['At time ', num2str(i), ' the tree is: ', num2str(trinomial_tree{i}')]);
 % end
 
-% find wh
+% compute the forward discounts at each node
+dates = datenum(dates);
+
+% compute the date in each node by summing each dt
+node_dates = zeros(N_step +1, 1);
+node_dates(1) = dates(1);
+
+for i = 2:N_step +1
+    node_dates(i) = dates(1) + (i-1) * dt * 365;
+end
+fwd_discount_nodes = compute_fwdSpot(dates, node_dates, discounts, N_step);
+
+% compute the forward discounts in the reset dates
+
+% compute the reset dates for the tree
+tree_dates = datetime(dates(1), 'ConvertFrom', 'datenum') + calyears(0:ttm)';
+% convert to business date
+tree_dates(~isbusday(tree_dates,eurCalendar())) = ...
+    busdate(tree_dates(~isbusday(tree_dates,eurCalendar())),'modifiedfollow',eurCalendar());
+tree_dates = datenum(tree_dates);
+
+resetDates = tree_dates;
+
+fwd_spot_node = compute_fwdSpot_reset(dates, resetDates, discounts, length(resetDates)-1);
+
+% Compute the discounts swap rate in each reset date
+
+discount = discount_reset(sigma , a , resetDates , node_dates , trinomial_tree , fwd_spot_node , l_max , N_step,dates,ttm);
