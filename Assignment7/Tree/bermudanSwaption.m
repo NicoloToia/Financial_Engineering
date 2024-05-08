@@ -46,9 +46,3 @@ for i = length(Tree)-1:-1:l_max+1
     end
     
 end
-
-for i = l_max:-1:1
-
-    % iterate over the nodes
-
-end

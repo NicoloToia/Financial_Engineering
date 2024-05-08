@@ -206,3 +206,4 @@ fwd_spot_node = compute_fwdSpot_reset(dates, resetDates, discounts, length(reset
 
 % Compute the discounts swap rate in each reset date
 
+discount = discount_reset(sigma , a , resetDates , node_dates , trinomial_tree , fwd_spot_node , l_max , N_step,dates,ttm);
