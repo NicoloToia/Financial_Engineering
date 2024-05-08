@@ -1,4 +1,4 @@
-function [l_max, mu_hat, Tree] = buildTrinomialTree(a, sigma, dt, ttm)
+function [l_max, mu_hat, Tree, Tree_matrix] = buildTrinomialTree(a, sigma, dt, ttm)
 
 % number of time steps
 N = ttm/dt;

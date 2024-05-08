@@ -161,14 +161,6 @@ disp('--- --- ---')
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Tree
-
-% compute the reset dates for the tree
-tree_dates = datetime(dates(1), 'ConvertFrom', 'datenum') + calyears(1:10)';
-% convert to business date
-tree_dates(~isbusday(tree_dates,eurCalendar())) = ...
-    busdate(tree_dates(~isbusday(tree_dates,eurCalendar())),'modifiedfollow',eurCalendar());
-tree_dates = datenum(tree_dates);
-
 % data for the tree
 a = 0.11;
 sigma = 0.008;
@@ -180,36 +172,31 @@ dt = dt_1y;
 N_step = int_in_1y * ttm;
 
 
+% compute the reset dates for the tree
+tree_dates = datetime(dates(1), 'ConvertFrom', 'datenum') + calyears(1:ttm)';
+% convert to business date
+tree_dates(~isbusday(tree_dates,eurCalendar())) = ...
+    busdate(tree_dates(~isbusday(tree_dates,eurCalendar())),'modifiedfollow',eurCalendar());
+tree_dates = datenum(tree_dates);
 
-[l_max, mu, trinomial_tree] = buildTrinomialTree(a, sigma, dt, ttm);
 
-% print the trinomial tree
-% disp('--- Trinomial Tree ---')
-% disp('The trinomial tree is:')
-% for i = 1:ttm/dt
-%     disp(['At time ', num2str(i), ' the tree is: ', num2str(trinomial_tree{i}')]);
-% end
+[l_max, mu, trinomial_tree,tree_matrix] = buildTrinomialTree(a, sigma, dt, ttm);
 
 % compute the forward discounts at each node
 dates = datenum(dates);
 
 % compute the date in each node by summing each dt
-node_dates = zeros(N_step +1, 1);
-node_dates(1) = dates(1);
 
-for i = 2:N_step +1
-    node_dates(i) = dates(1) + (i-1) * dt * 365;
-end
+node_dates = datetime(dates(1),'convertFrom', 'datenum') + dt .* [1:N_step] * 365;
+node_dates(~isbusday(tree_dates,eurCalendar())) = ...
+    busdate(node_dates(~isbusday(tree_dates,eurCalendar())),'modifiedfollow',eurCalendar());
+node_dates = datenum(node_dates);
+
+node_dates = [dates(1) , node_dates]';
+
+tree_dates = [dates(1) ; node_dates(int_in_1y.*[1:ttm]+1)];
+
 fwd_discount_nodes = compute_fwdSpot(dates, node_dates, discounts, N_step);
-
-% compute the forward discounts in the reset dates
-
-% compute the reset dates for the tree
-tree_dates = datetime(dates(1), 'ConvertFrom', 'datenum') + calyears(0:ttm)';
-% convert to business date
-tree_dates(~isbusday(tree_dates,eurCalendar())) = ...
-    busdate(tree_dates(~isbusday(tree_dates,eurCalendar())),'modifiedfollow',eurCalendar());
-tree_dates = datenum(tree_dates);
 
 resetDates = tree_dates;
 
@@ -217,4 +204,4 @@ fwd_spot_node = compute_fwdSpot_reset(dates, resetDates, discounts, length(reset
 
 % Compute the discounts swap rate in each reset date
 
-discount = discount_reset(sigma , a , resetDates , node_dates , trinomial_tree , fwd_spot_node , l_max , N_step,dates,ttm);
+discount = discount_reset(sigma , a , resetDates , node_dates , tree_matrix , fwd_spot_node , l_max , N_step , dates , ttm)
