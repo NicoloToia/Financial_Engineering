@@ -40,7 +40,10 @@ coupon_DF = intExtDF(discounts, dates, couponDates);
 fixing_date(1) = datetime(couponDates(1), 'ConvertFrom', 'datenum') - caldays(2);
 fixing_date(2) = datetime(couponDates(2), 'ConvertFrom', 'datenum') - caldays(2);
 
-%%%%%%% business day check?
+% move to business days
+fixing_date(~isbusday(fixing_date, eurCalendar())) = ...
+    busdate(fixing_date(~isbusday(fixing_date, eurCalendar())), 'modifiedfollow', eurCalendar());
+fixing_date = datenum(fixing_date);
 
 %find the discount factors via linear interpolation
 fixing_DF = intExtDF(discounts, dates, datenum(fixing_date));
@@ -56,7 +59,7 @@ F_0 = S_0 / fixing_DF(2) * exp(-d * (t(1) + t(2)) );
 FT_1 = MC_NIG(F_0, alpha, sigma, kappa, eta, t(1), N);
 
 % Compute the undelying price
-ST_1 = FT_1* fixing_DF(1) * exp(d*t(1));
+ST_1 = FT_1* fixing_DF(2)/fixing_DF(1) * exp(d*t(2));
 
 % Divide ST in two vectors: one with ST>K and the other one with ST<K
 FT_1up = FT_1(ST_1>K);
@@ -76,7 +79,7 @@ ST_2down = FT_2down;
 
 %case A: ST_1>K & ST_2>K -> we take the last coupon
 ST_A = ST_2up(ST_2up>K); 
-probA = length(ST_A)/N; 
+probA = length(ST_A)/N;
 partA = principal * deltas(3) * coupons(3) * coupon_DF(3) * probA;
 
 %case B: ST_1>K & ST_2<K -> we take the second coupon

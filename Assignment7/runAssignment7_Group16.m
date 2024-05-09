@@ -58,7 +58,7 @@ X = computeUpfrontMCV(S_0, d, strike, ttm, principal, coupon_1y, coupon_2y, s_A,
     discounts, dates, alpha, N);
 
 % print the upfront payment
-disp('--- Upfront payment of the Certificate ---')
+disp('--- Upfront payment of the Certificate MCV ---')
 disp(['The upfront payment is: ', num2str(X/principal*100), '%']);
 disp(['The upfront payment is: ', num2str(X), ' EUR']);
 disp('--- --- ---')
