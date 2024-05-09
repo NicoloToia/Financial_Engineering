@@ -49,8 +49,6 @@ Tree_matrix = zeros(2*l_max+1, N);
 for i = 2:l_max +1
 
     Tree_matrix(:,i) = Tree_matrix(:,i-1);
-
-
     Tree_matrix(l_max + 2 - i  , i) = Tree_matrix(l_max + 3 - i  , i) + d_r;
     Tree_matrix(l_max + i , i) = Tree_matrix(l_max - 1 + i  , i) - d_r;
 
