@@ -45,7 +45,7 @@ F_0 = S0 / fixing_DF * exp(-d * t);
 x_1 = log(F_0/K);
 
 % compute the forward price via Monte Carlo NIG simulation
-FT = MC_NIG(F_0, kappa, t, alpha, eta, sigma, N);
+FT = MC_NIG(F_0, alpha, sigma, kappa, eta, t, N);
 
 % Compute the undelying price
 ST = FT * fixing_DF * exp(d*t);

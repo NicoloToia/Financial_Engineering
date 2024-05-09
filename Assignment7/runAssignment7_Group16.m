@@ -152,9 +152,9 @@ coupons(1) = 0.06;
 coupons(2) = 0.06; 
 coupons(3) = 0.02; 
 
-X_3y = price3y(S_0, d, strike, ttm, sigma, kappa, eta, discounts, dates, alpha, N, principal, coupons, s_A);
-
+X_3y = price3y(S_0, d, strike, ttm, alpha, sigma, kappa, eta, s_A, N, discounts, dates, principal, coupons);
 disp ('--- Pricing bond with expiry 3y ---')
+disp(['The upfront payment is: ', num2str(X_3y/principal*100), '%']);
 disp(['The price of the 3y bond is   : ', num2str(X_3y)]);
 disp('--- --- ---')
 

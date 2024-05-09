@@ -1,18 +1,21 @@
-function X = price3y(S_0, d, K, ttm, sigma, kappa, eta, discounts, dates, alpha, N, principal, coupons, s_A)
+function X = price3y(S_0, d, K, ttm, alpha, sigma, kappa, eta, s_A, N, discounts, dates, principal, coupons)
 
 % INPUTS
 %   S0: initial price of the underlying
 %   d: dividend yield rate
 %   K: strike price
 %   ttm: time to maturity of the certificate
-%   coupon_1y: coupon rate for the 1st year payment
-%   coupon_2y: coupon rate for the 2nd year payment
-%   s_A: spread for party A
+%   alpha = parameter to identify the desired model, in this 0.5(NIG)
 %   sigma: volatility of the underlying
 %   kappa: vol of vol
 %   eta: skewness
+%   s_A: spread for party A
+%   N = number of simulations for MC
 %   discounts: discount factors
 %   dates: dates for the discount factors
+%   principal = principal amount
+%   coupons = vector of possible coupons
+
 
 % Define yearfractions conventions
 ACT_360 = 2; 
@@ -37,7 +40,10 @@ coupon_DF = intExtDF(discounts, dates, couponDates);
 fixing_date(1) = datetime(couponDates(1), 'ConvertFrom', 'datenum') - caldays(2);
 fixing_date(2) = datetime(couponDates(2), 'ConvertFrom', 'datenum') - caldays(2);
 
+%find the discount factors via linear interpolation
 fixing_DF = intExtDF(discounts, dates, datenum(fixing_date));
+
+%find the yearfrac between the fixing dates
 t(1) = yearfrac(dates(1), fixing_date(1), ACT_365);
 t(2) = yearfrac(fixing_date(1), fixing_date(2), ACT_365);
 
@@ -45,7 +51,7 @@ t(2) = yearfrac(fixing_date(1), fixing_date(2), ACT_365);
 F_0 = S_0 / fixing_DF(1) * exp(-d * t(1));
 
 % compute the forward price via Monte Carlo NIG simulation
-FT_1 = MC_NIG(F_0, kappa, t(1), alpha, eta, sigma, N);
+FT_1 = MC_NIG(F_0, alpha, sigma, kappa, eta, t(1), N);
 
 % Compute the undelying price
 ST_1 = FT_1 * fixing_DF(1) * exp(d*t(1));
@@ -55,14 +61,16 @@ FT_1up = FT_1(ST_1>K); %I don't take the first coupon
 FT_1down = FT_1(ST_1<K); %I take the first coupon
 
 %Compute the forward price via MonteCarlo NIG starting from FT_1
-FT_2up = MC_NIG(FT_1up, kappa, t(2), alpha, eta, sigma, length(FT_1up)); 
-FT_2down = MC_NIG(FT_1down, kappa, t(2), alpha, eta, sigma, length(FT_1down)); 
+FT_2up = MC_NIG(FT_1up, alpha, sigma, kappa, eta, t(2), length(FT_1up)); 
+FT_2down = MC_NIG(FT_1down, alpha, sigma, kappa, eta, t(2), length(FT_1down)); 
 
 % Compute the undelying price
 ST_2up = FT_2up * fixing_DF(2) * exp(d*t(2));
 ST_2down = FT_2down * fixing_DF(2) * exp(d*t(2));
 
 %now we find 4 different scenarios: 
+%for each scenario, find the probability and the corresponding payoff
+
 %case A: ST_1>K & ST_2>K -> we take the last coupon
 ST_A = ST_2up(ST_2up>K); 
 probA = length(ST_A)/N; 
