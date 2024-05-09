@@ -22,6 +22,7 @@ addpath('FFT');
 addpath('pricing')
 addpath('Tree')
 addpath('schemes')
+addpath('jamshidian')
 
 
 %% Load data for bootstrap and NIG model

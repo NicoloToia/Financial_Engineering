@@ -24,9 +24,9 @@ B = @(x)  fwd_discount_nodes'.*exp(-x.*sigma_hjm/sigma - 0.5.*integral_ZC);
 
 P = @(x) sum(coupon.*B(x));
 
-x_star = fzero( @(x)P(x) - 1, 0)
+x_star = fzero( @(x)P(x) - 1, 0);
 
-strikes = B(x_star)
+strikes = B(x_star);
 
 
 end
