@@ -6,8 +6,6 @@ date_t0 = datenum(dates(1));
 
 discount = zeros(2*l_max+1,N_step);
 
-size(reset_dates)
-size(datenodes)
 for i = 1:N_step
 
     if datenodes(i) == reset_dates(k)
