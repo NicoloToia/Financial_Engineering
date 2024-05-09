@@ -148,7 +148,7 @@ disp('--- --- ---')
 
 %% 3y bond
 ttm = 3; 
-N = 1e5; 
+N = 1e6; 
 coupons(1) = 0.06; 
 coupons(2) = 0.06; 
 coupons(3) = 0.02; 
