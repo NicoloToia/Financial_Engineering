@@ -11,7 +11,7 @@ ttm = yearfrac(t0, exercise_date, ACT_365);
 v_2 = @(t) (sigmaHJM(a, sigma, ttm+tau, t) - sigmaHJM(a, sigma, ttm, t)).^2;
 
 % compute the integral
-V = 1 / ttm * integral(v_2, 0, ttm);
+V = sqrt(1 / ttm  * integral(v_2, 0, ttm));
 
 % define d1 and d2 for every T_i given
 d1 = log(fwd_DF / strike) / (V * sqrt(ttm)) + 0.5 * V * sqrt(ttm);
