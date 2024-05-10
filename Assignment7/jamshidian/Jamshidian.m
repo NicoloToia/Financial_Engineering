@@ -63,6 +63,4 @@ coupon_bond = sum(coupons .* fwd_ZCB_t0) * B_alpha;
 % put-call parity
 price = coupon_call + B_alpha * 1 - coupon_bond;
 
-% price = price / 2 * 10
-
 end
