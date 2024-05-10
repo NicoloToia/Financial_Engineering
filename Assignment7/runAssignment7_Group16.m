@@ -149,14 +149,19 @@ disp('--- --- ---')
 %% 3y bond
 ttm = 3; 
 N = 1e6; 
-coupons(1) = 0.06; 
-coupons(2) = 0.06; 
-coupons(3) = 0.02; 
+coupons = [0.06, 0.06, 0.02];
+alpha_IC = 5/100; % confidence level at 5%
 
-X_3y = price3y(S_0, d, strike, ttm, alpha, sigma, kappa, eta, s_A, N, discounts, dates, principal, coupons);
+[X_3y, IC_3y] = price3y(S_0, d, strike, ttm, alpha, sigma, kappa, eta, s_A, N, discounts, dates, ...
+    principal, coupons, alpha_IC);
 disp ('--- Pricing bond with expiry 3y ---')
 disp(['The upfront payment is: ', num2str(X_3y/principal*100), '%']);
+disp(['The 95% confidence interval is [', num2str(IC_3y(1)/principal*100), '%, ' , ...
+    num2str(IC_3y(2)/principal*100), '%]'])
 disp(['The price of the 3y bond is   : ', num2str(X_3y)]);
+disp(['The 95% confidence interval is [', num2str(IC_3y(1)), ', ' , ...
+    num2str(IC_3y(2)), '] EUR'])
+disp(['IC width is: ', num2str(IC_3y(2) - IC_3y(1)), ' EUR'])
 disp('--- --- ---')
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
