@@ -1,17 +1,22 @@
-function ZC_call_price = ZC_call(strike_i,discount_Talfa_Ti,discount_alfa,Talfa,t0,sigma,a,dates_years)
+function ZC_call_price = ZC_call(strike, fwd_DF, DF, exercise_date, t0, sigma, a, payment_date)
 
+ACT_360 = 2;
 ACT_365 = 3;
 
-V = Volatility(Talfa,t0,dates_years,sigma,a)';
+% compute the volatility using the integral
+tau = yearfrac(payment_date, exercise_date, ACT_365);
+ttm = yearfrac(t0, exercise_date, ACT_365);
 
-dt = yearfrac(t0,dates_years,ACT_365)';
+% compute the volatility integral
+v_2 = @(t) (sigmaHJM(a, sigma, ttm+tau, t) - sigmaHJM(a, sigma, ttm, t)).^2;
 
+% compute the integral
+V = 1 / ttm * integral(v_2, 0, ttm);
 
 % define d1 and d2 for every T_i given
-d1 = log(discount_Talfa_Ti ./ strike_i)./(V.* sqrt(dt(1))) + 0.5 .* V .* sqrt(dt(1));
-d2 = log(discount_Talfa_Ti ./ strike_i)./(V.* sqrt(dt(1))) - 0.5 .* V .* sqrt(dt(1));
+d1 = log(fwd_DF / strike) / (V * sqrt(ttm)) + 0.5 * V * sqrt(ttm);
+d2 = d1 - V * sqrt(ttm);
 
-
-ZC_call_price = discount_alfa* (discount_Talfa_Ti.* normcdf(d1) - strike_i .* normcdf(d2));
+ZC_call_price = DF * (fwd_DF * normcdf(d1) - strike * normcdf(d2));
 
 end

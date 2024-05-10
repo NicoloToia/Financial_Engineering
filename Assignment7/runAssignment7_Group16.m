@@ -214,31 +214,42 @@ fwd_spot_node = compute_fwdSpot_reset(dates, resetDates, discounts, length(reset
 
 %%
 
+% expiry of the swaption and start
+alfa = 9;
 ttm = 10;
-int_in_1y = 1;
-dt_1y = 1/int_in_1y;
-dt = dt_1y;
-N_step = int_in_1y * ttm;
+% stike of the swaption
+strike_swaption = 5 / 100;
 
-alfa = 2;
-omega=ttm;
+% swaption from 2 to 10
+Jamshidian(alfa, ttm, strike_swaption, a, sigma, discounts, dates);
 
-strike_swaption = 0.05;
+% display the value of the swaption
+disp('--- Swaption value ---')
+disp(['The value of the swaption is: ', num2str(Jamshidian(alfa, ttm, strike_swaption, a, sigma, discounts, dates))]);
+disp('--- --- ---')
 
-node_dates = datetime(dates(1),'convertFrom', 'datenum') + dt .* [1:N_step] * 365;
-node_dates(~isbusday(tree_dates,eurCalendar())) = ...
-    busdate(node_dates(~isbusday(tree_dates,eurCalendar())),'modifiedfollow',eurCalendar());
-node_dates = datenum(node_dates);
+% find the price for each alpha
+alphas = 2:ttm-1;
 
-node_dates = [dates(1) , node_dates]';
+% initialize the vector of prices
+prices = zeros(length(alphas), 1);
 
-fwd_discount_nodes = compute_fwdSpot(dates, node_dates, discounts, N_step);
+for i = 1:length(alphas)
 
-discounts_j = intExtDF(discounts , dates, node_dates);
+    prices(i) = Jamshidian(alphas(i), ttm, strike_swaption, a, sigma, discounts, dates);
 
-discounts_j = discounts_j(2:end);
+end
 
-Jamshidian(alfa,omega,strike_swaption, node_dates, a, sigma, dates,discounts_j)
+% plot the prices
+figure
+plot(alphas, prices, 'LineWidth', 2)
+xlabel('Alpha')
+ylabel('Price')
+title('Price of the swaption for different alpha')
+grid on
+
+% upper bound
+upper_bound = sum(prices);
 
 %% BERMUDAN SWAPTION BY TRINOMIAL TREE
 
@@ -253,119 +264,130 @@ sigma = 0.8/100;
 % compute the reset dates for the tree from 2 to 9 years
 reset_dates = (datenum(dates(1)) + (1:ttm)*365)';
 
-% set the number of steps in each interval
-N_steps_in_1y = 20;
-% N_steps_in_1y = 4;
-N_steps = N_steps_in_1y * ttm;
+Steps = 2:1:70;
+values = zeros(size(Steps));
+for k = 1:length(Steps)
+    % set the number of steps in each interval
+    N_steps_in_1y = Steps(k);
+    % N_steps_in_1y = 4;
+    N_steps = N_steps_in_1y * ttm;
 
-% find the interval length dt
-dt = 1/N_steps_in_1y;
+    % find the interval length dt
+    dt = 1/N_steps_in_1y;
 
-% find the dates in each node
-node_dates = (datenum(dates(1)) + dt*(0:N_steps)*365)';
-% find the integer for the dates
-node_dates = round(node_dates);
+    % find the dates in each node
+    node_dates = (datenum(dates(1)) + dt*(0:N_steps)*365)';
+    % find the integer for the dates
+    node_dates = round(node_dates);
 
 
-% compute sigma hat and mu hat
-mu_hat = 1- exp(-a*dt);
-sigma_hat = sigma * sqrt((1-exp(-2*a*dt))/(2*a));
-% find the jump D_x in the tree
-D_x = sigma_hat * sqrt(3);
-% find l_max and l_min (symmetric)
-l_max = ceil((1-sqrt(2/3))/mu_hat);
-l_min = -l_max;
-% vector of position in the tree (l)     
-l = l_max:-1:l_min;
+    % compute sigma hat and mu hat
+    mu_hat = 1- exp(-a*dt);
+    sigma_hat = sigma * sqrt((1-exp(-2*a*dt))/(2*a));
+    % find the jump D_x in the tree
+    D_x = sigma_hat * sqrt(3);
+    % find l_max and l_min (symmetric)
+    l_max = ceil((1-sqrt(2/3))/mu_hat);
+    l_min = -l_max;
+    % vector of position in the tree (l)     
+    l = l_max:-1:l_min;
 
-% build the vector of x_i based on the indicator l
-x = l * D_x;
+    % build the vector of x_i based on the indicator l
+    x = l * D_x;
 
-% compute the forward discount factor in each reset date
-% fwdDE_reset = zeros(2*l_max+1, length(resetDates));
+    % compute the forward discount factor in each reset date
+    % fwdDE_reset = zeros(2*l_max+1, length(resetDates));
 
-discounts_reset = intExtDF(discounts, dates, reset_dates);
-BPV = zeros(2*l_max+1, length(reset_dates)-1);
-swaps_rate = zeros(2*l_max+1, length(reset_dates)-1);
-intr_value = zeros(2*l_max+1, length(reset_dates)-1);
-intr_value1 = zeros(2*l_max+1, length(reset_dates)-1);
+    discounts_reset = intExtDF(discounts, dates, reset_dates);
+    BPV = zeros(2*l_max+1, length(reset_dates)-1);
+    swaps_rate = zeros(2*l_max+1, length(reset_dates)-1);
+    intr_value = zeros(2*l_max+1, length(reset_dates)-1);
+    intr_value1 = zeros(2*l_max+1, length(reset_dates)-1);
 
-for i = 2:9
+    for i = 2:9
 
-    fwdDF_ttm = discounts_reset(end)/discounts_reset(i);
-    fwdDF_present = fwdDF_ttm*exp( -x * (sigmaHJM(a, sigma, (ttm-i), 0)/sigma) - 0.5 * IntHJM(a, sigma, i, 0, (ttm-i) ) );
-    float_leg = (1 - fwdDF_present)';
-    % find the BPV
-    fwdDF_dt = discounts_reset(i+1:end)/discounts_reset(i);
-    BPV = zeros(2*l_max+1, 1);
+        fwdDF_ttm = discounts_reset(end)/discounts_reset(i);
+        fwdDF_present = fwdDF_ttm*exp( -x * (sigmaHJM(a, sigma, (ttm-i), 0)/sigma) - 0.5 * IntHJM(a, sigma, i, 0, (ttm-i) ) );
+        float_leg = (1 - fwdDF_present)';
+        % find the BPV
+        fwdDF_dt = discounts_reset(i+1:end)/discounts_reset(i);
+        BPV = zeros(2*l_max+1, 1);
 
-    for j = 1:ttm-i
-        fwdDF_present_dt = fwdDF_dt(j) * exp( -x * (sigmaHJM(a, sigma, j, 0)/sigma) - 0.5 * IntHJM(a, sigma, i, 0, j));
-        BPV = BPV + fwdDF_present_dt'; % is an yearly bpv so delta_i is always 1
-    end
-
-%     BPV = BPV(:,i)
-    % find the swap rates
-    swaps_rate(:,i) = float_leg ./ BPV;
-
-    % intr_value1(:,i) = max(0, 1 - BPV * strike + fwdDF_present');
-    intr_value(:,i) = BPV .* max(0, swaps_rate(:,i) - strike);
-
-end
-
-%% Build the tree with the stochastic dicount in each node for the step (i, i+1)
-
-discounts_node = intExtDF(discounts, dates, node_dates);
-discounts_node(1) = 1;
-fwd_discount_nodes = discounts_node(2:end)./discounts_node(1:end-1);
-sigma_star = (sigma/a) * sqrt(dt - 2 *( (1 - exp(-a*dt)) / a ) + (1 - exp(-2*a*dt)) / (2*a) );
-
-% initialize
-fwdDF_present = zeros(2*l_max+1, N_steps);
-
-for i = 1:N_steps
-
-    fwdDF_present(:,i) = fwd_discount_nodes(i)*exp( -x * (sigmaHJM(a, sigma, dt, 0)/sigma) - 0.5 * IntHJM(a, sigma, i, 0, dt) );
-     
-end
-
-value = zeros(2*l_max + 1, (ttm)*N_steps_in_1y+1 );
-
-for i = (ttm)*N_steps_in_1y:-1:1
-
-    % compute the continuation value
-    for j = 1:2*l_max+1
-
-        if j == 1
-            value(j,i) = C_contvalue(l_max, mu_hat, sigma, sigma_star, a, dt, fwdDF_present(:,i), value(:,i+1), D_x, x);
-
-        elseif j == 2*l_max+1
-            value(j,i) = B_contvalue(l_min, mu_hat, sigma, sigma_star, a, dt, fwdDF_present(:,i), value(:,i+1), D_x, x);
-
-        else
-            value(j,i) = A_contvalue(l_max - j + 1, j, mu_hat, sigma, sigma_star, a, dt, fwdDF_present(:,i), value(:,i+1), D_x, x);            
+        for j = 1:ttm-i
+            fwdDF_present_dt = fwdDF_dt(j) * exp( -x * (sigmaHJM(a, sigma, j, 0)/sigma) - 0.5 * IntHJM(a, sigma, i, 0, j));
+            BPV = BPV + fwdDF_present_dt'; % is an yearly bpv so delta_i is always 1
         end
 
-    end
-    
-    if find(reset_dates == node_dates(i))
+    %     BPV = BPV(:,i)
+        % find the swap rates
+        swaps_rate(:,i) = float_leg ./ BPV;
 
-        % find the index of the reset date
-        index = find(reset_dates == node_dates(i));
+        % intr_value1(:,i) = max(0, 1 - BPV * strike + fwdDF_present');
+        intr_value(:,i) = BPV .* max(0, swaps_rate(:,i) - strike);
 
-        continuation_value = max(intr_value(:,index), value(:,i));
-
-        value(:,i) = continuation_value;
-    
-    else
-        continue
     end
 
+    %% Build the tree with the stochastic dicount in each node for the step (i, i+1)
+
+    discounts_node = intExtDF(discounts, dates, node_dates);
+    discounts_node(1) = 1;
+    fwd_discount_nodes = discounts_node(2:end)./discounts_node(1:end-1);
+    sigma_star = (sigma/a) * sqrt(dt - 2 *( (1 - exp(-a*dt)) / a ) + (1 - exp(-2*a*dt)) / (2*a) );
+
+    % initialize
+    fwdDF_present = zeros(2*l_max+1, N_steps);
+
+    for i = 1:N_steps
+
+        fwdDF_present(:,i) = fwd_discount_nodes(i)*exp( -x * (sigmaHJM(a, sigma, dt, 0)/sigma) - 0.5 * IntHJM(a, sigma, i, 0, dt) );
+        
+    end
+
+    value = zeros(2*l_max + 1, (ttm)*N_steps_in_1y+1);
+
+    for i = (ttm)*N_steps_in_1y:-1:1
+
+        % compute the continuation value
+        for j = 1:2*l_max+1
+
+            if j == 1
+                value(j,i) = C_contvalue(l_max, mu_hat, sigma, sigma_star, a, dt, fwdDF_present(:,i), value(:,i+1), D_x, x);
+
+            elseif j == 2*l_max+1
+                value(j,i) = B_contvalue(l_min, mu_hat, sigma, sigma_star, a, dt, fwdDF_present(:,i), value(:,i+1), D_x, x);
+
+            else
+                value(j,i) = A_contvalue(l_max - j + 1, j, mu_hat, sigma, sigma_star, a, dt, fwdDF_present(:,i), value(:,i+1), D_x, x);            
+            end
+
+        end
+        
+        if find(reset_dates == node_dates(i))
+        
+            % find the index of the reset date
+            index = find(reset_dates == node_dates(i));
+        
+            continuation_value = max(intr_value(:,index), value(:,i));
+        
+            value(:,i) = continuation_value;
+        
+        else
+            continue
+        end
+
+        
+        % value(:,i) = continuation_value;
     
-    %value(:,i) = continuation_value;
-   
+    end
+
+    % display the value of the swaption
+    disp('--- Bermudan swaption value ---')
+    disp(['The value of the Bermudan swaption is: ', num2str(value(l_max+1,1))]);
+
+    values(k) = value(l_max+1,1);
+
 end
 
-% display the value of the swaption
-disp('--- Bermudan swaption value ---')
-disp(['The value of the Bermudan swaption is: ', num2str(value(l_max+1,1))]);
+% plot the values in log scale
+figure
+plot(Steps, values, 'LineWidth', 2)

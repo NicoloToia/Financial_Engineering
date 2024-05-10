@@ -1,4 +1,4 @@
-function vol = Volatility(Talfa,t0,Ti,sigma,a)
+function vol = Volatility(t_alpha,t0, Ti, sigma, a)
 
 ACT_365 = 3;
 
