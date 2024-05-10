@@ -235,7 +235,7 @@ discounts_j = discounts_j(2:end);
 
 Jamshidian(alfa,omega,strike_swaption, node_dates, a, sigma, dates,discounts_j)
 
-%% BERMUDAN SWAPTION BY THREENOMIAL TREE
+%% BERMUDAN SWAPTION BY TRINOMIAL TREE
 
 % import the data
 strike = 5/100; 
@@ -249,7 +249,8 @@ sigma = 0.8/100;
 reset_dates = (datenum(dates(1)) + (1:ttm)*365)';
 
 % set the number of steps in each interval
-N_steps_in_1y = 150;
+N_steps_in_1y = 20;
+% N_steps_in_1y = 4;
 N_steps = N_steps_in_1y * ttm;
 
 % find the interval length dt
@@ -287,14 +288,14 @@ intr_value1 = zeros(2*l_max+1, length(reset_dates)-1);
 for i = 2:9
 
     fwdDF_ttm = discounts_reset(end)/discounts_reset(i);
-    fwdDF_present = fwdDF_ttm*exp( -x * (sigmaHJM(a, sigma, (ttm-i), 0)/sigma) - 0.5 * IntHJM(a, sigma, i, 0, (i-1) ) );
+    fwdDF_present = fwdDF_ttm*exp( -x * (sigmaHJM(a, sigma, (ttm-i), 0)/sigma) - 0.5 * IntHJM(a, sigma, i, 0, (ttm-i) ) );
     float_leg = (1 - fwdDF_present)';
     % find the BPV
     fwdDF_dt = discounts_reset(i+1:end)/discounts_reset(i);
-    BPV = 0;
+    BPV = zeros(2*l_max+1, 1);
 
     for j = 1:ttm-i
-        fwdDF_present_dt = fwdDF_dt(j) * exp( -x * (sigmaHJM(a, sigma, (i+j), 0)/sigma) - 0.5 * IntHJM(a, sigma, i, 0, (i-1)) );
+        fwdDF_present_dt = fwdDF_dt(j) * exp( -x * (sigmaHJM(a, sigma, j, 0)/sigma) - 0.5 * IntHJM(a, sigma, i, 0, j));
         BPV = BPV + fwdDF_present_dt'; % is an yearly bpv so delta_i is always 1
     end
 
@@ -302,33 +303,10 @@ for i = 2:9
     % find the swap rates
     swaps_rate(:,i) = float_leg ./ BPV;
 
-    intr_value1(:,i) = max(0, 1 - BPV * strike + fwdDF_present');
+    % intr_value1(:,i) = max(0, 1 - BPV * strike + fwdDF_present');
     intr_value(:,i) = BPV .* max(0, swaps_rate(:,i) - strike);
 
 end
-
-% Build the tree to keep trace of zeros and 1 in the scheme
-Tree_matrix = zeros(2*l_max+1, ttm);
-Tree_matrix(l_max + 1, 1) = 1;
-
-for i = 2:ttm
-
-    if i <= l_max + 1
-
-        Tree_matrix(:,i) = Tree_matrix(:,i-1);    
-        Tree_matrix(l_max + 2 - i  , i) = 1;
-        
-        Tree_matrix(l_max + i , i) = 1;
-    else
-        Tree_matrix(:,i) = Tree_matrix(:,i-1);
-    end
-
-end
-
-
-% for i = 1:ttm-1
-%    intr_value(:,i) = intr_value(:,i) .* Tree_matrix(:,i+1);
-% end
 
 %% Build the tree with the stochastic dicount in each node for the step (i, i+1)
 
@@ -344,10 +322,6 @@ for i = 1:N_steps
 
     fwdDF_present(:,i) = fwd_discount_nodes(i)*exp( -x * (sigmaHJM(a, sigma, dt, 0)/sigma) - 0.5 * IntHJM(a, sigma, i, 0, dt) );
      
-    % Compute the stochastic discounts in each node
-%     for j = 1:2*l_max+1
-%         fwdSDF_present = fwdDF_present(j) * exp( -0.5*sigma_star^2 + (sigma_star/sigma_hat)*(exp(-a*dt) ) );
-%     end
 end
 
 value = zeros(2*l_max + 1, (ttm)*N_steps_in_1y+1 );
@@ -364,7 +338,7 @@ for i = (ttm)*N_steps_in_1y:-1:1
             value(j,i) = B_contvalue(l_min, mu_hat, sigma, sigma_star, a, dt, fwdDF_present(:,i), value(:,i+1), D_x, x);
 
         else
-            value(j,i) = A_contvalue(j, mu_hat, sigma, sigma_star, a, dt, fwdDF_present(:,i), value(:,i+1), D_x, x);            
+            value(j,i) = A_contvalue(l_max - j + 1, j, mu_hat, sigma, sigma_star, a, dt, fwdDF_present(:,i), value(:,i+1), D_x, x);            
         end
 
     end
@@ -386,3 +360,7 @@ for i = (ttm)*N_steps_in_1y:-1:1
     %value(:,i) = continuation_value;
    
 end
+
+% display the value of the swaption
+disp('--- Bermudan swaption value ---')
+disp(['The value of the Bermudan swaption is: ', num2str(value(l_max+1,1))]);

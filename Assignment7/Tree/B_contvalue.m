@@ -16,6 +16,6 @@ end
 [p_u, p_m, p_d] = schemeB(l, mu_hat);
 probabilities = [p_u, p_m, p_d]';
 
-B_contvalue =  sum(next_value(1:3) .* probabilities .* stoch_disc);
+B_contvalue =  sum(next_value(end-2:end) .* probabilities .* stoch_disc);
 
 end
