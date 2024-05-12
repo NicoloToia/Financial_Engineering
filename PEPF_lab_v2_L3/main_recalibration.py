@@ -60,7 +60,7 @@ def compute_winkler_scores(y_true, pred_quantiles, quantiles_levels):
 # Set PEPF task to execute
 PF_task_name = 'EM_price'
 # Set Model setup to execute
-exper_setup = 'N-DNN'
+exper_setup = 'QR-DNN-ARCSINH'
 
 #---------------------------------------------------------------------------------------------------------------------
 # Set run configs
