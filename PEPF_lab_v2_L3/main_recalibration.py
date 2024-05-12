@@ -60,7 +60,7 @@ def compute_winkler_scores(y_true, pred_quantiles, quantiles_levels):
 # Set PEPF task to execute
 PF_task_name = 'EM_price'
 # Set Model setup to execute
-exper_setup = 'QR-DNN-ARCSINH'
+exper_setup = 'QR-DNN'
 
 #---------------------------------------------------------------------------------------------------------------------
 # Set run configs
@@ -69,9 +69,9 @@ exper_setup = 'QR-DNN-ARCSINH'
 np.random.seed(42)
 
 # run_id = 'recalib_opt_grid_1_1'
-run_id = 'recalib_opt_random_1_1'
+run_id = 'recalib_opt_random_1_2'
 # Load hyperparams from file (select: load_tuned or optuna_tuner)
-hyper_mode = 'load_tuned'
+hyper_mode = 'optuna_tuner'
 # Plot train history flag
 plot_train_history=False
 plot_weights=False
