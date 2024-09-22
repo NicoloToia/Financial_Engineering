@@ -28,16 +28,16 @@ This repository contains a series of assignments for the Financial Engineering c
 - Historical Simulation and Bootstrap: Evaluated VaR and ES using historical simulation methods and explored their accuracy.
 - Principal Component Analysis (PCA): Applied PCA to reduce dimensionality in VaR estimation.
 - Monte Carlo VaR: Implemented full Monte Carlo simulation and Delta-Normal approaches for VaR analysis.
-- Cliquet Option Pricing: Explored the pricing of a Cliquet option in the presence of counterparty risk​(Assignment4_Group16).
+- Cliquet Option Pricing: Explored the pricing of a Cliquet option in the presence of counterparty risk​.
 
 ### Assignment 5: Advanced Derivative Pricing and Volatility Surface Calibration
 - Certificate Pricing: Priced a certificate based on a basket of ENEL and AXA stocks using Monte Carlo simulations.
 - Digital Option Pricing: Compared different methods (Black-Scholes, implied volatility) for pricing a digital option.
 - Lewis Formula and FFT: Applied the Lewis formula and Fast Fourier Transform (FFT) for efficient pricing of call options.
-- Volatility Surface Calibration: Calibrated a volatility surface using a mean-variance mixture model and analyzed the skew and vega of options​(Assignment5_Group16).
+- Volatility Surface Calibration: Calibrated a volatility surface using a mean-variance mixture model and analyzed the skew and vega of options​.
 
 ### Assignment 6: Interest Rate Risk and Hedging
 - Bootstrap Market Discounts: Extended the bootstrapping technique to model discount factors and zero rates for interest rates beyond 12 years.
 - Caplet Pricing and Spot Volatility Calibration: Calibrated spot volatilities from market cap prices using the Bachelier formula.
 - Upfront Payment Calculation: Priced upfront payments for structured interest rate products.
-- Delta and Vega Sensitivities: Computed delta and vega sensitivities for various buckets of maturities and strikes, and developed a hedging strategy using swaps and caps​(Assignment6_Group16).
+- Delta and Vega Sensitivities: Computed delta and vega sensitivities for various buckets of maturities and strikes, and developed a hedging strategy using swaps and caps​.
