@@ -41,3 +41,18 @@ This repository contains a series of assignments for the Financial Engineering c
 - Caplet Pricing and Spot Volatility Calibration: Calibrated spot volatilities from market cap prices using the Bachelier formula.
 - Upfront Payment Calculation: Priced upfront payments for structured interest rate products.
 - Delta and Vega Sensitivities: Computed delta and vega sensitivities for various buckets of maturities and strikes, and developed a hedging strategy using swaps and caps​.
+
+### Assignment 7: Bermudan Swaptions and Certificate Pricing
+- Bermudan Swaption Pricing: Priced a Bermudan swaption using the Hull-White model, exploring both closed-form solutions and tree-based methods.
+- Certificate Pricing via NIG Model: Priced structured bonds using the Normal Inverse Gaussian (NIG) model, Fast Fourier Transform (FFT), and other methods (Variance Gamma and Monte Carlo).
+- Black Model Adjustments: Evaluated the impact of digital risk adjustments on the Black model for certificate pricing​(Assignment7_Report).
+
+### EPLF Assignment 1: Regularization Techniques in Energy Price Forecasting
+- Lasso, Ridge, and Elastic Net Regression: Explored regularization techniques to improve forecasting accuracy for electricity prices.
+- Feature Selection: Demonstrated the importance of feature selection in time-series forecasting using LASSO.
+- Seasonality Analysis: Investigated the effects of seasonality on energy price predictions using the Elastic Net model​(Assignment1_EPLF_Report).
+
+### EPLF Assignment 2: Deep Neural Networks (DNN) Hyperparameter Tuning
+- Hyperparameter Optimization: Employed Optuna to perform random search for optimizing learning rate and hidden layer size in a DNN.
+- Loss Function Minimization: Compared different configurations of learning rate and hidden size, evaluating their impact on the loss function.
+- DNN Performance: Analyzed the effect of hyperparameters on overfitting and generalization performance in a DNN​(Assignment2_EPLF_Report).
