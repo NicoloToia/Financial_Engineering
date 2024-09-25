@@ -45,28 +45,33 @@ This repository contains a series of assignments for the Financial Engineering c
 ### Assignment 7: Bermudan Swaptions and Certificate Pricing
 - Bermudan Swaption Pricing: Priced a Bermudan swaption using the Hull-White model, exploring both closed-form solutions and tree-based methods.
 - Certificate Pricing via NIG Model: Priced structured bonds using the Normal Inverse Gaussian (NIG) model, Fast Fourier Transform (FFT), and other methods (Variance Gamma and Monte Carlo).
-- Black Model Adjustments: Evaluated the impact of digital risk adjustments on the Black model for certificate pricing​(Assignment7_Report).
+- Black Model Adjustments: Evaluated the impact of digital risk adjustments on the Black model for certificate pricing.
 
 ## Energy Price and Load Forecasting
 
 ### EPLF Assignment 1: Regularization Techniques in Energy Price Forecasting
 - Lasso, Ridge, and Elastic Net Regression: Explored regularization techniques to improve forecasting accuracy for electricity prices.
 - Feature Selection: Demonstrated the importance of feature selection in time-series forecasting using LASSO.
-- Seasonality Analysis: Investigated the effects of seasonality on energy price predictions using the Elastic Net model​(Assignment1_EPLF_Report).
+- Seasonality Analysis: Investigated the effects of seasonality on energy price predictions using the Elastic Net model.
 
 ### EPLF Assignment 2: Deep Neural Networks (DNN) Hyperparameter Tuning
 - Hyperparameter Optimization: Employed Optuna to perform random search for optimizing learning rate and hidden layer size in a DNN.
 - Loss Function Minimization: Compared different configurations of learning rate and hidden size, evaluating their impact on the loss function.
-- DNN Performance: Analyzed the effect of hyperparameters on overfitting and generalization performance in a DNN​(Assignment2_EPLF_Report).
+- DNN Performance: Analyzed the effect of hyperparameters on overfitting and generalization performance in a DNN​.
 
 ### EPLF Assignment 3: Distributional Neural Networks and Quantile Regression
 - Quantile Regression Neural Networks: Applied quantile regression to capture boundaries of data distribution using pinball loss functions.
 - Distributional Neural Networks (DNN): Implemented DNNs using Normal and Johnson's SU distributions to capture probabilistic forecasting, tuning models via pinball and log-likelihood functions.
-- Model Comparison: Compared model performance using Pinball and Winkler scores, finding JSU-DNN to perform best overall​(Assignment3_EPLF_Report).
+- Model Comparison: Compared model performance using Pinball and Winkler scores, finding JSU-DNN to perform best overall​.
 
 ## Risk Managment
 
 ### RM Assignment 1: Hazard Rate and Z-Spread Calculation
 - Hazard Rate Curve Bootstrapping: Constructed hazard rate curves for investment grade (IG) and high yield (HY) bonds using bootstrapping and solving for hazard rates using MATLAB.
 - Z-Spread Calculation: Calculated the Z-spread for IG and HY bonds by applying a parallel shift to the zero-rate curve to equalize defaultable and risk-free bond prices.
-- Market-Implied Transition Matrix: Developed a time-homogeneous transition matrix for rating migrations, using the hazard rate curves​(Assignment_1_RM_Report).
+- Market-Implied Transition Matrix: Developed a time-homogeneous transition matrix for rating migrations, using the hazard rate curves​.
+
+### RM Assignment 2: Present Value and Credit VaR
+- Present Value Calculation: Evaluated present value using Monte Carlo simulations, considering survival probabilities and default scenarios for Investment Grade (IG) and High Yield (HY) bonds.
+- Credit VaR Simulation: Simulated Credit VaR under different correlation scenarios, examining the impact of default and migration risks.
+- Concentration Risk Analysis: Assessed the impact of concentration risk by varying the number of obligors, demonstrating the importance of diversification.
